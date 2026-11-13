@@ -1,0 +1,74 @@
+/** Cliente HTTP mínimo para la API de EcoLogística. */
+
+export const API_URL: string = import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api';
+const CLAVE_TOKEN = 'eco_token';
+
+export class ApiError extends Error {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
+export const tokenStore = {
+  get: (): string | null => sessionStorage.getItem(CLAVE_TOKEN),
+  set: (t: string) => sessionStorage.setItem(CLAVE_TOKEN, t),
+  clear: () => sessionStorage.removeItem(CLAVE_TOKEN),
+};
+
+/** Convierte el `detail` de FastAPI (texto o lista de errores de validación) en un mensaje legible. */
+export function mensajeError(detail: unknown, status: number): string {
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    return detail
+      .map((d: { loc?: unknown[]; msg?: string }) => `${(d.loc ?? []).slice(1).join('.')}: ${d.msg ?? ''}`)
+      .join(' · ');
+  }
+  return `Error ${status}`;
+}
+
+export async function api<T>(ruta: string, opciones: RequestInit = {}): Promise<T> {
+  const token = tokenStore.get();
+  const resp = await fetch(`${API_URL}${ruta}`, {
+    ...opciones,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...opciones.headers,
+    },
+  });
+  if (resp.status === 401 && ruta !== '/auth/login') {
+    tokenStore.clear();
+    window.location.assign('/login');
+  }
+  if (!resp.ok) {
+    const cuerpo = await resp.json().catch(() => ({}));
+    throw new ApiError(resp.status, mensajeError(cuerpo.detail, resp.status));
+  }
+  return resp.status === 204 ? (undefined as T) : resp.json();
+}
+
+export const post = <T>(ruta: string, body: unknown) => api<T>(ruta, { method: 'POST', body: JSON.stringify(body) });
+export const put = <T>(ruta: string, body: unknown) => api<T>(ruta, { method: 'PUT', body: JSON.stringify(body) });
+export const del = (ruta: string) => api<void>(ruta, { method: 'DELETE' });
+
+// ---------- Tipos ----------
+export type Rol = 'ADMIN' | 'PLANIFICADOR' | 'CONDUCTOR';
+export interface Usuario { id: number; correo: string; nombre: string; rol: Rol }
+export interface Vehiculo { id: number; placa: string; tipo: string; capacidad_kg: number; combustible: string; consumo_100km: number; activo: boolean }
+export interface Pedido {
+  id: number; codigo: string; cliente: string; direccion: string; distrito?: string; lat: number; lng: number;
+  peso_kg: number; ventana_inicio: string; ventana_fin: string; prioridad: number; estado: string;
+}
+export interface Parada { id: number; orden: number; hora_llegada: string; estado: string; pedido: Pedido }
+export interface Ruta {
+  id: number; fecha: string; vehiculo: Vehiculo; conductor: { id: number; nombre: string } | null;
+  hora_inicio: string; hora_fin: string; distancia_km: number; duracion_min: number; co2_kg: number;
+  distancia_base_km: number; co2_base_kg: number; estado: string; ruta_origen_id: number | null; paradas: Parada[];
+}
+export interface ResultadoPlan {
+  estado: string; rutas: Ruta[]; no_asignados: number[]; distancia_total_km: number; co2_total_kg: number;
+  ahorro_km: number; ahorro_co2_kg: number; tiempo_calculo_ms: number;
+}
