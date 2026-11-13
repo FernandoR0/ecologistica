@@ -1,0 +1,27 @@
+# Acta de aceptación
+
+| Campo | Valor |
+|---|---|
+| Proyecto | EcoLogística - Optimizador de rutas sostenibles de última milla |
+| Organización | DistriRápido S.A.C., Huancayo, Junín |
+| Curso | Taller de Proyectos 2, Universidad Continental |
+| Versión | 1.0.0 |
+| Fecha | _Completar_ |
+| Elaborado por | _Completar_ |
+| Revisado por | Docente: Daniel Gamarra Moreno |
+
+---
+
+Por la presente, DistriRápido S.A.C. (representada por _Completar_) declara haber recibido y aceptado el producto
+**EcoLogística - Optimizador de rutas sostenibles de última milla**, versión 1.0.0, conforme a los criterios de aceptación definidos en el Product Backlog.
+
+| Criterio | Aceptado (Sí/No) | Observaciones |
+|---|:-:|---|
+| Funcionalidad RF-001 a RF-010 | _Completar_ | |
+| Requisitos no funcionales | _Completar_ | |
+| Documentación y manual | _Completar_ | |
+
+| Rol | Nombre | Firma | Fecha |
+|---|---|---|---|
+| Cliente | _Completar_ | | |
+| Product Owner | _Completar_ | | |
