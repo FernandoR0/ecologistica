@@ -3,7 +3,7 @@
 set -e
 cd "$(dirname "$0")/.."
 
-pip install --only-binary :all: --require-hashes -r backend/requirements.lock
+python -m pip install --only-binary :all: --require-hashes -r backend/requirements.lock
 
 if [ ! -f backend/.env ]; then
   {
