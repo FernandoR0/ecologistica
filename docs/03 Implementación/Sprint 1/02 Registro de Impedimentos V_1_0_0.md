@@ -16,7 +16,7 @@
 
 | Impedimento # | Fecha de Registro | Descripción del Impedimento así como el Impacto en el Proyecto | Prioridad | Reportado por | Fecha tope de Resolución | Estado | Fecha de Resolución | Resolución/Comentarios |
 |---|---|---|---|---|---|---|---|---|
-| _Completar_ | _Completar_ | _Completar_ | _Completar_ | Fernando Rodrigo Chaupis Espinoza | _Completar_ | _Completar_ | _Completar_ | _Completar_ |
+| - | - | No se registraron impedimentos en este sprint. | - | - | - | - | - | - |
 
 ---
 

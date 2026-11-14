@@ -25,11 +25,23 @@ Todos los requisitos RF-001 a RF-010 están implementados (ver `01 Inicio/06`). 
 - Prueba de carga: 150 pedidos y 15 vehículos en 30 s, sin pedidos sin asignar.
 - Lighthouse en el login: 100 en desempeño, accesibilidad, buenas prácticas y SEO. axe-core: 0 violaciones WCAG 2.1 AA en las 8 pantallas.
 - Dependencias de producción sin vulnerabilidades conocidas (pip-audit, npm audit).
-- _Completar_: puntaje SUS y resultado de SonarQube.
+- SonarQube Cloud: Quality Gate aprobado, 0 bugs, 0 vulnerabilidades, 0 code smells, cobertura 90.6 %.
+- _Completar_: puntaje SUS.
 
 ## 4. Costos y tiempo reales vs. planificados
-_Completar_
+
+| Concepto | Planificado (S/) | Real (S/) | Comentario |
+|---|:-:|:-:|---|
+| Recursos humanos | 6 350 | 6 350 | Proyecto individual; se mantiene la estimación de 300 h |
+| Licencias y herramientas | 400 | 400 | Todo el software es libre o gratuito; solo la depreciación de la laptop |
+| Infraestructura y servicios | 0 | 0 | GitHub Actions y SonarQube Cloud gratuitos para repositorios públicos |
+| Reserva de contingencia | 675 | 0 | No fue necesaria |
+| **Total** | **7 425** | **6 750** | |
+
+Tiempo: los Sprints 1 a 4 se completaron al 100 % de sus SP; el Sprint 5 está al 50 % (falta la encuesta SUS).
 
 ## 5. Conclusiones y recomendaciones
 - Integrar un servidor OSRM para distancias por calles reales.
-- _Completar_
+- Agregar una bitácora de auditoría de acciones críticas (OWASP A09).
+- Corregir el trazo de la ruta re-optimizada en el mapa (DEF-03).
+- Ejecutar `pip-audit` y `npm audit` en el CI.

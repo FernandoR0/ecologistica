@@ -14,35 +14,40 @@
 
 ## ¿Qué aprendimos?
 
-- _Completar_
+- El ahorro se mide contra una línea base: las mismas paradas recorridas en el orden de registro, sin optimizar.
+- Los factores de emisión deben tener fuente (IPCC para combustibles y MINAM para la red eléctrica).
+- Los indicadores se calculan sobre rutas vigentes; las re-optimizadas no se cuentan dos veces.
 
 ## ¿Qué estamos haciendo bien?
 
-- _Completar_
+- El dashboard y el reporte usan los mismos servicios que prueban las pruebas de integración.
+- El plan de compensación propone dos opciones (árboles y bonos) con sus supuestos visibles.
+- Se completaron los 13 SP comprometidos (3 de 3 historias).
 
 ## ¿Qué podemos hacer mejor?
 
 ### Personas
 
-- _Completar_
+Las historias de reportes son más cortas; el tiempo libre se puede usar para pruebas y documentación.
 
 ### Relaciones
 
-- _Completar_
+Los indicadores ayudan a explicar el valor del sistema a la gerencia; conviene mostrarlos primero en la revisión.
 
 ### Procesos
 
-- _Completar_
+Registrar en el control de cambios cada ajuste de alcance que salga de la revisión.
 
 ### Herramientas
 
-- _Completar_
+Los indicadores se recalculaban en cada consulta; hace falta caché en el servidor.
 
 ## Acciones a realizar
 
-| Acción | Responsable | Para el sprint |
-|---|---|:-:|
-| _Completar_ | Fernando Rodrigo Chaupis Espinoza | 5 |
+| Acción | Eje | Responsable | Fecha |
+|---|---|---|---|
+| Caché de indicadores en el servidor que se limpia con cada escritura | Herramientas | Fernando Rodrigo Chaupis Espinoza | Sprint 5 |
+| Mantener actualizado el control de cambios | Procesos | Fernando Rodrigo Chaupis Espinoza | Sprint 5 |
 
 ---
 

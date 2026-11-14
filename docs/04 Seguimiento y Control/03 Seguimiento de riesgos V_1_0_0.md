@@ -16,4 +16,4 @@
 |---|---|:-:|:-:|---|---|
 | R-01 | Motor sin solución a tiempo | 15 | 3 | Límite de tiempo + descarte con penalización; prueba de carga: 150 pedidos y 15 vehículos en 30 s | Mitigado |
 | R-02 | Distancia en línea recta | 12 | 12 | Factor vial 1.3; OSRM queda como mejora futura | Aceptado |
-| R-03 | Baja disponibilidad del equipo | 12 | _Completar_ | _Completar_ | _Completar_ |
+| R-03 | Baja disponibilidad del equipo (proyecto individual) | 12 | 8 | Backlog priorizado; pruebas, CI y análisis de calidad automatizados | Abierto |

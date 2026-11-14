@@ -79,8 +79,16 @@ Estado actual: 13 issues cerrados (hechos) y 1 abierto (ENB-002: falta la encues
 | 1.0.0 | RF-001 a RF-010, motor VRPTW + Green VRP, CI |
 | 1.1.0 | Inspección 04 (Green IT), actualización de dependencias, pruebas E2E y de carga |
 
-> Capturas: tomar desde la cuenta FernandoR0 la lista de issues, los hitos y la versión, y guardarlas en
-> `02 Planificación/evidencias/` (_Completar_).
+### Capturas
+
+| Evidencia | Captura |
+|---|---|
+| 1. Roadmap (hitos por sprint) | ![Hitos cerrados](<evidencias/evidencia-1-roadmap-hitos-cerrados.png>) ![Hito abierto](<evidencias/evidencia-1-roadmap-hito-abierto.png>) |
+| 2. Backlog priorizado | ![Backlog](<evidencias/evidencia-2-backlog-issues.png>) |
+| 3. Sprint Planning (historias de cada sprint) | ![Sprint 1](<evidencias/evidencia-3-sprint-1.png>) ![Sprint 2](<evidencias/evidencia-3-sprint-2.png>) ![Sprint 3](<evidencias/evidencia-3-sprint-3.png>) ![Sprint 4](<evidencias/evidencia-3-sprint-4.png>) ![Sprint 5](<evidencias/evidencia-3-sprint-5.png>) |
+| 4. Tablero (hecho / por hacer) | ![Cerrados](<evidencias/evidencia-4-tablero-cerrados.png>) ![Abiertos](<evidencias/evidencia-4-tablero-abiertos.png>) |
+| Detalle de una historia | ![US-005](<evidencias/evidencia-issue-us-005.png>) |
+| 5. Versiones (commits y GitHub Actions) | ![Commits](<evidencias/evidencia-5-commits.png>) ![Actions](<evidencias/evidencia-5-actions.png>) |
 
 ---
 
