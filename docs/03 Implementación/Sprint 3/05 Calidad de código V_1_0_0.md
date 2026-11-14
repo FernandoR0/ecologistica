@@ -21,8 +21,11 @@
 ```bash
 cd backend && pytest --cov=app --cov-report=xml
 cd frontend && npm test -- --coverage
-docker run --rm -e SONAR_HOST_URL=http://host.docker.internal:9000 -e SONAR_TOKEN=<token> -v "$PWD:/usr/src" sonarsource/sonar-scanner-cli
 ```
+
+El análisis de SonarQube se hace en **SonarQube Cloud** (https://sonarcloud.io/project/overview?id=FernandoR0_ecologistica)
+con el workflow `.github/workflows/sonarcloud.yml`: en cada push a `main` corre las pruebas con cobertura y envía
+el análisis. Configuración en `sonar-project.properties`.
 
 ## Resultados
 | Métrica | Valor | Meta |
@@ -36,6 +39,6 @@ docker run --rm -e SONAR_HOST_URL=http://host.docker.internal:9000 -e SONAR_TOKE
 | Duplicación (SonarQube) | _Completar_ | < 3 % |
 | Quality Gate (SonarQube) | _Completar_ | Aprobado |
 
-Las filas de SonarQube se llenan al ejecutar el análisis (requiere Docker Desktop encendido para levantar el servidor). Adjuntar captura del panel.
+Las filas de SonarQube se toman del panel de SonarQube Cloud después del primer análisis. Adjuntar captura del panel.
 
 Salidas completas: `06 Anexos/evidencias/resultado-pytest.txt` y `06 Anexos/evidencias/resultado-vitest.txt`.

@@ -1,0 +1,48 @@
+name: SonarQube Cloud
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Sonar necesita el historial completo para el análisis de código nuevo
+
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - name: Pruebas backend con cobertura
+        working-directory: backend
+        run: |
+          pip install -r requirements-dev.txt
+          pytest --cov=app --cov-report=xml:coverage.xml
+          # Sonar lee las rutas desde la raíz del repositorio
+          sed -i "s#<source>.*</source>#<source>$GITHUB_WORKSPACE/backend/app</source>#" coverage.xml
+
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - name: Pruebas frontend con cobertura
+        working-directory: frontend
+        run: |
+          npm ci
+          npx vitest run --coverage
+
+      - name: Análisis SonarQube Cloud
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_HOST_URL: https://sonarcloud.io
+
+      - name: Aviso si falta el token
+        if: env.SONAR_TOKEN == ''
+        run: echo "::warning::Falta el secreto SONAR_TOKEN. Configúralo en Settings > Secrets and variables > Actions."

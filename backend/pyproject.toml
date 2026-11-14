@@ -13,3 +13,8 @@ ignore = ["B008"]
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101", "S105", "S106"]
 "app/seed.py" = ["S105", "S106"]
+
+[tool.coverage.run]
+# Rutas relativas para que SonarQube encuentre los archivos del reporte de cobertura
+relative_files = true
+source = ["app"]
