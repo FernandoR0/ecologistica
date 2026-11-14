@@ -3,9 +3,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only
 
 from app.api.deps import gestion, get_current_user
+from app.api.paginacion import Pagina, paginar, params_pagina
 from app.api.routers.crud import crud_router
 from app.db import get_db
 from app.models import Conductor, Pedido, PreferenciaCliente, Vehiculo
@@ -15,6 +16,7 @@ from app.schemas import (
     ConductorUpdate,
     PedidoIn,
     PedidoOut,
+    PedidoResumen,
     PedidoUpdate,
     PreferenciaIn,
     PreferenciaOut,
@@ -42,12 +44,19 @@ def _pedido(db: Session, pedido_id: int) -> Pedido:
     return p
 
 
-@pedidos.get("", response_model=list[PedidoOut])
-def listar_pedidos(estado: str | None = None, db: Session = Depends(get_db), _=Depends(get_current_user)):
-    q = select(Pedido).order_by(Pedido.id)
+@pedidos.get("", response_model=list[PedidoResumen])
+def listar_pedidos(
+    response: Response,
+    estado: str | None = None,
+    p: Pagina = Depends(params_pagina),
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    # Para el listado solo se leen las columnas que muestra la tabla
+    q = select(Pedido).options(load_only(*(getattr(Pedido, c) for c in PedidoResumen.model_fields))).order_by(Pedido.id)
     if estado:
         q = q.where(Pedido.estado == estado.upper())
-    return db.scalars(q).all()
+    return paginar(db, q, p, response)
 
 
 @pedidos.get("/{pedido_id}", response_model=PedidoOut)

@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, solo_admin
+from app.core import cache
 from app.db import get_db
 from app.models import Compensacion
 from app.schemas import CompensacionIn, CompensacionOut
@@ -18,19 +19,19 @@ router = APIRouter(tags=["Indicadores y sostenibilidad"])
 @router.get("/indicadores")
 def dashboard(desde: date | None = None, hasta: date | None = None, db: Session = Depends(get_db),
               _=Depends(get_current_user)):
-    return indicadores.dashboard(db, desde, hasta)
+    return cache.obtener(("dashboard", desde, hasta), lambda: indicadores.dashboard(db, desde, hasta))
 
 
 @router.get("/indicadores/sostenibilidad")
 def sostenibilidad(desde: date | None = None, hasta: date | None = None, db: Session = Depends(get_db),
                    _=Depends(get_current_user)):
-    return indicadores.sostenibilidad(db, desde, hasta)
+    return cache.obtener(("sostenibilidad", desde, hasta), lambda: indicadores.sostenibilidad(db, desde, hasta))
 
 
 @router.get("/compensacion/plan")
 def plan(desde: date | None = None, hasta: date | None = None, db: Session = Depends(get_db),
          _=Depends(get_current_user)):
-    return indicadores.plan_compensacion(db, desde, hasta)
+    return cache.obtener(("plan", desde, hasta), lambda: indicadores.plan_compensacion(db, desde, hasta))
 
 
 @router.get("/compensacion", response_model=list[CompensacionOut])

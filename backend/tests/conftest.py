@@ -8,6 +8,7 @@ from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import sessionmaker  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
+from app.core import cache  # noqa: E402
 from app.core.config import settings  # noqa: E402
 from app.core.security import bloqueo_login, hash_password  # noqa: E402
 from app.db import Base, get_db  # noqa: E402
@@ -30,6 +31,7 @@ def db():
 def client(db):
     app.dependency_overrides[get_db] = lambda: db
     bloqueo_login.limpiar()
+    cache.limpiar()
     for correo, rol in [("admin@test.pe", "ADMIN"), ("plan@test.pe", "PLANIFICADOR"), ("cond@test.pe", "CONDUCTOR")]:
         db.add(Usuario(correo=correo, nombre=rol.title(), rol=rol, password_hash=hash_password("Secreta123")))
     db.commit()

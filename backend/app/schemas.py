@@ -154,6 +154,31 @@ class PedidoOut(ORM, PedidoIn):
     estado: str
 
 
+class PedidoResumen(ORM):
+    """Solo las columnas que se ven en el listado de pedidos."""
+
+    id: int
+    codigo: str
+    cliente: str
+    distrito: str | None
+    peso_kg: float
+    ventana_inicio: str
+    ventana_fin: str
+    prioridad: int
+    estado: str
+
+
+class PedidoParada(ORM):
+    """Datos del pedido que necesita el mapa y la lista de paradas."""
+
+    id: int
+    codigo: str
+    cliente: str
+    lat: float
+    lng: float
+    peso_kg: float
+
+
 # ---------- Rutas (RF-003, RF-004, RF-007) ----------
 class OptimizarIn(BaseModel):
     fecha: date | None = None
@@ -166,7 +191,7 @@ class ParadaOut(ORM):
     orden: int
     hora_llegada: str
     estado: str
-    pedido: PedidoOut
+    pedido: PedidoParada
 
 
 class RutaOut(ORM):

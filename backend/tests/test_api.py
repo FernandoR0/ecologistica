@@ -117,3 +117,32 @@ def test_averia_reparte_en_otro_vehiculo(client, admin):
 
 def test_conductor_ve_solo_sus_rutas(client, admin):
     assert client.get("/api/rutas/mias", headers=token(client, "cond@test.pe")).json() == []
+
+
+def test_paginacion_de_pedidos(client, admin):
+    _crear_pedidos(client, admin, 15)
+    r = client.get("/api/pedidos", headers=admin)
+    assert r.headers["X-Total-Count"] == "15"
+    assert len(r.json()) == 12
+    assert len(client.get("/api/pedidos?pagina=2", headers=admin).json()) == 3
+    # El listado solo trae las columnas de la tabla
+    assert "direccion" not in r.json()[0]
+
+
+def test_gzip_y_etag(client, admin):
+    _crear_pedidos(client, admin, 12)
+    r = client.get("/api/pedidos", headers={**admin, "Accept-Encoding": "gzip"})
+    assert r.headers["content-encoding"] == "gzip"
+    etag = r.headers["etag"]
+    otra = client.get("/api/pedidos", headers={**admin, "If-None-Match": etag})
+    assert otra.status_code == 304
+    assert otra.content == b""
+
+
+def test_filtro_rutas_por_varios_estados(client, admin):
+    _crear_flota(client, admin)
+    _crear_pedidos(client, admin, 3)
+    client.post("/api/rutas/optimizar", headers=admin, json={"fecha": HOY, "limite_segundos": 1})
+    r = client.get("/api/rutas?estado=PLANIFICADA,EN_CURSO", headers=admin)
+    assert r.status_code == 200 and len(r.json()) >= 1
+    assert client.get("/api/rutas?estado=COMPLETADA", headers=admin).json() == []

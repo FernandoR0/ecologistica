@@ -2,13 +2,14 @@
 
 from datetime import date
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.api.deps import gestion, get_current_user
+from app.api.paginacion import Pagina, paginar, params_pagina
 from app.db import get_db
-from app.models import Conductor, Ruta, Usuario
+from app.models import Conductor, Parada, Ruta, Usuario
 from app.schemas import EstadoRutaIn, IncidenteIn, OptimizarIn, ResultadoPlanOut, RutaOut
 from app.services import planificacion
 
@@ -39,15 +40,30 @@ def optimizar(datos: OptimizarIn, db: Session = Depends(get_db), _=Depends(gesti
     return _respuesta(res)
 
 
+def _con_relaciones(q):
+    # Carga paradas, pedidos, vehiculo y conductor en pocas consultas (evita el problema N+1)
+    return q.options(
+        selectinload(Ruta.paradas).selectinload(Parada.pedido),
+        selectinload(Ruta.vehiculo),
+        selectinload(Ruta.conductor),
+    )
+
+
 @router.get("", response_model=list[RutaOut])
-def listar(fecha: date | None = None, estado: str | None = None, db: Session = Depends(get_db),
-           _=Depends(get_current_user)):
+def listar(
+    response: Response,
+    fecha: date | None = None,
+    estado: str | None = Query(None, description="Uno o varios separados por coma: PLANIFICADA,EN_CURSO"),
+    p: Pagina = Depends(params_pagina),
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     q = select(Ruta).order_by(Ruta.id.desc())
     if fecha:
         q = q.where(Ruta.fecha == fecha)
     if estado:
-        q = q.where(Ruta.estado == estado.upper())
-    return db.scalars(q).all()
+        q = q.where(Ruta.estado.in_([e.strip().upper() for e in estado.split(",")]))
+    return paginar(db, _con_relaciones(q), p, response)
 
 
 @router.get("/mias", response_model=list[RutaOut])
@@ -57,7 +73,9 @@ def mis_rutas(db: Session = Depends(get_db), user: Usuario = Depends(get_current
     if conductor is None:
         return []
     return db.scalars(
-        select(Ruta).where(Ruta.conductor_id == conductor.id, Ruta.estado.in_(("PLANIFICADA", "EN_CURSO")))
+        _con_relaciones(
+            select(Ruta).where(Ruta.conductor_id == conductor.id, Ruta.estado.in_(("PLANIFICADA", "EN_CURSO")))
+        )
     ).all()
 
 

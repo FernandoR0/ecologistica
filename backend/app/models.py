@@ -92,8 +92,8 @@ class Ruta(Base):
     __tablename__ = "rutas"
     id: Mapped[int] = mapped_column(primary_key=True)
     fecha: Mapped[date] = mapped_column(Date, index=True)
-    vehiculo_id: Mapped[int] = mapped_column(ForeignKey("vehiculos.id"))
-    conductor_id: Mapped[int | None] = mapped_column(ForeignKey("conductores.id"), nullable=True)
+    vehiculo_id: Mapped[int] = mapped_column(ForeignKey("vehiculos.id"), index=True)
+    conductor_id: Mapped[int | None] = mapped_column(ForeignKey("conductores.id"), nullable=True, index=True)
     hora_inicio: Mapped[str] = mapped_column(String(5))
     hora_fin: Mapped[str] = mapped_column(String(5))
     distancia_km: Mapped[float] = mapped_column(Float)
@@ -102,7 +102,7 @@ class Ruta(Base):
     # Línea base: mismas paradas en el orden de registro (sin optimizar)
     distancia_base_km: Mapped[float] = mapped_column(Float)
     co2_base_kg: Mapped[float] = mapped_column(Float)
-    estado: Mapped[str] = mapped_column(String(12), default="PLANIFICADA")
+    estado: Mapped[str] = mapped_column(String(12), default="PLANIFICADA", index=True)
     ruta_origen_id: Mapped[int | None] = mapped_column(ForeignKey("rutas.id"), nullable=True)
     creada_en: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
@@ -116,8 +116,8 @@ class Ruta(Base):
 class Parada(Base):
     __tablename__ = "paradas"
     id: Mapped[int] = mapped_column(primary_key=True)
-    ruta_id: Mapped[int] = mapped_column(ForeignKey("rutas.id"))
-    pedido_id: Mapped[int] = mapped_column(ForeignKey("pedidos.id"))
+    ruta_id: Mapped[int] = mapped_column(ForeignKey("rutas.id"), index=True)
+    pedido_id: Mapped[int] = mapped_column(ForeignKey("pedidos.id"), index=True)
     orden: Mapped[int] = mapped_column(Integer)
     hora_llegada: Mapped[str] = mapped_column(String(5))
     estado: Mapped[str] = mapped_column(String(12), default="PENDIENTE")  # PENDIENTE · ENTREGADA

@@ -1,4 +1,4 @@
-"""Fábrica de routers CRUD con baja lógica (campo `activo`)."""
+"""Fábrica de routers CRUD con baja lógica (campo `activo`) y paginación."""
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel
@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.api.deps import gestion, get_current_user
+from app.api.paginacion import Pagina, paginar, params_pagina
 from app.db import Base, get_db
 
 
@@ -32,11 +33,17 @@ def crud_router(
         return obj
 
     @router.get("", response_model=list[salida])
-    def listar(activo: bool | None = None, db: Session = Depends(get_db), _=Depends(get_current_user)):
+    def listar(
+        response: Response,
+        activo: bool | None = None,
+        p: Pagina = Depends(params_pagina),
+        db: Session = Depends(get_db),
+        _=Depends(get_current_user),
+    ):
         q = select(model).order_by(model.id)
         if activo is not None:
             q = q.where(model.activo == activo)
-        return db.scalars(q).all()
+        return paginar(db, q, p, response)
 
     @router.get("/{item_id}", response_model=salida)
     def obtener(item_id: int, db: Session = Depends(get_db), _=Depends(get_current_user)):
