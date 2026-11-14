@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     CO2_ABSORBIDO_ARBOL_KG_ANIO: float = 22.0
 
     @property
-    def cors_origins(self) -> list[str]:
+    def lista_cors(self) -> list[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
 
 

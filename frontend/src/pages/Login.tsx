@@ -18,7 +18,7 @@ export function Login() {
     setError('');
     try {
       await login(correo, password);
-      navigate('/');
+      await navigate('/');
     } catch (err) {
       setError((err as Error).message);
     } finally {

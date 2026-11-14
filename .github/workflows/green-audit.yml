@@ -21,7 +21,7 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-      - run: npm ci
+      - run: npm ci --ignore-scripts
       - run: npm run build
       - name: Peso del build
         run: |
@@ -29,5 +29,5 @@ jobs:
           du -b dist/assets/*.js dist/assets/*.css | awk '{printf "- %s: %.1f KB\n", $2, $1/1024}' >> $GITHUB_STEP_SUMMARY
       - name: Lighthouse CI
         run: |
-          npm install -g @lhci/cli@0.14.0
+          npm install -g --ignore-scripts @lhci/cli@0.14.0
           lhci autorun --config=./lighthouserc.cjs
