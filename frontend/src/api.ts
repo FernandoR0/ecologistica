@@ -77,7 +77,9 @@ export interface Pedido {
   id: number; codigo: string; cliente: string; direccion: string; distrito?: string; lat: number; lng: number;
   peso_kg: number; ventana_inicio: string; ventana_fin: string; prioridad: number; estado: string;
 }
-export interface Parada { id: number; orden: number; hora_llegada: string; estado: string; pedido: Pedido }
+/** Datos del pedido que la API manda dentro de cada parada (resumen para el mapa). */
+export type PedidoParada = Pick<Pedido, 'id' | 'codigo' | 'cliente' | 'lat' | 'lng' | 'peso_kg'>;
+export interface Parada { id: number; orden: number; hora_llegada: string; estado: string; pedido: PedidoParada }
 export interface Ruta {
   id: number; fecha: string; vehiculo: Vehiculo; conductor: { id: number; nombre: string } | null;
   hora_inicio: string; hora_fin: string; distancia_km: number; duracion_min: number; co2_kg: number;

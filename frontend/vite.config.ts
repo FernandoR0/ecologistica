@@ -45,6 +45,6 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],
-    coverage: { reporter: ['text', 'lcov'], include: ['src/**'], exclude: ['src/**/*.test.tsx', 'src/setupTests.ts', 'src/vite-env.d.ts'] },
+    coverage: { reporter: ['text', 'lcov'], include: ['src/**'], exclude: ['src/**/*.test.{ts,tsx}', 'src/test/**', 'src/setupTests.ts', 'src/vite-env.d.ts', 'src/main.tsx'] },
   },
 });
