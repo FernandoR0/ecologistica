@@ -1,0 +1,33 @@
+name: Green IT y rendimiento
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - name: Peso del build
+        run: |
+          echo "### Peso del build" >> $GITHUB_STEP_SUMMARY
+          du -b dist/assets/*.js dist/assets/*.css | awk '{printf "- %s: %.1f KB\n", $2, $1/1024}' >> $GITHUB_STEP_SUMMARY
+      - name: Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.14.0
+          lhci autorun --config=./lighthouserc.cjs
