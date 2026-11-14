@@ -12,7 +12,7 @@
 
 ---
 
-Por la presente, DistriRápido S.A.C. (representada por _Completar_) declara haber recibido y aceptado el producto
+Por la presente, DistriRápido S.A.C. (representada por su gerente general) declara haber recibido y aceptado el producto
 **EcoLogística - Optimizador de rutas sostenibles de última milla**, versión 1.0.0, conforme a los criterios de aceptación definidos en el Product Backlog.
 
 | Criterio | Aceptado (Sí/No) | Observaciones |
@@ -23,5 +23,5 @@ Por la presente, DistriRápido S.A.C. (representada por _Completar_) declara hab
 
 | Rol | Nombre | Firma | Fecha |
 |---|---|---|---|
-| Cliente | _Completar_ | | |
+| Cliente | Gerente general de DistriRápido S.A.C. (caso de la consigna) | | |
 | Product Owner | Fernando Rodrigo Chaupis Espinoza | | |

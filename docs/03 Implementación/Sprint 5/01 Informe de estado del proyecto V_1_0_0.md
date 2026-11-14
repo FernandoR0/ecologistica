@@ -19,7 +19,7 @@
 | Aspecto | Estado (🟢/🟡/🔴) | Comentario |
 |---|:-:|---|
 | Alcance | 🟡 | ENB-001 completado. ENB-002: pruebas E2E y de carga listas, encuesta SUS pendiente |
-| Cronograma | _Completar_ | |
+| Cronograma | Calendario del curso | 13/11/2026 - 26/11/2026 |
 | Calidad | 🟢 | 27 pruebas de backend, 5 de frontend y 4 E2E en verde; cobertura backend 90 % |
 | Riesgos | 🟢 | Ver `04 Seguimiento y Control/03 Seguimiento de riesgos` |
 

@@ -19,7 +19,7 @@
 | Aspecto | Estado (🟢/🟡/🔴) | Comentario |
 |---|:-:|---|
 | Alcance | 🟢 | Historias completadas (issues #7 a #9 cerrados) |
-| Cronograma | _Completar_ | |
+| Cronograma | Calendario del curso | 16/10/2026 - 29/10/2026 |
 | Calidad | 🟢 | 27 pruebas de backend, 5 de frontend y 4 E2E en verde; cobertura backend 90 % |
 | Riesgos | 🟢 | Ver `04 Seguimiento y Control/03 Seguimiento de riesgos` |
 
