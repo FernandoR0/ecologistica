@@ -48,10 +48,11 @@ python -m scripts.prueba_carga 30 5
 
 | Corrida | Tiempo | Rutas | km | kg CO₂ | Sin asignar |
 |:-:|:-:|:-:|:-:|:-:|:-:|
-| 1 | 30.0 s | 9 | 152.2 | 16.03 | 0 |
-| 2 | 30.0 s | 9 | 149.7 | 13.45 | 0 |
-| 3 | 30.0 s | 10 | 158.4 | 17.23 | 0 |
-| 4 | 30.0 s | 9 | 170.1 | 18.21 | 0 |
-| 5 | 30.0 s | 10 | 158.1 | 15.22 | 0 |
+| 1 | 30.0 s | 9 | 153.9 | 16.63 | 0 |
+| 2 | 30.0 s | 9 | 150.2 | 13.39 | 0 |
+| 3 | 30.0 s | 10 | 152.4 | 17.15 | 0 |
+| 4 | 30.0 s | 10 | 167.4 | 17.46 | 0 |
+| 5 | 30.0 s | 9 | 150.9 | 16.31 | 0 |
 
-P95: **30 s** (meta ≤ 45 s). El motor usa todo el tiempo límite para seguir mejorando la solución (Guided Local Search).
+P95: **30 s** (meta ≤ 45 s), promedio 155.0 km por plan. El motor usa todo el tiempo límite para seguir mejorando la
+solución con la Búsqueda Tabú.

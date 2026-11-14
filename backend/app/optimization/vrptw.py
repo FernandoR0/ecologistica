@@ -5,6 +5,8 @@ Restricciones duras:
 - Ventana horaria de cada pedido (incluye la preferencia del cliente, RF-009).
 - Jornada máxima del conductor asignado al vehículo (RF-008).
 
+Metaheurística: Búsqueda Tabú sobre una solución inicial "Path Cheapest Arc".
+
 Objetivo (Green VRP): minimizar Σ distancia × (1 + peso_co2 × emisión_relativa_del_vehículo).
 Con peso_co2 > 0 el motor prefiere los vehículos menos contaminantes para los tramos largos.
 
@@ -165,7 +167,8 @@ def resolver(inst: Instancia, limite_segundos: int = 30) -> Plan:
 
     params = pywrapcp.DefaultRoutingSearchParameters()
     params.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
-    params.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
+    # Metaheurística: Búsqueda Tabú (una de las tres que pide la consigna)
+    params.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.TABU_SEARCH
     params.time_limit.seconds = max(1, int(limite_segundos))
 
     solucion = routing.SolveWithParameters(params)

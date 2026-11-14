@@ -1,17 +1,27 @@
-# Registro de impedimentos - Sprint 2
+# Registro de impedimentos
 
-| Campo | Valor |
-|---|---|
-| Proyecto | EcoLogística - Optimizador de rutas sostenibles de última milla |
-| Organización | DistriRápido S.A.C., Huancayo, Junín |
-| Curso | Taller de Proyectos 2, Universidad Continental |
-| Versión | 1.0.0 |
-| Fecha | 13/11/2026 |
-| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
-| Revisado por | Docente: Daniel Gamarra Moreno |
+**Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
+
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
+
+**Docente:** Daniel Gamarra Moreno
+
+**Fecha:** 13/11/2026
+
+**Versión:** 1.0.0
 
 ---
 
-| ID | Fecha | Impedimento | Impacto | Acción | Responsable | Estado |
-|---|---|---|---|---|---|---|
-| IMP-201 | _Completar_ | _Completar_ | _Completar_ | _Completar_ | _Completar_ | _Completar_ |
+**Sprint 2:** 16/09/2026 - 29/09/2026
+
+| Impedimento # | Fecha de Registro | Descripción del Impedimento así como el Impacto en el Proyecto | Prioridad | Reportado por | Fecha tope de Resolución | Estado | Fecha de Resolución | Resolución/Comentarios |
+|---|---|---|---|---|---|---|---|---|
+| _Completar_ | _Completar_ | _Completar_ | _Completar_ | Fernando Rodrigo Chaupis Espinoza | _Completar_ | _Completar_ | _Completar_ | _Completar_ |
+
+---
+
+## Historial de control de cambios
+
+| Versión | Fecha | Autor | Descripción |
+|---|---|---|---|
+| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |

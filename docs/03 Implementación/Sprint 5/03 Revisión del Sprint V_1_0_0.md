@@ -1,40 +1,47 @@
 # Revisión del Sprint 5
 
-| Campo | Valor |
-|---|---|
-| Proyecto | EcoLogística - Optimizador de rutas sostenibles de última milla |
-| Organización | DistriRápido S.A.C., Huancayo, Junín |
-| Curso | Taller de Proyectos 2, Universidad Continental |
-| Versión | 1.0.0 |
-| Fecha | 13/11/2026 |
-| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
-| Revisado por | Docente: Daniel Gamarra Moreno |
+**Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
+
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
+
+**Docente:** Daniel Gamarra Moreno
+
+**Fecha:** 13/11/2026
+
+**Versión:** 1.0.0
 
 ---
 
-**Sprint Goal:** Calidad y despliegue: CI/CD, staging, pruebas E2E, SUS y auditoría Green IT.
+**Sprint 5:** 13/11/2026 - 26/11/2026
 
-## 1. Asistentes
-| Nombre | Rol |
-|---|---|
-| Daniel Gamarra Moreno | Docente / evaluador |
-| Fernando Rodrigo Chaupis Espinoza | Product Owner, Scrum Master y Developer |
+**Sprint Goal:** Calidad y despliegue: CI/CD, pruebas E2E, prueba de carga, SUS y auditoría Green IT.
 
-## 2. Incremento demostrado
-| ID | Historia / Enabler | Requisito | SP | Sprint |
-|---|---|---|:-:|:-:|
-| ENB-001 | CI/CD, Docker y despliegue en staging | RNF-OPE | 5 | 5 |
-| ENB-002 | Pruebas E2E, usabilidad SUS y auditoría Green IT | RNF-CAL | 5 | 5 |
+## Historias de Usuario completadas en este Sprint
 
-## 3. Validación de criterios de aceptación
-| Historia | Escenario probado | Resultado | Evidencia |
+| ID | Criterio verificado | Estado |
+|---|---|---|
+| ENB-001 | CI, auditoría Green IT y SonarQube Cloud en GitHub Actions | Completada |
+| ENB-002 | 4 pruebas E2E y prueba de carga (30 s para 150 pedidos) | Completada |
+
+**Story points completados:** 5 de 10
+
+## Demostración del trabajo completado
+
+- **ENB-001:** CI, auditoría Green IT y SonarQube Cloud en GitHub Actions. ![ENB-001](<../../06 Anexos/evidencias/e2e-10-vista-conductor.png>)
+- **ENB-002:** 4 pruebas E2E y prueba de carga (30 s para 150 pedidos). ![ENB-002](<../../06 Anexos/evidencias/e2e-10-vista-conductor.png>)
+
+Pruebas automáticas del sprint: 4 pruebas E2E (Playwright), prueba de carga, 43 pruebas de frontend.
+
+## Pendientes
+
+- ENB-002: aplicar la encuesta SUS a 5 usuarios (issue #14 abierto).
+
+## Retroalimentación del docente
+
+---
+
+## Historial de control de cambios
+
+| Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
-| ENB-001 | CI y auditoría Green IT en GitHub Actions; Lighthouse 100 en el login | Cumple | [lighthouse-despues-movil.png](../reduccion del impacto ambiental/evidencias/lighthouse-despues-movil.png) |
-| ENB-002 | 4 pruebas E2E aprobadas; 150 pedidos y 15 vehículos en 30 s sin pedidos sin asignar | Cumple | [e2e-10-vista-conductor.png](../../06 Anexos/evidencias/e2e-10-vista-conductor.png) |
-| ENB-002 | Encuesta SUS a 5 usuarios | Pendiente | Anexo D |
-
-## 4. Elementos no completados
-Encuesta SUS (parte de ENB-002).
-
-## 5. Retroalimentación de los interesados
-
+| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |

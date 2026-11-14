@@ -21,7 +21,7 @@ módulo puro: recibe una `Instancia` (depósito, pedidos, vehículos) y devuelve
 - Vehículos k con capacidad Qₖ, emisión eₖ (kg CO₂/km) y jornada Tₖ.
 - **Objetivo:** min Σₖ Σ₍ᵢ,ⱼ₎ dᵢⱼ · (1 + λ · eₖ / e_max) · xᵢⱼₖ + Σᵢ penalización(prioridadᵢ) · (pedido i no atendido)
 - **Restricciones:** capacidad Σ qᵢ ≤ Qₖ; tiempo de llegada tᵢ ∈ [aᵢ, bᵢ]; duración de ruta ≤ Tₖ.
-- **Solución:** OR-Tools Routing, solución inicial *Path Cheapest Arc* + metaheurística *Guided Local Search*
+- **Solución:** OR-Tools Routing, solución inicial *Path Cheapest Arc* + metaheurística **Búsqueda Tabú** (una de las tres que pide la consigna)
   con límite de tiempo.
 
 ## 3. Re-optimización

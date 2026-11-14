@@ -1,41 +1,49 @@
 # Revisión del Sprint 4
 
-| Campo | Valor |
-|---|---|
-| Proyecto | EcoLogística - Optimizador de rutas sostenibles de última milla |
-| Organización | DistriRápido S.A.C., Huancayo, Junín |
-| Curso | Taller de Proyectos 2, Universidad Continental |
-| Versión | 1.0.0 |
-| Fecha | 13/11/2026 |
-| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
-| Revisado por | Docente: Daniel Gamarra Moreno |
+**Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
+
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
+
+**Docente:** Daniel Gamarra Moreno
+
+**Fecha:** 13/11/2026
+
+**Versión:** 1.0.0
 
 ---
 
+**Sprint 4:** 30/10/2026 - 12/11/2026
+
 **Sprint Goal:** Medir el impacto: dashboard, reporte de sostenibilidad y plan de compensación de carbono.
 
-## 1. Asistentes
-| Nombre | Rol |
-|---|---|
-| Daniel Gamarra Moreno | Docente / evaluador |
-| Fernando Rodrigo Chaupis Espinoza | Product Owner, Scrum Master y Developer |
+## Historias de Usuario completadas en este Sprint
 
-## 2. Incremento demostrado
-| ID | Historia / Enabler | Requisito | SP | Sprint |
-|---|---|---|:-:|:-:|
-| US-010 | Dashboard de indicadores | RF-005 | 5 | 4 |
-| US-011 | Reporte de sostenibilidad (CO₂ por ruta y combustible) | RF-006 | 5 | 4 |
-| US-012 | Plan de compensación de carbono | RF-010 | 3 | 4 |
+| ID | Criterio verificado | Estado |
+|---|---|---|
+| US-010 | Dashboard con pedidos por estado, km, ahorro y CO₂ por entrega | Completada |
+| US-011 | CO₂ emitido, evitado y compensado por combustible | Completada |
+| US-012 | Plan de compensación con árboles y bonos | Completada |
 
-## 3. Validación de criterios de aceptación
-| Historia | Escenario probado | Resultado | Evidencia |
+**Story points completados:** 13 de 13
+
+## Demostración del trabajo completado
+
+- **US-010:** Dashboard con pedidos por estado, km, ahorro y CO₂ por entrega. ![US-010](<../../06 Anexos/evidencias/e2e-02-dashboard.png>)
+- **US-011:** CO₂ emitido, evitado y compensado por combustible. ![US-011](<../../06 Anexos/evidencias/e2e-09-sostenibilidad.png>)
+- **US-012:** Plan de compensación con árboles y bonos. ![US-012](<../../06 Anexos/evidencias/e2e-09-sostenibilidad.png>)
+
+Pruebas automáticas del sprint: test_flujo_optimizar_reoptimizar_indicadores y pruebas de Paneles en el frontend.
+
+## Pendientes
+
+- Ninguno. Todas las historias comprometidas quedaron completadas.
+
+## Retroalimentación del docente
+
+---
+
+## Historial de control de cambios
+
+| Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
-| US-010 | Dashboard con pedidos por estado, km, ahorro y CO₂ por entrega | Cumple | [e2e-02-dashboard.png](../../06 Anexos/evidencias/e2e-02-dashboard.png) |
-| US-011 | CO₂ emitido, evitado y compensado por combustible | Cumple | [e2e-09-sostenibilidad.png](../../06 Anexos/evidencias/e2e-09-sostenibilidad.png) |
-| US-012 | Plan de compensación con árboles y costo de bonos | Cumple | [e2e-09-sostenibilidad.png](../../06 Anexos/evidencias/e2e-09-sostenibilidad.png) |
-
-## 4. Elementos no completados
-Ninguno.
-
-## 5. Retroalimentación de los interesados
-
+| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |

@@ -1,41 +1,49 @@
-# Informe de estado del proyecto - Sprint 4
+# Informe de estado del proyecto
 
-| Campo | Valor |
-|---|---|
-| Proyecto | EcoLogística - Optimizador de rutas sostenibles de última milla |
-| Organización | DistriRápido S.A.C., Huancayo, Junín |
-| Curso | Taller de Proyectos 2, Universidad Continental |
-| Versión | 1.0.0 |
-| Fecha | 13/11/2026 |
-| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
-| Revisado por | Docente: Daniel Gamarra Moreno |
+**Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
+
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
+
+**Docente:** Daniel Gamarra Moreno
+
+**Fecha:** 13/11/2026
+
+**Versión:** 1.0.0
 
 ---
 
-**Sprint 4:** 30/10/2026 – 12/11/2026
+**Periodo del Informe:** 30/10/2026 - 12/11/2026 (Sprint 4)
+
 **Sprint Goal:** Medir el impacto: dashboard, reporte de sostenibilidad y plan de compensación de carbono.
 
-## 1. Resumen del estado
-| Aspecto | Estado (🟢/🟡/🔴) | Comentario |
-|---|:-:|---|
-| Alcance | 🟢 | Historias completadas (issues #10 a #12 cerrados) |
-| Cronograma | Calendario del curso | 30/10/2026 - 12/11/2026 · Hito 3 |
-| Calidad | 🟢 | 27 pruebas de backend, 5 de frontend y 4 E2E en verde; cobertura backend 90 % |
-| Riesgos | 🟢 | Ver `04 Seguimiento y Control/03 Seguimiento de riesgos` |
+### Estado del proyecto
 
-## 2. Historias comprometidas
-| ID | Historia / Enabler | Requisito | SP | Sprint |
-|---|---|---|:-:|:-:|
-| US-010 | Dashboard de indicadores | RF-005 | 5 | 4 |
-| US-011 | Reporte de sostenibilidad (CO₂ por ruta y combustible) | RF-006 | 5 | 4 |
-| US-012 | Plan de compensación de carbono | RF-010 | 3 | 4 |
+| Variables de control | Descripción del estado |
+| --- | --- |
+| **Alcance** | Se comprometieron 13 SP (US-010, US-011, US-012). Todas las historias quedaron completadas y sus issues cerrados. |
+| **Cronograma** | Calendario del curso: 30/10/2026 - 12/11/2026 · Hito 3. |
+| **Costos** | Sin gastos adicionales: se usan solo herramientas libres. La ejecución se mantiene dentro de la línea base de S/ 7 425. |
+| **Calidad** | Pruebas del sprint en verde: test_flujo_optimizar_reoptimizar_indicadores y pruebas de Paneles en el frontend. Cobertura actual: backend 90 %, frontend 99.7 %. |
 
-## 3. Avance
-| Métrica | Valor |
-|---|---|
-| SP comprometidos | 13 |
-| SP completados | 13 |
-| Pruebas automatizadas en verde | test_flujo_optimizar_reoptimizar_indicadores (indicadores, sostenibilidad y compensación) |
+### Riesgos
 
-## 4. Próximos pasos
-Sprint 5: CI/CD, pruebas E2E, prueba de carga y encuesta SUS.
+| Riesgo | Responsable | Mitigación |
+| --- | --- | --- |
+| R-03 Poca disponibilidad de tiempo (proyecto individual) | Fernando Rodrigo Chaupis Espinoza | Priorizar el backlog y automatizar pruebas |
+| R-04 Cambios de alcance en la revisión | Fernando Rodrigo Chaupis Espinoza | Registrar el cambio en el control de cambios |
+
+### Próximos avances
+
+- Iniciar el Sprint 5: Calidad y despliegue: CI/CD, pruebas E2E, prueba de carga, SUS y auditoría Green IT.
+
+### Notas
+
+- Backlog y estado de las historias: https://github.com/FernandoR0/ecologistica/milestone/4
+
+---
+
+## Historial de control de cambios
+
+| Versión | Fecha | Autor | Descripción |
+|---|---|---|---|
+| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |

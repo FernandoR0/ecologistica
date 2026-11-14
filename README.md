@@ -33,7 +33,7 @@ Backlog y sprints: [issues](https://github.com/FernandoR0/ecologistica/issues?q=
 
 - **Frontend:** React 19, Vite, TypeScript, Leaflet
 - **Backend:** Python 3.12, FastAPI, SQLAlchemy
-- **Optimización:** Google OR-Tools
+- **Optimización:** Google OR-Tools con la metaheurística Búsqueda Tabú
 - **Base de datos:** PostgreSQL (SQLite para las pruebas)
 - **Seguridad:** JWT, bcrypt, roles ADMIN / PLANIFICADOR / CONDUCTOR
 - **Calidad:** pytest, Vitest, Ruff, ESLint, SonarQube

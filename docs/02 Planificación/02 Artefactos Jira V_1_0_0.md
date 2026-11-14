@@ -1,76 +1,91 @@
-# Artefactos Jira
+# Artefactos Jira - Evidencia de Configuración
 
-| Campo | Valor |
-|---|---|
-| Proyecto | EcoLogística - Optimizador de rutas sostenibles de última milla |
-| Organización | DistriRápido S.A.C., Huancayo, Junín |
-| Curso | Taller de Proyectos 2, Universidad Continental |
-| Versión | 1.0.0 |
-| Fecha | 13/11/2026 |
-| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
-| Revisado por | Docente: Daniel Gamarra Moreno |
+**Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
+
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
+
+**Docente:** Daniel Gamarra Moreno
+
+**Fecha:** 13/11/2026
+
+**Versión:** 1.0.0
 
 ---
 
-## Tablero
-El backlog se gestiona en **GitHub Issues**, con un hito (milestone) por sprint. Cada historia es un issue con sus criterios de aceptación y se cierra con el commit que la implementa.
+## Configuración Previa Aplicada
 
-- Backlog: https://github.com/FernandoR0/ecologistica/issues?q=is%3Aissue
-- Sprints: https://github.com/FernandoR0/ecologistica/milestones?state=all
+Al ser un proyecto individual, el backlog se gestiona en **GitHub Issues** del mismo repositorio, con la misma
+estructura que un proyecto Scrum en Jira:
 
-| Historia | Issue |
-|---|:-:|
-| US-001 | #1 |
-| US-002 | #2 |
-| US-003 | #3 |
-| US-004 | #4 |
-| US-005 | #5 |
-| US-006 | #6 |
-| US-007 | #7 |
-| US-008 | #8 |
-| US-009 | #9 |
-| US-010 | #10 |
-| US-011 | #11 |
-| US-012 | #12 |
-| ENB-001 | #13 |
-| ENB-002 | #14 |
-
-## Épicas
-
-| Épica | Historias |
+| Concepto en Jira | Equivalente usado |
 |---|---|
-| EP-01 Gestión operativa | US-001, US-002, US-003, US-004 |
-| EP-02 Motor de rutas | US-005, US-006, US-007, US-008, US-009 |
-| EP-03 Sostenibilidad e indicadores | US-010, US-011, US-012 |
-| EP-04 Calidad y despliegue | ENB-001, ENB-002 |
+| Épica | Etiqueta del issue y sección del documento `01 Transformando a ágil` |
+| Historia / Enabler | Issue con etiqueta `historia` o `enabler` y etiqueta del RF |
+| Sprint | Hito (milestone) `Sprint 1` a `Sprint 5` con su fecha de fin |
+| Tablero Scrum | Issues abiertos (por hacer) y cerrados (hechos) de cada hito |
+| Release | Versión del repositorio (`v1.0.0`) |
 
-## Backlog
-| ID | Historia / Enabler | Requisito | SP | Sprint |
-|---|---|---|:-:|:-:|
-| US-001 | Inicio de sesión y control de acceso por roles | RNF-SEG | 5 | 1 |
-| US-002 | Gestión de flota vehicular | RF-001 | 3 | 1 |
-| US-003 | Gestión de conductores y asignación de vehículo | RF-008 | 3 | 1 |
-| US-004 | Registro y gestión de pedidos con ventana horaria | RF-002 | 5 | 1 |
-| US-005 | Motor VRPTW + Green VRP (OR-Tools) | RF-003 | 13 | 2 |
-| US-006 | Visualización de rutas en mapa | RF-004 | 5 | 2 |
-| US-007 | Control de jornada máxima del conductor | RF-008 | 5 | 3 |
-| US-008 | Preferencias de recepción de clientes | RF-009 | 5 | 3 |
-| US-009 | Re-optimización dinámica ante incidentes | RF-007 | 8 | 3 |
-| US-010 | Dashboard de indicadores | RF-005 | 5 | 4 |
-| US-011 | Reporte de sostenibilidad (CO₂ por ruta y combustible) | RF-006 | 5 | 4 |
-| US-012 | Plan de compensación de carbono | RF-010 | 3 | 4 |
-| ENB-001 | CI/CD, Docker y despliegue en staging | RNF-OPE | 5 | 5 |
-| ENB-002 | Pruebas E2E, usabilidad SUS y auditoría Green IT | RNF-CAL | 5 | 5 |
+## Evidencia 1: Roadmap del Proyecto
 
-## Evidencias
-Capturas de la lista de issues y de los hitos en `02 Planificación/evidencias/` (_Completar_: tomarlas desde la cuenta FernandoR0, el repositorio es privado).
+| Sprint | Fechas | Objetivo | Historias |
+|---|---|---|---|
+| 1 | 02/09/2026 - 15/09/2026 | Base del sistema: autenticación con roles y gestión de flota, conductores y pedidos. | US-001, US-002, US-003, US-004 |
+| 2 | 16/09/2026 - 29/09/2026 | Generar rutas optimizadas con el motor VRPTW + Green VRP y verlas en el mapa. | US-005, US-006 |
+| 3 | 16/10/2026 - 29/10/2026 | Rutas realistas: jornada del conductor, preferencias del cliente y re-optimización ante incidentes. | US-007, US-008, US-009 |
+| 4 | 30/10/2026 - 12/11/2026 | Medir el impacto: dashboard, reporte de sostenibilidad y plan de compensación de carbono. | US-010, US-011, US-012 |
+| 5 | 13/11/2026 - 26/11/2026 | Calidad y despliegue: CI/CD, pruebas E2E, prueba de carga, SUS y auditoría Green IT. | ENB-001, ENB-002 |
 
-### Velocity
+Hitos en GitHub: https://github.com/FernandoR0/ecologistica/milestones?state=all
 
-| Sprint | SP comprometidos | SP completados |
-|:-:|:-:|:-:|
-| 1 | 16 | 16 |
-| 2 | 18 | 18 |
-| 3 | 18 | 18 |
-| 4 | 13 | 13 |
-| 5 | 10 | 5 |
+## Evidencia 2: Backlog Priorizado
+
+| Prioridad | Issue | ID | Título | Épica | SP | Sprint | Estado |
+|:-:|:-:|---|---|---|:-:|---|---|
+| 1 | [#1](https://github.com/FernandoR0/ecologistica/issues/1) | US-001 | Iniciar sesión con mi correo y contraseña y ver solo lo que mi rol permite | EP-01 | 5 | Sprint 1 | Cerrado |
+| 2 | [#2](https://github.com/FernandoR0/ecologistica/issues/2) | US-002 | Registrar y actualizar los vehículos de la flota | EP-01 | 3 | Sprint 1 | Cerrado |
+| 3 | [#3](https://github.com/FernandoR0/ecologistica/issues/3) | US-003 | Registrar conductores y asignarles un vehículo | EP-01 | 3 | Sprint 1 | Cerrado |
+| 4 | [#4](https://github.com/FernandoR0/ecologistica/issues/4) | US-004 | Registrar pedidos con ubicación, peso y ventana horaria | EP-01 | 5 | Sprint 1 | Cerrado |
+| 5 | [#5](https://github.com/FernandoR0/ecologistica/issues/5) | US-005 | Generar rutas optimizadas con un clic | EP-02 | 13 | Sprint 2 | Cerrado |
+| 6 | [#6](https://github.com/FernandoR0/ecologistica/issues/6) | US-006 | Ver las rutas en un mapa con las paradas numeradas | EP-02 | 5 | Sprint 2 | Cerrado |
+| 7 | [#7](https://github.com/FernandoR0/ecologistica/issues/7) | US-007 | Que mi ruta no supere mi jornada máxima | EP-02 | 5 | Sprint 3 | Cerrado |
+| 8 | [#8](https://github.com/FernandoR0/ecologistica/issues/8) | US-008 | Registrar el horario en que cada cliente prefiere recibir | EP-02 | 5 | Sprint 3 | Cerrado |
+| 9 | [#9](https://github.com/FernandoR0/ecologistica/issues/9) | US-009 | Re-optimizar una ruta cuando ocurre un incidente | EP-02 | 8 | Sprint 3 | Cerrado |
+| 10 | [#10](https://github.com/FernandoR0/ecologistica/issues/10) | US-010 | Ver un dashboard con los indicadores de la operación | EP-03 | 5 | Sprint 4 | Cerrado |
+| 11 | [#11](https://github.com/FernandoR0/ecologistica/issues/11) | US-011 | Ver el reporte de CO₂ emitido, evitado y compensado | EP-03 | 5 | Sprint 4 | Cerrado |
+| 12 | [#12](https://github.com/FernandoR0/ecologistica/issues/12) | US-012 | Ver un plan para compensar el CO₂ y registrar lo compensado | EP-03 | 3 | Sprint 4 | Cerrado |
+| 13 | [#13](https://github.com/FernandoR0/ecologistica/issues/13) | ENB-001 | CI/CD, Docker y auditoría Green IT | EP-04 | 5 | Sprint 5 | Cerrado |
+| 14 | [#14](https://github.com/FernandoR0/ecologistica/issues/14) | ENB-002 | Pruebas E2E, prueba de carga y usabilidad SUS | EP-04 | 5 | Sprint 5 | Abierto |
+
+Backlog en GitHub: https://github.com/FernandoR0/ecologistica/issues?q=is%3Aissue
+
+## Evidencia 3: Sprint Planning y Sprint Goal
+
+| Sprint | Sprint Goal | SP comprometidos |
+|:-:|---|:-:|
+| 1 | Base del sistema: autenticación con roles y gestión de flota, conductores y pedidos. | 16 |
+| 2 | Generar rutas optimizadas con el motor VRPTW + Green VRP y verlas en el mapa. | 18 |
+| 3 | Rutas realistas: jornada del conductor, preferencias del cliente y re-optimización ante incidentes. | 18 |
+| 4 | Medir el impacto: dashboard, reporte de sostenibilidad y plan de compensación de carbono. | 13 |
+| 5 | Calidad y despliegue: CI/CD, pruebas E2E, prueba de carga, SUS y auditoría Green IT. | 10 |
+
+## Evidencia 4: Tablero Scrum Activo
+
+Estado actual: 13 issues cerrados (hechos) y 1 abierto (ENB-002: falta la encuesta SUS).
+
+## Evidencia 5: Gestión de Versiones / Release
+
+| Versión | Contenido |
+|---|---|
+| 1.0.0 | RF-001 a RF-010, motor VRPTW + Green VRP, CI |
+| 1.1.0 | Inspección 04 (Green IT), actualización de dependencias, pruebas E2E y de carga |
+
+> Capturas: tomar desde la cuenta FernandoR0 la lista de issues, los hitos y la versión, y guardarlas en
+> `02 Planificación/evidencias/` (_Completar_).
+
+---
+
+## Historial de control de cambios
+
+| Versión | Fecha | Autor | Descripción |
+|---|---|---|---|
+| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |

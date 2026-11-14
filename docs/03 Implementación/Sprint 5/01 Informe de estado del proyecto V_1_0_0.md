@@ -1,40 +1,49 @@
-# Informe de estado del proyecto - Sprint 5
+# Informe de estado del proyecto
 
-| Campo | Valor |
-|---|---|
-| Proyecto | EcoLogística - Optimizador de rutas sostenibles de última milla |
-| Organización | DistriRápido S.A.C., Huancayo, Junín |
-| Curso | Taller de Proyectos 2, Universidad Continental |
-| Versión | 1.0.0 |
-| Fecha | 13/11/2026 |
-| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
-| Revisado por | Docente: Daniel Gamarra Moreno |
+**Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
+
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
+
+**Docente:** Daniel Gamarra Moreno
+
+**Fecha:** 13/11/2026
+
+**Versión:** 1.0.0
 
 ---
 
-**Sprint 5:** 13/11/2026 – 26/11/2026
-**Sprint Goal:** Calidad y despliegue: CI/CD, staging, pruebas E2E, SUS y auditoría Green IT.
+**Periodo del Informe:** 13/11/2026 - 26/11/2026 (Sprint 5)
 
-## 1. Resumen del estado
-| Aspecto | Estado (🟢/🟡/🔴) | Comentario |
-|---|:-:|---|
-| Alcance | 🟡 | ENB-001 completado. ENB-002: pruebas E2E y de carga listas, encuesta SUS pendiente |
-| Cronograma | Calendario del curso | 13/11/2026 - 26/11/2026 |
-| Calidad | 🟢 | 27 pruebas de backend, 5 de frontend y 4 E2E en verde; cobertura backend 90 % |
-| Riesgos | 🟢 | Ver `04 Seguimiento y Control/03 Seguimiento de riesgos` |
+**Sprint Goal:** Calidad y despliegue: CI/CD, pruebas E2E, prueba de carga, SUS y auditoría Green IT.
 
-## 2. Historias comprometidas
-| ID | Historia / Enabler | Requisito | SP | Sprint |
-|---|---|---|:-:|:-:|
-| ENB-001 | CI/CD, Docker y despliegue en staging | RNF-OPE | 5 | 5 |
-| ENB-002 | Pruebas E2E, usabilidad SUS y auditoría Green IT | RNF-CAL | 5 | 5 |
+### Estado del proyecto
 
-## 3. Avance
-| Métrica | Valor |
-|---|---|
-| SP comprometidos | 10 |
-| SP completados | 5 |
-| Pruebas automatizadas en verde | E2E con Playwright (4), prueba de carga, Lighthouse CI |
+| Variables de control | Descripción del estado |
+| --- | --- |
+| **Alcance** | Se comprometieron 10 SP (ENB-001, ENB-002). ENB-001 completado. ENB-002: pruebas E2E y de carga listas; la encuesta SUS está pendiente. |
+| **Cronograma** | Calendario del curso: 13/11/2026 - 26/11/2026 · Inspección 04. |
+| **Costos** | Sin gastos adicionales: se usan solo herramientas libres. La ejecución se mantiene dentro de la línea base de S/ 7 425. |
+| **Calidad** | Pruebas del sprint en verde: 4 pruebas E2E (Playwright), prueba de carga, 43 pruebas de frontend. Cobertura actual: backend 90 %, frontend 99.7 %. |
 
-## 4. Próximos pasos
-Cierre: aplicar la encuesta SUS y completar los documentos de cierre.
+### Riesgos
+
+| Riesgo | Responsable | Mitigación |
+| --- | --- | --- |
+| R-03 Poca disponibilidad de tiempo (proyecto individual) | Fernando Rodrigo Chaupis Espinoza | Priorizar el backlog y automatizar pruebas |
+| R-01 Tiempo del motor en instancias grandes | Fernando Rodrigo Chaupis Espinoza | Límite de tiempo y prueba de carga |
+
+### Próximos avances
+
+- Aplicar la encuesta SUS y completar los documentos de cierre.
+
+### Notas
+
+- Backlog y estado de las historias: https://github.com/FernandoR0/ecologistica/milestone/5
+
+---
+
+## Historial de control de cambios
+
+| Versión | Fecha | Autor | Descripción |
+|---|---|---|---|
+| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |

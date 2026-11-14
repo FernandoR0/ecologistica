@@ -1,42 +1,49 @@
-# Informe de estado del proyecto - Sprint 1
+# Informe de estado del proyecto
 
-| Campo | Valor |
-|---|---|
-| Proyecto | EcoLogística - Optimizador de rutas sostenibles de última milla |
-| Organización | DistriRápido S.A.C., Huancayo, Junín |
-| Curso | Taller de Proyectos 2, Universidad Continental |
-| Versión | 1.0.0 |
-| Fecha | 13/11/2026 |
-| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
-| Revisado por | Docente: Daniel Gamarra Moreno |
+**Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
+
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
+
+**Docente:** Daniel Gamarra Moreno
+
+**Fecha:** 13/11/2026
+
+**Versión:** 1.0.0
 
 ---
 
-**Sprint 1:** 02/09/2026 – 15/09/2026
-**Sprint Goal:** Base del sistema: autenticación con roles y CRUD de flota, conductores y pedidos.
+**Periodo del Informe:** 02/09/2026 - 15/09/2026 (Sprint 1)
 
-## 1. Resumen del estado
-| Aspecto | Estado (🟢/🟡/🔴) | Comentario |
-|---|:-:|---|
-| Alcance | 🟢 | Historias completadas (issues #1 a #4 cerrados) |
-| Cronograma | Calendario del curso | 02/09/2026 - 15/09/2026 · Hito 1 |
-| Calidad | 🟢 | 27 pruebas de backend, 5 de frontend y 4 E2E en verde; cobertura backend 90 % |
-| Riesgos | 🟢 | Ver `04 Seguimiento y Control/03 Seguimiento de riesgos` |
+**Sprint Goal:** Base del sistema: autenticación con roles y gestión de flota, conductores y pedidos.
 
-## 2. Historias comprometidas
-| ID | Historia / Enabler | Requisito | SP | Sprint |
-|---|---|---|:-:|:-:|
-| US-001 | Inicio de sesión y control de acceso por roles | RNF-SEG | 5 | 1 |
-| US-002 | Gestión de flota vehicular | RF-001 | 3 | 1 |
-| US-003 | Gestión de conductores y asignación de vehículo | RF-008 | 3 | 1 |
-| US-004 | Registro y gestión de pedidos con ventana horaria | RF-002 | 5 | 1 |
+### Estado del proyecto
 
-## 3. Avance
-| Métrica | Valor |
-|---|---|
-| SP comprometidos | 16 |
-| SP completados | 16 |
-| Pruebas automatizadas en verde | test_auth.py (7), test_crud_vehiculo_y_duplicado, test_validacion_pedido |
+| Variables de control | Descripción del estado |
+| --- | --- |
+| **Alcance** | Se comprometieron 16 SP (US-001, US-002, US-003, US-004). Todas las historias quedaron completadas y sus issues cerrados. |
+| **Cronograma** | Calendario del curso: 02/09/2026 - 15/09/2026 · Hito 1. |
+| **Costos** | Sin gastos adicionales: se usan solo herramientas libres. La ejecución se mantiene dentro de la línea base de S/ 7 425. |
+| **Calidad** | Pruebas del sprint en verde: test_auth.py (7 pruebas), test_crud_vehiculo_y_duplicado, test_validacion_pedido. Cobertura actual: backend 90 %, frontend 99.7 %. |
 
-## 4. Próximos pasos
-Sprint 2: motor VRPTW + Green VRP y mapa de rutas.
+### Riesgos
+
+| Riesgo | Responsable | Mitigación |
+| --- | --- | --- |
+| R-03 Poca disponibilidad de tiempo (proyecto individual) | Fernando Rodrigo Chaupis Espinoza | Priorizar el backlog y automatizar pruebas |
+| R-04 Cambios de alcance en la revisión | Fernando Rodrigo Chaupis Espinoza | Registrar el cambio en el control de cambios |
+
+### Próximos avances
+
+- Iniciar el Sprint 2: Generar rutas optimizadas con el motor VRPTW + Green VRP y verlas en el mapa.
+
+### Notas
+
+- Backlog y estado de las historias: https://github.com/FernandoR0/ecologistica/milestone/1
+
+---
+
+## Historial de control de cambios
+
+| Versión | Fecha | Autor | Descripción |
+|---|---|---|---|
+| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |

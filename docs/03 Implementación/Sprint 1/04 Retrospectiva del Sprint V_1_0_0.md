@@ -1,24 +1,53 @@
 # Retrospectiva del Sprint 1
 
-| Campo | Valor |
-|---|---|
-| Proyecto | EcoLogística - Optimizador de rutas sostenibles de última milla |
-| Organización | DistriRápido S.A.C., Huancayo, Junín |
-| Curso | Taller de Proyectos 2, Universidad Continental |
-| Versión | 1.0.0 |
-| Fecha | 13/11/2026 |
-| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
-| Revisado por | Docente: Daniel Gamarra Moreno |
+**Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
+
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
+
+**Docente:** Daniel Gamarra Moreno
+
+**Fecha:** 13/11/2026
+
+**Versión:** 1.0.0
 
 ---
 
-## ¿Qué salió bien?
+## ¿Qué aprendimos?
+
 - _Completar_
 
-## ¿Qué se puede mejorar?
+## ¿Qué estamos haciendo bien?
+
 - _Completar_
 
-## Acciones de mejora
+## ¿Qué podemos hacer mejor?
+
+### Personas
+
+- _Completar_
+
+### Relaciones
+
+- _Completar_
+
+### Procesos
+
+- _Completar_
+
+### Herramientas
+
+- _Completar_
+
+## Acciones a realizar
+
 | Acción | Responsable | Para el sprint |
 |---|---|:-:|
-| _Completar_ | _Completar_ | 2 |
+| _Completar_ | Fernando Rodrigo Chaupis Espinoza | 2 |
+
+---
+
+## Historial de control de cambios
+
+| Versión | Fecha | Autor | Descripción |
+|---|---|---|---|
+| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |

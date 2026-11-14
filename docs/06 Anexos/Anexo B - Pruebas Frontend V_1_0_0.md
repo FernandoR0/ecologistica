@@ -17,12 +17,29 @@ cd frontend
 npm test -- --coverage
 ```
 
-| Prueba | Qué verifica |
-|---|---|
-| mensajeError (3 casos) | Traducción de errores de la API (texto, 422, sin detalle) |
-| formatear | Presentación de booleanos y vacíos |
-| Login | El formulario es accesible y tiene campos requeridos |
+| Archivo | Pruebas | Qué verifica |
+|---|:-:|---|
+| `src/app.test.tsx` | 5 | Traducción de errores de la API, formato de valores y formulario de login accesible |
+| `src/test/api.test.ts` | 7 | Token en la cabecera, métodos POST/PUT/DELETE, errores como `ApiError`, 401 redirige al login, paginación con `X-Total-Count` |
+| `src/test/auth.test.tsx` | 9 | Rutas protegidas, permisos por rol, login correcto e incorrecto, menú según el rol y cierre de sesión |
+| `src/test/gestion.test.tsx` | 10 | Tabla con paginación de 12, alta, edición con registro completo, errores de validación, cancelación y preferencias de clientes |
+| `src/test/paneles.test.tsx` | 5 | Dashboard, reporte de sostenibilidad, plan de compensación y registro de compensación por el ADMIN |
+| `src/test/rutas.test.tsx` | 7 | Generar rutas, pedidos sin asignar, re-optimización, errores, vista del conductor y dibujo del mapa |
 
-**5 pruebas aprobadas, 0 fallidas.** Salida completa en [evidencias/resultado-vitest.txt](evidencias/resultado-vitest.txt).
+**43 pruebas aprobadas, 0 fallidas. Cobertura de líneas: 99.7 %** (ramas 94.6 %). Salida completa en
+[evidencias/resultado-vitest.txt](evidencias/resultado-vitest.txt).
 
-La cobertura de líneas de las pruebas unitarias del frontend es baja (10.7 %) porque las pantallas se validan con las pruebas E2E del Anexo C, que recorren todas las vistas en el navegador real.
+| Archivo | % Líneas |
+|---|:-:|
+| api.ts | 100 |
+| auth.tsx | 100 |
+| CrudPage.tsx | 98.6 |
+| Layout.tsx | 100 |
+| MapaRutas.tsx | 100 |
+| Gestion.tsx | 100 |
+| Login.tsx | 100 |
+| Paneles.tsx | 100 |
+| Rutas.tsx | 100 |
+
+Antes de estas pruebas la cobertura era 10.7 %; se agregaron 38 pruebas para que el Quality Gate de SonarQube
+(cobertura ≥ 80 %) se cumpla. Las pantallas también se recorren en el navegador real con las pruebas E2E del Anexo C.
