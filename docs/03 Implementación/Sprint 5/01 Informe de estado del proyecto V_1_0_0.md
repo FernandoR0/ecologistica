@@ -6,8 +6,8 @@
 | Organización | DistriRápido S.A.C., Huancayo, Junín |
 | Curso | Taller de Proyectos 2, Universidad Continental |
 | Versión | 1.0.0 |
-| Fecha | _Completar_ |
-| Elaborado por | _Completar_ |
+| Fecha | 13/11/2026 |
+| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
 | Revisado por | Docente: Daniel Gamarra Moreno |
 
 ---
@@ -18,10 +18,10 @@
 ## 1. Resumen del estado
 | Aspecto | Estado (🟢/🟡/🔴) | Comentario |
 |---|:-:|---|
-| Alcance | _Completar_ | |
+| Alcance | 🟡 | ENB-001 completado. ENB-002: pruebas E2E y de carga listas, encuesta SUS pendiente |
 | Cronograma | _Completar_ | |
-| Calidad | _Completar_ | |
-| Riesgos | _Completar_ | |
+| Calidad | 🟢 | 27 pruebas de backend, 5 de frontend y 4 E2E en verde; cobertura backend 90 % |
+| Riesgos | 🟢 | Ver `04 Seguimiento y Control/03 Seguimiento de riesgos` |
 
 ## 2. Historias comprometidas
 | ID | Historia / Enabler | Requisito | SP | Sprint |
@@ -33,8 +33,8 @@
 | Métrica | Valor |
 |---|---|
 | SP comprometidos | 10 |
-| SP completados | _Completar_ |
-| Pruebas automatizadas en verde | _Completar_ |
+| SP completados | 5 |
+| Pruebas automatizadas en verde | E2E con Playwright (4), prueba de carga, Lighthouse CI |
 
 ## 4. Próximos pasos
-_Completar_
+Cierre: aplicar la encuesta SUS y completar los documentos de cierre.

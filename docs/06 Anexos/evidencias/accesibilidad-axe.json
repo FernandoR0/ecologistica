@@ -1,0 +1,34 @@
+{
+  "Login": {
+    "reglas_aprobadas": 17,
+    "violaciones": []
+  },
+  "Dashboard": {
+    "reglas_aprobadas": 15,
+    "violaciones": []
+  },
+  "Pedidos": {
+    "reglas_aprobadas": 17,
+    "violaciones": []
+  },
+  "Flota": {
+    "reglas_aprobadas": 17,
+    "violaciones": []
+  },
+  "Conductores": {
+    "reglas_aprobadas": 17,
+    "violaciones": []
+  },
+  "Preferencias de recepción": {
+    "reglas_aprobadas": 20,
+    "violaciones": []
+  },
+  "Rutas": {
+    "reglas_aprobadas": 26,
+    "violaciones": []
+  },
+  "Sostenibilidad": {
+    "reglas_aprobadas": 22,
+    "violaciones": []
+  }
+}

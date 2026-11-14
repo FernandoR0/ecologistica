@@ -6,14 +6,34 @@
 | Organización | DistriRápido S.A.C., Huancayo, Junín |
 | Curso | Taller de Proyectos 2, Universidad Continental |
 | Versión | 1.0.0 |
-| Fecha | _Completar_ |
-| Elaborado por | _Completar_ |
+| Fecha | 13/11/2026 |
+| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
 | Revisado por | Docente: Daniel Gamarra Moreno |
 
 ---
 
 ## Tablero
-URL del tablero Jira: _Completar_
+El backlog se gestiona en **GitHub Issues**, con un hito (milestone) por sprint. Cada historia es un issue con sus criterios de aceptación y se cierra con el commit que la implementa.
+
+- Backlog: https://github.com/FernandoR0/ecologistica/issues?q=is%3Aissue
+- Sprints: https://github.com/FernandoR0/ecologistica/milestones?state=all
+
+| Historia | Issue |
+|---|:-:|
+| US-001 | #1 |
+| US-002 | #2 |
+| US-003 | #3 |
+| US-004 | #4 |
+| US-005 | #5 |
+| US-006 | #6 |
+| US-007 | #7 |
+| US-008 | #8 |
+| US-009 | #9 |
+| US-010 | #10 |
+| US-011 | #11 |
+| US-012 | #12 |
+| ENB-001 | #13 |
+| ENB-002 | #14 |
 
 ## Épicas
 
@@ -43,4 +63,14 @@ URL del tablero Jira: _Completar_
 | ENB-002 | Pruebas E2E, usabilidad SUS y auditoría Green IT | RNF-CAL | 5 | 5 |
 
 ## Evidencias
-Agregar capturas del tablero, burndown y velocity por sprint en `02 Planificación/evidencias/`.
+Capturas de la lista de issues y de los hitos en `02 Planificación/evidencias/` (_Completar_: tomarlas desde la cuenta FernandoR0, el repositorio es privado).
+
+### Velocity
+
+| Sprint | SP comprometidos | SP completados |
+|:-:|:-:|:-:|
+| 1 | 16 | 16 |
+| 2 | 18 | 18 |
+| 3 | 18 | 18 |
+| 4 | 13 | 13 |
+| 5 | 10 | 5 |

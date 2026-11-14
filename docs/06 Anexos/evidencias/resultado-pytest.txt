@@ -1,0 +1,41 @@
+============================= test session starts =============================
+collected 27 items
+
+tests\test_api.py .........                                              [ 33%]
+tests\test_auth.py .......                                               [ 59%]
+tests\test_motor.py ...........                                          [100%]
+
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.13.7-final-0 _______________
+
+Name                             Stmts   Miss  Cover
+----------------------------------------------------
+app\__init__.py                      0      0   100%
+app\api\__init__.py                  0      0   100%
+app\api\deps.py                     29      1    97%
+app\api\paginacion.py               15      0   100%
+app\api\routers\__init__.py          0      0   100%
+app\api\routers\auth.py             37      9    76%
+app\api\routers\crud.py             51      2    96%
+app\api\routers\gestion.py          73     26    64%
+app\api\routers\indicadores.py      29      1    97%
+app\api\routers\rutas.py            61     13    79%
+app\core\__init__.py                 0      0   100%
+app\core\cache.py                   15      1    93%
+app\core\config.py                  23      0   100%
+app\core\security.py                36      2    94%
+app\db.py                           14      4    71%
+app\main.py                         49      2    96%
+app\models.py                       98      0   100%
+app\optimization\__init__.py         0      0   100%
+app\optimization\emisiones.py        8      0   100%
+app\optimization\geo.py             24      0   100%
+app\optimization\vrptw.py          131      4    97%
+app\schemas.py                     176      2    99%
+app\seed.py                         33     33     0%
+app\services\__init__.py             0      0   100%
+app\services\indicadores.py         47      4    91%
+app\services\planificacion.py      129      9    93%
+----------------------------------------------------
+TOTAL                             1078    113    90%
+============================= 27 passed in 47.23s =============================

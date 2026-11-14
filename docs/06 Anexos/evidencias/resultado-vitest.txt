@@ -1,0 +1,26 @@
+ RUN  v3.2.7 C:/Users/Fernando/AppData/Local/Claude-Data/claude_pzs8sxrjxfjjc/scratch-workspaces/648fd2b9-338d-4479-82b6-fe885f852223/8245b25b-9325-4b87-a398-d38c73dabc25/scratch-2026-11-13-ebe9e0/ecologistica/frontend
+      Coverage enabled with v8
+ ✓ src/app.test.tsx (5 tests) 92ms
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  20:49:13
+   Duration  3.00s (transform 104ms, setup 296ms, collect 311ms, tests 92ms, environment 1.40s, prepare 279ms)
+ % Coverage report from v8
+----------------|---------|----------|---------|---------|----------------------
+File            | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s    
+----------------|---------|----------|---------|---------|----------------------
+All files       |   10.66 |    63.33 |   33.33 |   10.66 |                      
+ src            |   31.34 |    64.28 |      25 |   31.34 |                      
+  api.ts        |   36.66 |       75 |      20 |   36.66 | 8-12,32-66           
+  auth.tsx      |   54.05 |       60 |      40 |   54.05 | ...27-30,32-34,46-51 
+  main.tsx      |       0 |        0 |       0 |       0 | 1-43                 
+ src/components |    4.12 |    66.66 |      25 |    4.12 |                      
+  CrudPage.tsx  |    6.47 |    85.71 |      50 |    6.47 | 29-175               
+  Layout.tsx    |       0 |        0 |       0 |       0 | 1-36                 
+  MapaRutas.tsx |       0 |        0 |       0 |       0 | 1-54                 
+ src/pages      |    7.19 |    57.14 |   57.14 |    7.19 |                      
+  Gestion.tsx   |       0 |      100 |     100 |       0 | 2-154                
+  Login.tsx     |      70 |       25 |      25 |      70 | 16-27                
+  Paneles.tsx   |       0 |      100 |     100 |       0 | 2-124                
+  Rutas.tsx     |       0 |      100 |     100 |       0 | 2-127                
+----------------|---------|----------|---------|---------|----------------------

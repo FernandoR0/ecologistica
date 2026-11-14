@@ -6,8 +6,8 @@
 | Organización | DistriRápido S.A.C., Huancayo, Junín |
 | Curso | Taller de Proyectos 2, Universidad Continental |
 | Versión | 1.0.0 |
-| Fecha | _Completar_ |
-| Elaborado por | _Completar_ |
+| Fecha | 13/11/2026 |
+| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
 | Revisado por | Docente: Daniel Gamarra Moreno |
 
 ---
@@ -18,7 +18,7 @@
 | Nombre | Rol |
 |---|---|
 | Daniel Gamarra Moreno | Docente / evaluador |
-| _Completar_ | _Completar_ |
+| Fernando Rodrigo Chaupis Espinoza | Product Owner, Scrum Master y Developer |
 
 ## 2. Incremento demostrado
 | ID | Historia / Enabler | Requisito | SP | Sprint |
@@ -29,10 +29,12 @@
 ## 3. Validación de criterios de aceptación
 | Historia | Escenario probado | Resultado | Evidencia |
 |---|---|---|---|
-| _Completar_ | _Completar_ | Cumple / No cumple | Captura N |
+| ENB-001 | CI y auditoría Green IT en GitHub Actions; Lighthouse 100 en el login | Cumple | [lighthouse-despues-movil.png](../reduccion del impacto ambiental/evidencias/lighthouse-despues-movil.png) |
+| ENB-002 | 4 pruebas E2E aprobadas; 150 pedidos y 15 vehículos en 30 s sin pedidos sin asignar | Cumple | [e2e-10-vista-conductor.png](../../06 Anexos/evidencias/e2e-10-vista-conductor.png) |
+| ENB-002 | Encuesta SUS a 5 usuarios | Pendiente | Anexo D |
 
 ## 4. Elementos no completados
-_Completar_
+Encuesta SUS (parte de ENB-002).
 
 ## 5. Retroalimentación de los interesados
-_Completar_
+

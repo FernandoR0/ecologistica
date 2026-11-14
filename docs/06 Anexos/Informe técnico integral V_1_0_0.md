@@ -6,8 +6,8 @@
 | Organización | DistriRápido S.A.C., Huancayo, Junín |
 | Curso | Taller de Proyectos 2, Universidad Continental |
 | Versión | 1.0.0 |
-| Fecha | _Completar_ |
-| Elaborado por | _Completar_ |
+| Fecha | 13/11/2026 |
+| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
 | Revisado por | Docente: Daniel Gamarra Moreno |
 
 ---
@@ -31,9 +31,9 @@ La ruta afectada conserva sus paradas entregadas; las pendientes se replanifican
 ## 4. Resultados
 | Prueba | Resultado |
 |---|---|
-| Datos demo (20 pedidos, 3 vehículos) | _Completar_ km optimizados vs _Completar_ km línea base |
-| Carga (150 pedidos, 15 vehículos) | _Completar_ s |
-| Cobertura backend | _Completar_ % |
+| Datos demo (20 pedidos, 3 vehículos) | 28.1 km optimizados vs 55.8 km línea base (-49.7 %); 5.4 vs 12.6 kg CO₂ (-57 %) |
+| Carga (150 pedidos, 15 vehículos) | 30 s, 0 pedidos sin asignar |
+| Cobertura backend | 90 % |
 | SUS | _Completar_ |
 
 ## 5. Limitaciones y trabajo futuro

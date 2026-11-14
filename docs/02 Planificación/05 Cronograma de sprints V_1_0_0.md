@@ -6,8 +6,8 @@
 | Organización | DistriRápido S.A.C., Huancayo, Junín |
 | Curso | Taller de Proyectos 2, Universidad Continental |
 | Versión | 1.0.0 |
-| Fecha | _Completar_ |
-| Elaborado por | _Completar_ |
+| Fecha | 13/11/2026 |
+| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
 | Revisado por | Docente: Daniel Gamarra Moreno |
 
 ---
@@ -21,4 +21,4 @@
 | 3 | 16/10/2026 | 29/10/2026 | Rutas realistas: jornada del conductor, preferencias del cliente y re-optimización ante incidentes. | US-007, US-008, US-009 |
 | 4 | 30/10/2026 | 12/11/2026 | Medir el impacto: dashboard, reporte de sostenibilidad y plan de compensación de carbono. | US-010, US-011, US-012 |
 | 5 | 13/11/2026 | 26/11/2026 | Calidad y despliegue: CI/CD, staging, pruebas E2E, SUS y auditoría Green IT. | ENB-001, ENB-002 |
-| Cierre | 27/11/2026 | 13/12/2026 | Documentos de cierre y sustentación |, |
+| Cierre | 27/11/2026 | 13/12/2026 | Documentos de cierre y sustentación | - |

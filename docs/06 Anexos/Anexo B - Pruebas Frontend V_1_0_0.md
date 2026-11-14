@@ -6,8 +6,8 @@
 | Organización | DistriRápido S.A.C., Huancayo, Junín |
 | Curso | Taller de Proyectos 2, Universidad Continental |
 | Versión | 1.0.0 |
-| Fecha | _Completar_ |
-| Elaborado por | _Completar_ |
+| Fecha | 13/11/2026 |
+| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
 | Revisado por | Docente: Daniel Gamarra Moreno |
 
 ---
@@ -23,4 +23,6 @@ npm test -- --coverage
 | formatear | Presentación de booleanos y vacíos |
 | Login | El formulario es accesible y tiene campos requeridos |
 
-Pegar aquí la salida real de Vitest.
+**5 pruebas aprobadas, 0 fallidas.** Salida completa en [evidencias/resultado-vitest.txt](evidencias/resultado-vitest.txt).
+
+La cobertura de líneas de las pruebas unitarias del frontend es baja (10.7 %) porque las pantallas se validan con las pruebas E2E del Anexo C, que recorren todas las vistas en el navegador real.

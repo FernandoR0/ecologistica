@@ -10,8 +10,9 @@ Proyecto Final de Asignatura - Taller de Proyectos 2, Universidad Continental, 2
 
 | Integrante | Rol |
 |---|---|
-| Fernando Rodrigo Chaupis Espinoza | _Completar_ |
-| _Completar_ | _Completar_ |
+| Fernando Rodrigo Chaupis Espinoza | Product Owner, Scrum Master y Developer (proyecto individual) |
+
+Backlog y sprints: [issues](https://github.com/FernandoR0/ecologistica/issues?q=is%3Aissue) · [hitos](https://github.com/FernandoR0/ecologistica/milestones?state=all)
 
 ## Funcionalidades
 
@@ -97,8 +98,10 @@ Usuario de prueba: `admin@ecologistica.pe` / `Admin123*` (lo crea `python -m app
 ## Pruebas
 
 ```bash
-cd backend && pytest --cov=app
-cd frontend && npm test
+cd backend && pytest --cov=app             # 27 pruebas, cobertura 90 %
+cd frontend && npm test                    # 5 pruebas
+cd backend && python -m scripts.prueba_carga 30 5   # 150 pedidos y 15 vehículos
+pytest e2e -v                              # 4 pruebas E2E con Playwright (ver docs/06 Anexos)
 ```
 
 ## Endpoints principales

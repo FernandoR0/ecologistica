@@ -6,8 +6,8 @@
 | Organización | DistriRápido S.A.C., Huancayo, Junín |
 | Curso | Taller de Proyectos 2, Universidad Continental |
 | Versión | 1.0.0 |
-| Fecha | _Completar_ |
-| Elaborado por | _Completar_ |
+| Fecha | 13/11/2026 |
+| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
 | Revisado por | Docente: Daniel Gamarra Moreno |
 
 ---
@@ -19,9 +19,11 @@ Scrum con sprints de 2 semanas. Eventos: Sprint Planning, Daily (15 min), Sprint
 
 | Rol | Integrante |
 |---|---|
-| Product Owner | _Completar_ |
-| Scrum Master | _Completar_ |
-| Developers | _Completar_ |
+| Product Owner | Fernando Rodrigo Chaupis Espinoza |
+| Scrum Master | Fernando Rodrigo Chaupis Espinoza |
+| Developer | Fernando Rodrigo Chaupis Espinoza |
+
+Al ser un proyecto individual, los tres roles los cumple la misma persona. La Daily se reemplaza por el registro de avance en los issues y commits del repositorio, y la Sprint Review se hace con el docente.
 
 ## Definición de Listo (DoR)
 - Historia con criterio de aceptación en Gherkin.

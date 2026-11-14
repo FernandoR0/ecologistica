@@ -6,8 +6,8 @@
 | Organización | DistriRápido S.A.C., Huancayo, Junín |
 | Curso | Taller de Proyectos 2, Universidad Continental |
 | Versión | 1.0.0 |
-| Fecha | _Completar_ |
-| Elaborado por | _Completar_ |
+| Fecha | 13/11/2026 |
+| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
 | Revisado por | Docente: Daniel Gamarra Moreno |
 
 ---
@@ -27,11 +27,15 @@ docker run --rm -e SONAR_HOST_URL=http://host.docker.internal:9000 -e SONAR_TOKE
 ## Resultados
 | Métrica | Valor | Meta |
 |---|---|---|
-| Cobertura backend (pytest-cov) | _Completar_ (última ejecución local: 88 %) | ≥ 80 % |
-| Bugs | _Completar_ | 0 |
-| Vulnerabilidades | _Completar_ | 0 |
-| Code smells | _Completar_ | < 50 |
-| Duplicación | _Completar_ | < 3 % |
-| Quality Gate | _Completar_ | Aprobado |
+| Cobertura backend (pytest-cov) | **90 %** (27 pruebas) | ≥ 80 % |
+| Análisis estático Python (Ruff) | 0 observaciones | 0 |
+| Análisis estático TypeScript (ESLint + tsc) | 0 observaciones | 0 |
+| Bugs (SonarQube) | _Completar_ | 0 |
+| Vulnerabilidades en dependencias de producción (pip-audit / npm audit) | **0** | 0 |
+| Code smells (SonarQube) | _Completar_ | < 50 |
+| Duplicación (SonarQube) | _Completar_ | < 3 % |
+| Quality Gate (SonarQube) | _Completar_ | Aprobado |
 
-Adjuntar captura del panel de SonarQube.
+Las filas de SonarQube se llenan al ejecutar el análisis (requiere Docker Desktop encendido para levantar el servidor). Adjuntar captura del panel.
+
+Salidas completas: `06 Anexos/evidencias/resultado-pytest.txt` y `06 Anexos/evidencias/resultado-vitest.txt`.
