@@ -15,9 +15,12 @@ export function MapaRutas({ rutas }: { rutas: Ruta[] }) {
   useEffect(() => {
     if (!contenedor.current || mapa.current) return;
     mapa.current = L.map(contenedor.current).setView(DEPOSITO, 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap',
+    // Política de uso de OSM: los mosaicos deben pedirse con el Referer del sitio. Algunos proxys
+    // (por ejemplo, GitHub Codespaces) envían "same-origin" y OSM bloquea las solicitudes sin Referer.
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxZoom: 19,
+      referrerPolicy: 'strict-origin-when-cross-origin',
     }).addTo(mapa.current);
     capa.current = L.layerGroup().addTo(mapa.current);
     return () => {
