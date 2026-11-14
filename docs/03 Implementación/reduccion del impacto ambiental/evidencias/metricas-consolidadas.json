@@ -1,0 +1,226 @@
+{
+  "metodologia": "Lighthouse 12.6.1, mediana de 3 corridas por modo. SWDM v4 simplificado: g CO2e = GB x 0.815 kWh/GB x 442 g/kWh",
+  "lighthouse": {
+    "antes-movil": {
+      "performance": 97,
+      "accesibilidad": 100,
+      "buenas_practicas": 100,
+      "seo": 91,
+      "FCP": "2.1 s",
+      "LCP": "2.1 s",
+      "TBT": "0 ms",
+      "CLS": "0",
+      "SI": "2.1 s",
+      "bytes": 242795,
+      "archivos": [
+        [
+          "login",
+          690
+        ],
+        [
+          "index-CBhq7dd7.js",
+          238040
+        ],
+        [
+          "index-DFR_l8Xe.css",
+          3375
+        ],
+        [
+          "favicon.ico",
+          690
+        ]
+      ]
+    },
+    "antes-escritorio": {
+      "performance": 100,
+      "accesibilidad": 100,
+      "buenas_practicas": 100,
+      "seo": 91,
+      "FCP": "0.4 s",
+      "LCP": "0.4 s",
+      "TBT": "0 ms",
+      "CLS": "0",
+      "SI": "0.4 s",
+      "bytes": 242795,
+      "archivos": [
+        [
+          "login",
+          690
+        ],
+        [
+          "index-CBhq7dd7.js",
+          238040
+        ],
+        [
+          "index-DFR_l8Xe.css",
+          3375
+        ],
+        [
+          "favicon.ico",
+          690
+        ]
+      ]
+    },
+    "despues-movil": {
+      "performance": 100,
+      "accesibilidad": 100,
+      "buenas_practicas": 100,
+      "seo": 100,
+      "FCP": "1.4 s",
+      "LCP": "1.4 s",
+      "TBT": "10 ms",
+      "CLS": "0",
+      "SI": "1.4 s",
+      "bytes": 66697,
+      "archivos": [
+        [
+          "login",
+          1252
+        ],
+        [
+          "index-rNx1YtBD.js",
+          2893
+        ],
+        [
+          "react-DjIJcgOv.js",
+          61310
+        ],
+        [
+          "index-QE_Zu23p.css",
+          1242
+        ]
+      ]
+    },
+    "despues-escritorio": {
+      "performance": 100,
+      "accesibilidad": 100,
+      "buenas_practicas": 100,
+      "seo": 100,
+      "FCP": "0.3 s",
+      "LCP": "0.3 s",
+      "TBT": "0 ms",
+      "CLS": "0",
+      "SI": "0.3 s",
+      "bytes": 66697,
+      "archivos": [
+        [
+          "login",
+          1252
+        ],
+        [
+          "index-rNx1YtBD.js",
+          2893
+        ],
+        [
+          "react-DjIJcgOv.js",
+          61310
+        ],
+        [
+          "index-QE_Zu23p.css",
+          1242
+        ]
+      ]
+    }
+  },
+  "api": {
+    "antes": {
+      "etiqueta": "antes",
+      "optimizar_s": 20.3,
+      "rutas": 9,
+      "no_asignados": 0,
+      "/api/pedidos": {
+        "bytes_json": 75526,
+        "bytes_red": 75526,
+        "gzip": false,
+        "registros": 300,
+        "ms": 15.4,
+        "etag_304": false
+      },
+      "/api/rutas": {
+        "bytes_json": 102858,
+        "bytes_red": 102858,
+        "gzip": false,
+        "registros": 9,
+        "ms": 144.8,
+        "etag_304": false
+      },
+      "/api/vehiculos": {
+        "bytes_json": 1900,
+        "bytes_red": 1900,
+        "gzip": false,
+        "registros": 15,
+        "ms": 8.7,
+        "etag_304": false
+      },
+      "/api/indicadores": {
+        "bytes_json": 229,
+        "bytes_red": 229,
+        "gzip": false,
+        "registros": null,
+        "ms": 19.2,
+        "etag_304": false
+      }
+    },
+    "despues": {
+      "etiqueta": "despues",
+      "optimizar_s": 20.2,
+      "rutas": 9,
+      "no_asignados": 0,
+      "/api/pedidos": {
+        "bytes_json": 2046,
+        "bytes_red": 267,
+        "gzip": true,
+        "registros": 12,
+        "ms": 4.4,
+        "etag_304": true
+      },
+      "/api/rutas": {
+        "bytes_json": 62468,
+        "bytes_red": 10993,
+        "gzip": true,
+        "registros": 9,
+        "ms": 19.1,
+        "etag_304": true
+      },
+      "/api/vehiculos": {
+        "bytes_json": 1519,
+        "bytes_red": 226,
+        "gzip": true,
+        "registros": 12,
+        "ms": 5.3,
+        "etag_304": true
+      },
+      "/api/indicadores": {
+        "bytes_json": 229,
+        "bytes_red": 229,
+        "gzip": false,
+        "registros": null,
+        "ms": 3.1,
+        "etag_304": true
+      }
+    }
+  },
+  "swdm": {
+    "anti_patron_8.4MB": {
+      "bytes": 8808038,
+      "GB": 0.0082031,
+      "kWh": 0.0066855,
+      "g_co2_visita": 2.955,
+      "kg_co2_anio_500k": 1477.51
+    },
+    "antes": {
+      "bytes": 242795,
+      "GB": 0.0002261,
+      "kWh": 0.0001843,
+      "g_co2_visita": 0.0815,
+      "kg_co2_anio_500k": 40.73
+    },
+    "despues": {
+      "bytes": 66697,
+      "GB": 6.21e-05,
+      "kWh": 5.06e-05,
+      "g_co2_visita": 0.0224,
+      "kg_co2_anio_500k": 11.19
+    }
+  }
+}
