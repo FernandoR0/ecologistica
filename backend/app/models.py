@@ -50,6 +50,9 @@ class Conductor(Base):
     jornada_max_min: Mapped[int] = mapped_column(Integer, default=480)
     vehiculo_id: Mapped[int | None] = mapped_column(ForeignKey("vehiculos.id"), nullable=True)
     usuario_id: Mapped[int | None] = mapped_column(ForeignKey("usuarios.id"), nullable=True)
+    # Punto de partida propio (por ejemplo, la casa del conductor). Vacío = sale del depósito.
+    partida_lat: Mapped[float | None] = mapped_column(Float, nullable=True)
+    partida_lng: Mapped[float | None] = mapped_column(Float, nullable=True)
     activo: Mapped[bool] = mapped_column(Boolean, default=True)
 
     vehiculo: Mapped[Vehiculo | None] = relationship()
@@ -64,6 +67,8 @@ class PreferenciaCliente(Base):
     hora_desde: Mapped[str] = mapped_column(String(5))
     hora_hasta: Mapped[str] = mapped_column(String(5))
     dias: Mapped[str] = mapped_column(String(20), default="1,2,3,4,5,6")  # ISO: 1=lunes
+    punto_referencia: Mapped[str | None] = mapped_column(String(150), nullable=True)
+    restricciones_acceso: Mapped[str | None] = mapped_column(String(200), nullable=True)
     notas: Mapped[str | None] = mapped_column(String(250), nullable=True)
 
 
@@ -104,6 +109,9 @@ class Ruta(Base):
     co2_base_kg: Mapped[float] = mapped_column(Float)
     estado: Mapped[str] = mapped_column(String(12), default="PLANIFICADA", index=True)
     ruta_origen_id: Mapped[int | None] = mapped_column(ForeignKey("rutas.id"), nullable=True)
+    # Punto desde el que sale la ruta (vacío = depósito)
+    partida_lat: Mapped[float | None] = mapped_column(Float, nullable=True)
+    partida_lng: Mapped[float | None] = mapped_column(Float, nullable=True)
     creada_en: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     vehiculo: Mapped[Vehiculo] = relationship()
@@ -136,3 +144,30 @@ class Compensacion(Base):
     proveedor: Mapped[str | None] = mapped_column(String(120), nullable=True)
     co2_kg: Mapped[float] = mapped_column(Float)
     costo_soles: Mapped[float] = mapped_column(Float, default=0)
+
+
+class Configuracion(Base):
+    """RF-012 · Parámetros del motor de rutas que el ADMIN puede ajustar (una sola fila, id = 1)."""
+
+    __tablename__ = "configuracion"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    velocidad_kmh: Mapped[float] = mapped_column(Float)
+    factor_vial: Mapped[float] = mapped_column(Float)
+    peso_co2: Mapped[float] = mapped_column(Float)
+    servicio_min: Mapped[int] = mapped_column(Integer)
+    limite_segundos: Mapped[int] = mapped_column(Integer)
+    precio_combustible_soles: Mapped[float] = mapped_column(Float, default=16.5)  # S/ por galón de diésel
+    actualizado_en: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class Auditoria(Base):
+    """RF-012 · Bitácora de acciones (OWASP A09)."""
+
+    __tablename__ = "auditoria"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    fecha: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), index=True)
+    usuario_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
+    correo: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    accion: Mapped[str] = mapped_column(String(10))  # método HTTP o LOGIN
+    recurso: Mapped[str] = mapped_column(String(200))
+    estado_http: Mapped[int] = mapped_column(Integer)

@@ -4,7 +4,15 @@ import { api, post, type ResultadoPlan, type Ruta } from '../api';
 import { useAuth } from '../auth';
 import { MapaRutas } from '../components/MapaRutas';
 
-const TIPOS = { TRAFICO: 'Tráfico', BLOQUEO_VIA: 'Bloqueo de vía', CLIMA: 'Lluvia / clima', AVERIA_VEHICULO: 'Avería del vehículo' };
+const TIPOS = {
+  TRAFICO: 'Tráfico',
+  BLOQUEO_VIA: 'Bloqueo de vía',
+  CLIMA: 'Lluvia / clima',
+  AVERIA_VEHICULO: 'Avería del vehículo',
+  PEDIDO_NUEVO: 'Pedido nuevo',
+  CANCELACION: 'Cancelación de pedido',
+};
+const CON_PEDIDO = ['PEDIDO_NUEVO', 'CANCELACION'];
 
 export function Rutas() {
   const { usuario } = useAuth();
@@ -13,7 +21,7 @@ export function Rutas() {
   const [resultado, setResultado] = useState<ResultadoPlan | null>(null);
   const [calculando, setCalculando] = useState(false);
   const [error, setError] = useState('');
-  const [incidente, setIncidente] = useState({ ruta: 0, tipo: 'TRAFICO', hora_actual: '10:00', demora_min: 30, completados: '' });
+  const [incidente, setIncidente] = useState({ ruta: 0, tipo: 'TRAFICO', hora_actual: '10:00', demora_min: 30, completados: '', pedido: '' });
 
   const cargar = useCallback(() => {
     const ruta = gestiona ? '/rutas?estado=PLANIFICADA,EN_CURSO&limite=100' : '/rutas/mias';
@@ -46,6 +54,7 @@ export function Rutas() {
         await post<ResultadoPlan>(`/rutas/${incidente.ruta}/reoptimizar`, {
           tipo: incidente.tipo, hora_actual: incidente.hora_actual, demora_min: Number(incidente.demora_min),
           paradas_completadas: completados,
+          ...(CON_PEDIDO.includes(incidente.tipo) ? { pedido_id: Number(incidente.pedido) } : {}),
         }),
       );
       cargar();
@@ -119,6 +128,11 @@ export function Rutas() {
           <label>Hora actual<input type="time" value={incidente.hora_actual} onChange={(e) => setIncidente({ ...incidente, hora_actual: e.target.value })} /></label>
           <label>Demora (min)<input type="number" min={0} value={incidente.demora_min} onChange={(e) => setIncidente({ ...incidente, demora_min: Number(e.target.value) })} /></label>
           <label>Pedidos ya entregados (IDs, separados por coma)<input value={incidente.completados} onChange={(e) => setIncidente({ ...incidente, completados: e.target.value })} /></label>
+          {CON_PEDIDO.includes(incidente.tipo) && (
+            <label>ID del pedido{incidente.tipo === 'PEDIDO_NUEVO' ? ' nuevo' : ' a cancelar'}
+              <input type="number" min={1} required value={incidente.pedido} onChange={(e) => setIncidente({ ...incidente, pedido: e.target.value })} />
+            </label>
+          )}
           <div className="acciones"><button type="submit" disabled={calculando || !incidente.ruta}>Re-optimizar</button></div>
         </form>
       )}

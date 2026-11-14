@@ -6,7 +6,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.models import Compensacion, Pedido, Ruta, Vehiculo
+from app.models import Compensacion, Configuracion, Pedido, Ruta, Vehiculo
 
 ESTADOS_VIGENTES = ("PLANIFICADA", "EN_CURSO", "COMPLETADA")
 
@@ -20,8 +20,35 @@ def _rutas(db: Session, desde: date | None, hasta: date | None):
     return list(db.scalars(q))
 
 
+LITROS_POR_GALON = 3.785
+
+
+def _ahorro_energia(rutas) -> tuple[float, float]:
+    """Combustible (L) y electricidad (kWh) ahorrados frente a la ruta sin optimizar."""
+    litros = kwh = 0.0
+    for r in rutas:
+        ahorro = (r.distancia_base_km - r.distancia_km) * r.vehiculo.consumo_100km / 100
+        if r.vehiculo.combustible == "ELECTRICO":
+            kwh += ahorro
+        else:
+            litros += ahorro
+    return litros, kwh
+
+
+def _cumplimiento_ventanas(rutas) -> float:
+    """% de paradas cuya hora estimada de llegada cae dentro de la ventana del pedido."""
+    paradas = [p for r in rutas for p in r.paradas]
+    if not paradas:
+        return 0.0
+    dentro = sum(1 for p in paradas if p.pedido.ventana_inicio <= p.hora_llegada <= p.pedido.ventana_fin)
+    return round(dentro / len(paradas) * 100, 1)
+
+
 def dashboard(db: Session, desde: date | None = None, hasta: date | None = None) -> dict:
     rutas = _rutas(db, desde, hasta)
+    conf = db.get(Configuracion, 1)
+    precio_galon = conf.precio_combustible_soles if conf else 16.5
+    litros, kwh = _ahorro_energia(rutas)
     por_estado = dict(db.execute(select(Pedido.estado, func.count()).group_by(Pedido.estado)).all())
     km = sum(r.distancia_km for r in rutas)
     km_base = sum(r.distancia_base_km for r in rutas)
@@ -40,6 +67,11 @@ def dashboard(db: Session, desde: date | None = None, hasta: date | None = None)
         "co2_kg": round(co2, 2),
         "ahorro_co2_kg": round(co2_base - co2, 2),
         "co2_por_entrega_kg": round(co2 / entregas, 3) if entregas else 0.0,
+        "combustible_ahorrado_l": round(litros, 2),
+        "electricidad_ahorrada_kwh": round(kwh, 2),
+        "ahorro_combustible_soles": round(litros / LITROS_POR_GALON * precio_galon, 2),
+        "cumplimiento_ventanas_pct": _cumplimiento_ventanas(rutas),
+        "arboles_equivalentes": round((co2_base - co2) / settings.CO2_ABSORBIDO_ARBOL_KG_ANIO, 2),
     }
 
 

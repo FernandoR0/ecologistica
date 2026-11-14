@@ -15,6 +15,7 @@ const Pedidos = lazy(() => import('./pages/Gestion').then((m) => ({ default: m.P
 const Vehiculos = lazy(() => import('./pages/Gestion').then((m) => ({ default: m.Vehiculos })));
 const Conductores = lazy(() => import('./pages/Gestion').then((m) => ({ default: m.Conductores })));
 const Preferencias = lazy(() => import('./pages/Gestion').then((m) => ({ default: m.Preferencias })));
+const Administracion = lazy(() => import('./pages/Administracion').then((m) => ({ default: m.Administracion })));
 
 const GESTION = ['ADMIN', 'PLANIFICADOR'] as const;
 const cargando = (texto: string, hijo: ReactNode) => (
@@ -35,6 +36,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="conductores" element={<Protegida roles={[...GESTION]}>{cargando('Cargando conductores…', <Conductores />)}</Protegida>} />
             <Route path="preferencias" element={<Protegida roles={[...GESTION]}>{cargando('Cargando preferencias…', <Preferencias />)}</Protegida>} />
             <Route path="sostenibilidad" element={cargando('Cargando reporte…', <SostenibilidadPage />)} />
+            <Route path="administracion" element={<Protegida roles={['ADMIN']}>{cargando('Cargando administración…', <Administracion />)}</Protegida>} />
           </Route>
         </Routes>
       </BrowserRouter>

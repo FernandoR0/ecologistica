@@ -22,11 +22,12 @@ def verify_password(password: str, password_hash: str) -> bool:
         return False
 
 
-def create_token(user_id: int, rol: str) -> str:
+def create_token(user_id: int, rol: str, correo: str | None = None) -> str:
     ahora = datetime.now(UTC)
     payload = {
         "sub": str(user_id),
         "rol": rol,
+        "correo": correo,
         "iat": ahora,
         "exp": ahora + timedelta(minutes=settings.JWT_EXPIRE_MINUTES),
     }

@@ -1,11 +1,13 @@
 /** RF-005 dashboard · RF-006 sostenibilidad · RF-010 compensación de carbono. */
 import { useEffect, useState, type FormEvent } from 'react';
-import { api, post } from '../api';
+import { api, descargar, post } from '../api';
 import { useAuth } from '../auth';
 
 interface Dashboard {
   pedidos_por_estado: Record<string, number>; rutas: number; vehiculos_activos: number; entregas_planificadas: number;
   distancia_km: number; ahorro_km: number; ahorro_km_pct: number; co2_kg: number; ahorro_co2_kg: number; co2_por_entrega_kg: number;
+  combustible_ahorrado_l: number; electricidad_ahorrada_kwh: number; ahorro_combustible_soles: number;
+  cumplimiento_ventanas_pct: number; arboles_equivalentes: number;
 }
 interface Sostenibilidad {
   co2_emitido_kg: number; co2_evitado_por_optimizacion_kg: number; co2_compensado_kg: number; co2_neto_kg: number;
@@ -41,6 +43,9 @@ export function Inicio() {
         <Kpi titulo="Distancia" valor={`${d.distancia_km} km`} detalle={`Ahorro ${d.ahorro_km} km (${d.ahorro_km_pct} %)`} />
         <Kpi titulo="CO₂ emitido" valor={`${d.co2_kg} kg`} detalle={`Evitado ${d.ahorro_co2_kg} kg`} />
         <Kpi titulo="CO₂ por entrega" valor={`${d.co2_por_entrega_kg} kg`} />
+        <Kpi titulo="Combustible ahorrado" valor={`${d.combustible_ahorrado_l} L`} detalle={`S/ ${d.ahorro_combustible_soles} · ${d.electricidad_ahorrada_kwh} kWh eléctricos`} />
+        <Kpi titulo="Entregas dentro de su ventana" valor={`${d.cumplimiento_ventanas_pct} %`} />
+        <Kpi titulo="Equivale a" valor={`${d.arboles_equivalentes} árboles`} detalle="CO₂ evitado frente a lo que absorbe un árbol en un año" />
       </div>
     </section>
   );
@@ -59,6 +64,18 @@ export function SostenibilidadPage() {
   };
   useEffect(cargar, []);
 
+  const [descargando, setDescargando] = useState(false);
+  const pdf = async () => {
+    setDescargando(true);
+    try {
+      await descargar('/indicadores/reporte.pdf', `reporte-sostenibilidad-${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setDescargando(false);
+    }
+  };
+
   const registrar = async (e: FormEvent) => {
     e.preventDefault();
     try {
@@ -72,7 +89,10 @@ export function SostenibilidadPage() {
 
   return (
     <section>
-      <h1>Reporte de sostenibilidad</h1>
+      <header className="fila-titulo">
+        <h1>Reporte de sostenibilidad</h1>
+        <button onClick={pdf} disabled={descargando}>{descargando ? 'Generando…' : 'Descargar reporte PDF'}</button>
+      </header>
       {error && <p className="error" role="alert">{error}</p>}
       {s && (
         <>

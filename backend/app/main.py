@@ -4,14 +4,17 @@ import hashlib
 import logging
 from contextlib import asynccontextmanager
 
+import jwt
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
-from app.api.routers import auth, gestion, indicadores, rutas
+from app.api.routers import admin, auth, gestion, indicadores, rutas
 from app.core import cache
 from app.core.config import DEV_SECRET, settings
-from app.db import Base, engine
+from app.core.security import decode_token
+from app.db import Base, SessionLocal, engine, get_db
+from app.models import Auditoria
 
 log = logging.getLogger("ecologistica")
 
@@ -38,6 +41,41 @@ async def cabeceras_seguridad(request: Request, call_next):
     resp.headers["X-Content-Type-Options"] = "nosniff"
     resp.headers["X-Frame-Options"] = "DENY"
     resp.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return resp
+
+
+def _registrar(request: Request, estado: int) -> None:
+    """Guarda en la bitácora quién hizo qué (OWASP A09). Nunca guarda contraseñas ni cuerpos."""
+    usuario_id, correo = None, None
+    cabecera = request.headers.get("authorization", "")
+    if cabecera.lower().startswith("bearer "):
+        try:
+            datos = decode_token(cabecera[7:])
+            usuario_id, correo = int(datos["sub"]), datos.get("correo")
+        except (jwt.PyJWTError, KeyError, ValueError):
+            log.info("Escritura con token inválido en %s", request.url.path)
+    if request.url.path == "/api/auth/login":
+        correo = getattr(request.state, "correo_login", None)
+    fabrica = app.dependency_overrides.get(get_db)
+    if fabrica:
+        obtenido = fabrica()
+        db = next(obtenido) if hasattr(obtenido, "__next__") else obtenido
+    else:
+        db = SessionLocal()
+    try:
+        db.add(Auditoria(usuario_id=usuario_id, correo=correo, accion="LOGIN" if request.url.path.endswith("/login")
+                         else request.method, recurso=request.url.path[:200], estado_http=estado))
+        db.commit()
+    finally:
+        if not fabrica:
+            db.close()
+
+
+@app.middleware("http")
+async def auditoria(request: Request, call_next):
+    resp = await call_next(request)
+    if request.method in ("POST", "PUT", "PATCH", "DELETE") and request.url.path.startswith("/api/"):
+        _registrar(request, resp.status_code)
     return resp
 
 
@@ -80,7 +118,7 @@ app.add_middleware(
     expose_headers=["X-Total-Count", "ETag"],
 )
 
-for r in (auth.router, gestion.vehiculos, gestion.conductores, gestion.pedidos, gestion.preferencias,
+for r in (auth.router, admin.router, gestion.vehiculos, gestion.conductores, gestion.pedidos, gestion.preferencias,
           rutas.router, indicadores.router):
     app.include_router(r, prefix="/api")
 

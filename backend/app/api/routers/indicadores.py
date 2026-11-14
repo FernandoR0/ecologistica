@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -11,7 +11,7 @@ from app.core import cache
 from app.db import get_db
 from app.models import Compensacion
 from app.schemas import CompensacionIn, CompensacionOut
-from app.services import indicadores
+from app.services import indicadores, reporte_pdf
 
 router = APIRouter(tags=["Indicadores y sostenibilidad"])
 
@@ -26,6 +26,15 @@ def dashboard(desde: date | None = None, hasta: date | None = None, db: Session 
 def sostenibilidad(desde: date | None = None, hasta: date | None = None, db: Session = Depends(get_db),
                    _=Depends(get_current_user)):
     return cache.obtener(("sostenibilidad", desde, hasta), lambda: indicadores.sostenibilidad(db, desde, hasta))
+
+
+@router.get("/indicadores/reporte.pdf", response_class=Response)
+def reporte(desde: date | None = None, hasta: date | None = None, db: Session = Depends(get_db),
+            _=Depends(get_current_user)):
+    """RF-006 · Reporte PDF descargable del periodo."""
+    nombre = f"reporte-sostenibilidad-{desde or 'inicio'}-{hasta or 'hoy'}.pdf"
+    return Response(reporte_pdf.generar(db, desde, hasta), media_type="application/pdf",
+                    headers={"Content-Disposition": f'attachment; filename="{nombre}"'})
 
 
 @router.get("/compensacion/plan")

@@ -1,6 +1,6 @@
 """DTOs de entrada/salida validados con Pydantic (OWASP A03: validación de entradas)."""
 
-from datetime import date
+from datetime import date, datetime
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
@@ -79,6 +79,8 @@ class ConductorIn(BaseModel):
     jornada_max_min: int = Field(default=480, ge=60, le=600)
     vehiculo_id: int | None = None
     usuario_id: int | None = None
+    partida_lat: Lat | None = None
+    partida_lng: Lng | None = None
     activo: bool = True
 
 
@@ -90,6 +92,8 @@ class ConductorUpdate(BaseModel):
     jornada_max_min: int | None = Field(default=None, ge=60, le=600)
     vehiculo_id: int | None = None
     usuario_id: int | None = None
+    partida_lat: Lat | None = None
+    partida_lng: Lng | None = None
     activo: bool | None = None
 
 
@@ -102,6 +106,8 @@ class PreferenciaIn(BaseModel):
     hora_desde: Hora
     hora_hasta: Hora
     dias: str = Field(default="1,2,3,4,5,6", pattern=r"^[1-7](,[1-7])*$")
+    punto_referencia: str | None = Field(default=None, max_length=150, examples=["Frente al mercado Modelo"])
+    restricciones_acceso: str | None = Field(default=None, max_length=200, examples=["Calle angosta: solo furgoneta"])
     notas: str | None = Field(default=None, max_length=250)
 
     @model_validator(mode="after")
@@ -208,6 +214,8 @@ class RutaOut(ORM):
     co2_base_kg: float
     estado: str
     ruta_origen_id: int | None
+    partida_lat: float | None = None
+    partida_lng: float | None = None
     paradas: list[ParadaOut]
 
 
@@ -223,11 +231,18 @@ class ResultadoPlanOut(BaseModel):
 
 
 class IncidenteIn(BaseModel):
-    tipo: Literal["TRAFICO", "BLOQUEO_VIA", "CLIMA", "AVERIA_VEHICULO"]
+    tipo: Literal["TRAFICO", "BLOQUEO_VIA", "CLIMA", "AVERIA_VEHICULO", "PEDIDO_NUEVO", "CANCELACION"]
     hora_actual: Hora
+    pedido_id: int | None = Field(default=None, description="Pedido nuevo o cancelado (PEDIDO_NUEVO / CANCELACION)")
     demora_min: int = Field(default=0, ge=0, le=480)
     paradas_completadas: list[int] = Field(default_factory=list, description="IDs de pedido ya entregados")
     descripcion: str | None = Field(default=None, max_length=250)
+
+    @model_validator(mode="after")
+    def _pedido(self):
+        if self.tipo in ("PEDIDO_NUEVO", "CANCELACION") and self.pedido_id is None:
+            raise ValueError("pedido_id es obligatorio para PEDIDO_NUEVO y CANCELACION")
+        return self
 
 
 class EstadoRutaIn(BaseModel):
@@ -245,3 +260,33 @@ class CompensacionIn(BaseModel):
 
 class CompensacionOut(ORM, CompensacionIn):
     id: int
+
+
+# ---------- Administración (RF-012) ----------
+class ConfiguracionIn(BaseModel):
+    velocidad_kmh: float = Field(gt=5, le=80)
+    factor_vial: float = Field(ge=1, le=3)
+    peso_co2: float = Field(ge=0, le=10)
+    servicio_min: int = Field(ge=1, le=60)
+    limite_segundos: int = Field(ge=1, le=120)
+    precio_combustible_soles: float = Field(gt=0, le=100)
+
+
+class ConfiguracionOut(ORM, ConfiguracionIn):
+    pass
+
+
+class AuditoriaOut(ORM):
+    id: int
+    fecha: datetime
+    usuario_id: int | None
+    correo: str | None
+    accion: str
+    recurso: str
+    estado_http: int
+
+
+class UsuarioUpdate(BaseModel):
+    nombre: str | None = Field(default=None, min_length=3, max_length=120)
+    rol: Rol | None = None
+    activo: bool | None = None

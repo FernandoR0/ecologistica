@@ -103,7 +103,8 @@ def cambiar_estado(ruta_id: int, datos: EstadoRutaIn, db: Session = Depends(get_
 def reoptimizar(ruta_id: int, inc: IncidenteIn, db: Session = Depends(get_db), _=Depends(gestion)):
     try:
         res = planificacion.reoptimizar(
-            db, ruta_id, inc.tipo, inc.hora_actual, inc.demora_min, inc.paradas_completadas
+            db, ruta_id, inc.tipo, inc.hora_actual, inc.demora_min, inc.paradas_completadas,
+            pedido_id=inc.pedido_id,
         )
     except planificacion.PlanificacionError as e:
         raise HTTPException(status.HTTP_409_CONFLICT, str(e)) from None

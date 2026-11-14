@@ -49,6 +49,8 @@ export function Conductores() {
         { nombre: 'hora_inicio', etiqueta: 'Inicio de jornada', tipo: 'time' },
         { nombre: 'jornada_max_min', etiqueta: 'Jornada máx. (min)', tipo: 'number' },
         { nombre: 'vehiculo_id', etiqueta: 'ID vehículo asignado', tipo: 'number' },
+        { nombre: 'partida_lat', etiqueta: 'Punto de partida: latitud (vacío = depósito)', tipo: 'number', paso: 'any' },
+        { nombre: 'partida_lng', etiqueta: 'Punto de partida: longitud', tipo: 'number', paso: 'any' },
         { nombre: 'activo', etiqueta: 'Activo', tipo: 'checkbox' },
       ]}
       columnas={[
@@ -97,11 +99,16 @@ export function Pedidos() {
   );
 }
 
-interface Preferencia { id: number; cliente: string; hora_desde: string; hora_hasta: string; dias: string; notas?: string }
+interface Preferencia {
+  id: number; cliente: string; hora_desde: string; hora_hasta: string; dias: string;
+  punto_referencia?: string | null; restricciones_acceso?: string | null; notas?: string | null;
+}
 
 export function Preferencias() {
   const [lista, setLista] = useState<Preferencia[]>([]);
-  const [form, setForm] = useState({ cliente: '', hora_desde: '09:00', hora_hasta: '11:00', dias: '1,2,3,4,5,6', notas: '' });
+  const [form, setForm] = useState({
+    cliente: '', hora_desde: '09:00', hora_hasta: '11:00', dias: '1,2,3,4,5,6', punto_referencia: '', restricciones_acceso: '', notas: '',
+  });
   const [error, setError] = useState('');
   const puede = usePuedeEditar();
   const cargar = () => {
@@ -113,7 +120,12 @@ export function Preferencias() {
     e.preventDefault();
     const { cliente, ...datos } = form;
     try {
-      await put(`/preferencias/${encodeURIComponent(cliente)}`, { ...datos, notas: datos.notas || null });
+      await put(`/preferencias/${encodeURIComponent(cliente)}`, {
+        ...datos,
+        punto_referencia: datos.punto_referencia || null,
+        restricciones_acceso: datos.restricciones_acceso || null,
+        notas: datos.notas || null,
+      });
       setError('');
       cargar();
     } catch (err) {
@@ -132,16 +144,18 @@ export function Preferencias() {
           <label>Desde<input type="time" required value={form.hora_desde} onChange={(e) => setForm({ ...form, hora_desde: e.target.value })} /></label>
           <label>Hasta<input type="time" required value={form.hora_hasta} onChange={(e) => setForm({ ...form, hora_hasta: e.target.value })} /></label>
           <label>Días (1=lun … 7=dom)<input value={form.dias} onChange={(e) => setForm({ ...form, dias: e.target.value })} /></label>
+          <label>Punto de referencia<input value={form.punto_referencia} onChange={(e) => setForm({ ...form, punto_referencia: e.target.value })} /></label>
+          <label>Restricciones de acceso<input value={form.restricciones_acceso} onChange={(e) => setForm({ ...form, restricciones_acceso: e.target.value })} /></label>
           <label>Notas<input value={form.notas} onChange={(e) => setForm({ ...form, notas: e.target.value })} /></label>
           <div className="acciones"><button type="submit">Guardar</button></div>
         </form>
       )}
       <table>
-        <thead><tr><th>Cliente</th><th>Horario</th><th>Días</th><th>Notas</th>{puede && <th />}</tr></thead>
+        <thead><tr><th>Cliente</th><th>Horario</th><th>Días</th><th>Punto de referencia</th><th>Restricciones de acceso</th><th>Notas</th>{puede && <th />}</tr></thead>
         <tbody>
           {lista.map((p) => (
             <tr key={p.id}>
-              <td>{p.cliente}</td><td>{p.hora_desde} – {p.hora_hasta}</td><td>{p.dias}</td><td>{p.notas ?? '—'}</td>
+              <td>{p.cliente}</td><td>{p.hora_desde} – {p.hora_hasta}</td><td>{p.dias}</td><td>{p.punto_referencia ?? '—'}</td><td>{p.restricciones_acceso ?? '—'}</td><td>{p.notas ?? '—'}</td>
               {puede && (
                 <td><button className="peligro" onClick={() => del(`/preferencias/${encodeURIComponent(p.cliente)}`).then(cargar)}>Eliminar</button></td>
               )}

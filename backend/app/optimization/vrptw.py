@@ -50,6 +50,7 @@ class VehiculoRecurso:
     inicio_min: int = 8 * 60
     jornada_max_min: int = 8 * 60
     conductor_id: int | None = None
+    origen: tuple[float, float] | None = None  # punto de partida propio del conductor
 
 
 @dataclass
@@ -80,6 +81,7 @@ class RutaPlan:
     co2_kg: float
     inicio_min: int
     fin_min: int
+    partida: tuple[float, float] | None = None  # None = depósito
 
     @property
     def duracion_min(self) -> int:
@@ -108,17 +110,25 @@ def resolver(inst: Instancia, limite_segundos: int = 30) -> Plan:
     if not inst.vehiculos:
         return Plan(estado="SIN_SOLUCION", no_asignados=[p.id for p in inst.pedidos])
 
-    # Nodos: 0 = depósito, [1 = origen], luego pedidos
+    # Nodos: 0 = depósito, luego un nodo por cada punto de partida distinto, luego los pedidos.
+    # Cada vehículo sale de su propio punto de partida (RF-008), del origen de la re-optimización
+    # (RF-007) o del depósito, y siempre termina en el depósito.
     puntos = [inst.deposito]
-    if inst.origen is not None:
-        puntos.append(inst.origen)
+    inicios: list[int] = []
+    for veh in inst.vehiculos:
+        partida = veh.origen or inst.origen
+        if partida is None:
+            inicios.append(0)
+            continue
+        if partida not in puntos:
+            puntos.append(partida)
+        inicios.append(puntos.index(partida))
     offset = len(puntos)
     puntos += [(p.lat, p.lng) for p in inst.pedidos]
     dist = matriz_distancias_km(puntos, inst.factor_vial)
 
     nv = len(inst.vehiculos)
-    inicio_nodo = 1 if inst.origen is not None else 0
-    manager = pywrapcp.RoutingIndexManager(len(puntos), nv, [inicio_nodo] * nv, [0] * nv)
+    manager = pywrapcp.RoutingIndexManager(len(puntos), nv, inicios, [0] * nv)
     routing = pywrapcp.RoutingModel(manager)
 
     # --- Costo por vehículo (distancia ponderada por emisiones) ---
@@ -204,6 +214,7 @@ def resolver(inst: Instancia, limite_segundos: int = 30) -> Plan:
                 co2_kg=round(km * veh.emision_kg_km, 3),
                 inicio_min=solucion.Min(t_dim.CumulVar(routing.Start(v_idx))),
                 fin_min=solucion.Min(t_dim.CumulVar(routing.End(v_idx))),
+                partida=puntos[inicios[v_idx]] if inicios[v_idx] else None,
             )
         )
 

@@ -36,7 +36,9 @@ export function MapaRutas({ rutas }: { rutas: Ruta[] }) {
     const limites = L.latLngBounds([DEPOSITO]);
     rutas.forEach((r, i) => {
       const color = COLORES[i % COLORES.length];
-      const puntos: [number, number][] = [DEPOSITO, ...r.paradas.map((p) => [p.pedido.lat, p.pedido.lng] as [number, number]), DEPOSITO];
+      // La ruta sale de su punto de partida (casa del conductor o última entrega) y vuelve al depósito
+      const partida: [number, number] = r.partida_lat != null && r.partida_lng != null ? [r.partida_lat, r.partida_lng] : DEPOSITO;
+      const puntos: [number, number][] = [partida, ...r.paradas.map((p) => [p.pedido.lat, p.pedido.lng] as [number, number]), DEPOSITO];
       L.polyline(puntos, { color, weight: 4, opacity: 0.8 }).bindTooltip(`${r.vehiculo.placa}`).addTo(grupo);
       r.paradas.forEach((p) => {
         limites.extend([p.pedido.lat, p.pedido.lng]);

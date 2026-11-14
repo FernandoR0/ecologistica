@@ -10,6 +10,7 @@ const MENU: { a: string; texto: string; roles?: Rol[] }[] = [
   { a: '/conductores', texto: 'Conductores', roles: ['ADMIN', 'PLANIFICADOR'] },
   { a: '/preferencias', texto: 'Preferencias', roles: ['ADMIN', 'PLANIFICADOR'] },
   { a: '/sostenibilidad', texto: 'Sostenibilidad' },
+  { a: '/administracion', texto: 'Administración', roles: ['ADMIN'] },
 ];
 
 export function Layout() {

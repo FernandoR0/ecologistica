@@ -65,6 +65,19 @@ export async function apiPaginado<T>(ruta: string, pagina: number, limite = 12):
   return { datos, total: Number(resp.headers.get('X-Total-Count') ?? datos.length) };
 }
 
+/** Descarga un archivo (por ejemplo el reporte PDF) enviando el token. */
+export async function descargar(ruta: string, nombre: string): Promise<void> {
+  const token = tokenStore.get();
+  const resp = await fetch(`${API_URL}${ruta}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  if (!resp.ok) throw new ApiError(resp.status, `No se pudo descargar (${resp.status})`);
+  const url = URL.createObjectURL(await resp.blob());
+  const enlace = document.createElement('a');
+  enlace.href = url;
+  enlace.download = nombre;
+  enlace.click();
+  URL.revokeObjectURL(url);
+}
+
 export const post = <T>(ruta: string, body: unknown) => api<T>(ruta, { method: 'POST', body: JSON.stringify(body) });
 export const put = <T>(ruta: string, body: unknown) => api<T>(ruta, { method: 'PUT', body: JSON.stringify(body) });
 export const del = (ruta: string) => api<void>(ruta, { method: 'DELETE' });
@@ -84,6 +97,7 @@ export interface Ruta {
   id: number; fecha: string; vehiculo: Vehiculo; conductor: { id: number; nombre: string } | null;
   hora_inicio: string; hora_fin: string; distancia_km: number; duracion_min: number; co2_kg: number;
   distancia_base_km: number; co2_base_kg: number; estado: string; ruta_origen_id: number | null; paradas: Parada[];
+  partida_lat?: number | null; partida_lng?: number | null;
 }
 export interface ResultadoPlan {
   estado: string; rutas: Ruta[]; no_asignados: number[]; distancia_total_km: number; co2_total_kg: number;

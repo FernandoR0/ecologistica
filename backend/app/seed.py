@@ -47,7 +47,8 @@ def run() -> None:
             Conductor(nombre="Luis Quispe", dni="70000001", licencia="A-IIb-1001", vehiculo_id=vehs[0].id,
                       usuario_id=conductor_user.id),
             Conductor(nombre="María Huamán", dni="70000002", licencia="A-IIb-1002", vehiculo_id=vehs[1].id),
-            Conductor(nombre="Jorge Rojas", dni="70000003", licencia="A-IIa-1003", vehiculo_id=vehs[2].id),
+            Conductor(nombre="Jorge Rojas", dni="70000003", licencia="A-IIa-1003", vehiculo_id=vehs[2].id,
+                      partida_lat=-12.0560, partida_lng=-75.2160),  # sale desde El Tambo
         ])
         rnd = random.Random(42)  # noqa: S311 - datos de demostración, no criptografía
         for i in range(20):
@@ -63,6 +64,8 @@ def run() -> None:
             ))
         db.add_all([
             PreferenciaCliente(cliente="Restaurante Wanka", hora_desde="09:00", hora_hasta="11:00",
+                               punto_referencia="Frente al parque Huamanmarca",
+                               restricciones_acceso="Descarga por la puerta lateral",
                                notas="Recibe antes del almuerzo"),
             PreferenciaCliente(cliente="Farmacia Salud Total", hora_desde="08:00", hora_hasta="10:00",
                                dias="1,2,3,4,5"),
