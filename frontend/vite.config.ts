@@ -31,7 +31,12 @@ function precomprimir(): Plugin {
 
 export default defineConfig({
   plugins: [react(), precomprimir()],
-  server: { port: 5173 },
+  server: {
+    port: 5173,
+    // En GitHub Codespaces la app se abre desde *.app.github.dev y /api se reenvía a la API local
+    allowedHosts: ['.app.github.dev'],
+    proxy: { '/api': 'http://localhost:8000' },
+  },
   build: {
     rollupOptions: {
       output: {

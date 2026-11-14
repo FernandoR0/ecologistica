@@ -9,6 +9,9 @@ Proyecto Final de Asignatura - Taller de Proyectos 2, Universidad Continental, 2
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=FernandoR0_ecologistica&metric=alert_status)](https://sonarcloud.io/summary/overall?id=FernandoR0_ecologistica&branch=main)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=FernandoR0_ecologistica&metric=coverage)](https://sonarcloud.io/summary/overall?id=FernandoR0_ecologistica&branch=main)
 
+**Probar en línea:** [![Abrir en GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/FernandoR0/ecologistica?quickstart=1)
+(se necesita una cuenta de GitHub; ver [Probar en GitHub Codespaces](#probar-en-github-codespaces))
+
 ## Tabla de contenido
 
 1. [Equipo](#equipo)
@@ -20,7 +23,7 @@ Proyecto Final de Asignatura - Taller de Proyectos 2, Universidad Continental, 2
 7. [Estructura del repositorio](#estructura-del-repositorio)
 8. [Instalación](#instalación)
 9. [Build](#build)
-10. [Despliegue](#despliegue)
+10. [Despliegue](#despliegue) (incluye [GitHub Codespaces](#probar-en-github-codespaces))
 11. [Pruebas y calidad](#pruebas-y-calidad)
 12. [Video explicativo](#video-explicativo)
 13. [Documentación por fases](#documentación-por-fases)
@@ -167,6 +170,18 @@ Con Docker Compose (base de datos, API y frontend):
 ```bash
 docker compose up --build
 ```
+
+### Probar en GitHub Codespaces
+
+Sin instalar nada: el botón **Abrir en GitHub Codespaces** crea un entorno en la nube con la configuración de
+`.devcontainer/`. La primera vez tarda unos 3 a 5 minutos (instala dependencias y carga los datos de demostración);
+luego la app se abre sola en el puerto **5173** (pestaña *Puertos* → "EcoLogística (web)"). Se ingresa con los
+usuarios de demostración de la tabla de [Instalación](#instalación).
+
+Las cuentas personales de GitHub tienen 120 horas-núcleo gratis al mes. Al terminar conviene detener el Codespace en
+https://github.com/codespaces para no gastar horas.
+
+### Producción
 
 En producción el frontend se sirve con `frontend/Dockerfile` (nginx sin privilegios en el puerto 8080, caché de un año
 para `/assets/` y archivos precomprimidos) y la API con `backend/Dockerfile` (usuario sin privilegios). Las variables
