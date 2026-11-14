@@ -37,7 +37,7 @@ Aplicamos los principios de la GSF para software verde:
 |---|---|
 | Eficiencia de carbono | Emitir menos CO₂ por unidad de trabajo: 0.0224 g por visita al login frente a 0.0815 g antes |
 | Eficiencia energética | Menos CPU por solicitud: archivos precomprimidos en el build, caché de indicadores, consultas sin N+1 |
-| Eficiencia de hardware | Contenedores livianos (`python:3.12-slim`, `nginx:alpine`, `postgres:16-alpine`) |
+| Eficiencia de hardware | Contenedores livianos (`python:3.12-slim`, `nginx-unprivileged:alpine`, `postgres:16-alpine`) |
 | Medición | Lighthouse y SWDM en cada cambio con el workflow `green-audit.yml` |
 | Green BY software | El motor VRPTW + Green VRP reduce kilómetros y prefiere vehículos de menor emisión |
 

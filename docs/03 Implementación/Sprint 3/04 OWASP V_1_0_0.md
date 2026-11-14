@@ -26,7 +26,7 @@ Revisión del código del backend (FastAPI) y del frontend (React) frente al OWA
 | A05:2025-Injection | **Limpio** | Todo acceso a datos pasa por SQLAlchemy (consultas parametrizadas). Pydantic valida tipos, rangos y formatos (placa, DNI, horas, coordenadas del Valle del Mantaro); una entrada inválida responde 422. |
 | A06:2025-Insecure Design | **Limpio** | Reglas de negocio en el servidor (capacidad, ventanas, jornada, pedidos planificados no editables); bajas lógicas para conservar historial. |
 | A07:2025-Authentication Failures | **Limpio** | Bloqueo de 15 minutos tras 5 intentos fallidos y mensaje genérico «Credenciales inválidas». Prueba `test_bloqueo_tras_cinco_intentos`. |
-| A08:2025-Software or Data Integrity Failures | **Limpio** | CI en GitHub Actions en cada push; dependencias fijadas; el frontend se compila en el pipeline. |
+| A08:2025-Software or Data Integrity Failures | **Limpio** (corregido) | CI en GitHub Actions en cada push; dependencias de Python bloqueadas por hash (`requirements*.lock`), `npm ci --ignore-scripts` y la acción de SonarQube fijada por SHA; dependencias fijadas; el frontend se compila en el pipeline. |
 | A09:2025-Security Logging and Alerting Failures | **Bajo Revisión** | Los errores se registran en el log del servidor, pero falta una bitácora de auditoría de acciones críticas (quién generó o re-optimizó una ruta). Pendiente para un próximo sprint. |
 | A10:2025-Mishandling of Exceptional Conditions | **Limpio** | Los errores de negocio responden 409 con un mensaje claro; un pedido imposible no tumba el plan (se informa como no asignado). Prueba `test_descarta_pedido_imposible_sin_romper_plan`. |
 
@@ -38,7 +38,11 @@ Revisión del código del backend (FastAPI) y del frontend (React) frente al OWA
 | SEC-02 | Starlette 0.46.2 con vulnerabilidades publicadas (7 avisos) | pip-audit | Alta | Dependencia de FastAPI | Fijar Starlette 1.10.0 con FastAPI 0.162.7 | Corregido |
 | SEC-03 | react-router 7.5.0 y turbo-stream con 3 vulnerabilidades altas | npm audit | Alta | `frontend/package.json` | Actualizar a react-router-dom 7.18.5 | Corregido |
 | SEC-04 | Avisos en herramientas de desarrollo (Vitest, typescript-eslint) | npm audit | Moderada | Solo `devDependencies` | No se despliegan; actualizar al cambiar de versión mayor | Aceptado |
-| SEC-05 | Security Hotspots y vulnerabilidades de SonarQube Cloud | SonarQube Cloud | _Completar_ | _Completar_ | _Completar_ | _Completar_ |
+| SEC-05 | Instalación de dependencias sin bloqueo por hash, con scripts de terceros y sin solo binarios (12 hallazgos) | SonarQube Cloud | Mayor | Workflows y Dockerfiles | `requirements*.lock` con hashes, `--require-hashes`, `--only-binary :all:`, `--ignore-scripts` | Corregido |
+| SEC-06 | Acción de GitHub de terceros referenciada por etiqueta | SonarQube Cloud | Mayor | `sonarcloud.yml` | Fijada por SHA | Corregido |
+| SEC-07 | Ruta enviada por el usuario usada para leer archivos (Filesystem Oracle) | SonarQube Cloud | Mayor | `frontend/scripts/servidor-estatico.mjs` | Lista de archivos permitidos armada al iniciar | Corregido |
+| SEC-08 | Contenedor de nginx con usuario root | SonarQube Cloud | Menor | `frontend/Dockerfile` | `nginx-unprivileged` en el puerto 8080 | Corregido |
+| SEC-09 | Security Hotspots | SonarQube Cloud | - | - | 0 encontrados | Limpio |
 
 ### Verificación
 
