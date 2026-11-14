@@ -73,7 +73,10 @@ export function Rutas() {
           {resultado.co2_total_kg.toFixed(2)} kg CO₂ · ahorro {resultado.ahorro_km.toFixed(1)} km /{' '}
           {resultado.ahorro_co2_kg.toFixed(2)} kg CO₂ · {resultado.tiempo_calculo_ms} ms
           {resultado.no_asignados.length > 0 && (
-            <p className="error">Pedidos sin asignar (revise capacidad, ventanas o jornada): {resultado.no_asignados.join(', ')}</p>
+            <p className="error">
+              {resultado.no_asignados.length} pedido(s) sin asignar por capacidad, ventana horaria o jornada:{' '}
+              {resultado.no_asignados.map((id) => `#${id}`).join(', ')}
+            </p>
           )}
         </div>
       )}
