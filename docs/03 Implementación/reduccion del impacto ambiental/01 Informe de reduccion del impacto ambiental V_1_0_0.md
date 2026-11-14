@@ -6,7 +6,7 @@
 | Organización | DistriRápido S.A.C. - Huancayo, Junín |
 | Curso | Taller de Proyectos 2 - Universidad Continental |
 | Entregable | Inspección 04 - Green IT |
-| Versión | 1.0.0 |
+| Versión | 1.1.0 |
 | Fecha | 13/11/2026 |
 | Elaborado por | Fernando Rodrigo Chaupis Espinoza |
 | Revisado por | Docente: Daniel Gamarra Moreno |
@@ -25,10 +25,10 @@ inspección el foco está en el **propio software**: que la aplicación web sea 
 
 Para medir el impacto usamos:
 
-- **Lighthouse 12.6.1** (Chrome) sobre la pantalla de inicio de sesión, en modo móvil y escritorio. Se hicieron
-  3 corridas por caso y se tomó la mediana (igual que Lighthouse CI).
+- **Lighthouse 12.6.1** (Chrome) en modo *user flow* sobre 4 pantallas (Login, Dashboard, Pedidos y Rutas), en
+  escritorio y móvil, más el login medido aparte con la mediana de 3 corridas.
 - Un script de medición de la API con **300 pedidos, 15 vehículos y 9 rutas generadas**.
-- El **Sustainable Web Design Model v4 (SWDM)** para convertir los bytes transferidos a CO₂.
+- El **Sustainable Web Design Model v4 (SWDM)**, con sus coeficientes oficiales, para convertir los bytes a CO₂.
 
 Las dos mediciones se hicieron en la misma máquina y con el mismo servidor estático
 (`frontend/scripts/servidor-estatico.mjs`): el "antes" con la opción `--plano` (sin compresión ni caché) sobre
@@ -117,8 +117,8 @@ la guía (documento 02) es servirlas en WebP o AVIF con `loading="lazy"`.
 
 | Archivo inicial | Antes | Después |
 |---|:-:|:-:|
-| `index.js` (código de la app) | 232.2 KB | **7.2 KB** |
-| `react.js` (librerías, en caché 1 año) | - | 219.4 KB |
+| `index.js` (código de la app) | 232.5 KB | **7.6 KB** |
+| `react.js` (librerías, en caché 1 año) | - | 220.5 KB |
 
 ### 5. Bibliotecas pesadas y API nativa
 
@@ -165,34 +165,100 @@ En el backend, la compresión, el ETag y la caché se hicieron con la librería 
 
 ## 1.4 Tabla comparativa
 
-### Pantalla de login (Lighthouse móvil)
+Medición con **Lighthouse 12.6.1 en modo user flow** (`flujo.mjs`): el usuario inicia sesión una vez y recorre
+Dashboard, Pedidos y Rutas con la sesión iniciada, igual que en el uso real. El "antes" es el build anterior a las
+optimizaciones servido sin compresión ni caché; el "después" es el build actual. La API es la misma en ambos casos
+(su mejora se midió aparte, más abajo).
 
-| Indicador | Antes | Después | Mejora |
+### Umbrales de la consigna
+
+Score ≥ 90 · FCP ≤ 1.0 s · LCP ≤ 1.4 s · TBT ≤ 85 ms · CLS ≤ 0.02 · transferencia ≤ 1.1 MB. Perfil de referencia:
+**escritorio** (igual criterio que los demás equipos del curso); el perfil móvil se reporta como información
+adicional.
+
+### Escritorio - ANTES
+
+| Pantalla | Score | FCP | LCP | TBT | CLS | Peso | Solicitudes | Cumple los 6 umbrales |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
+| Login | 100 | 0.44 s | 0.44 s | 0 ms | 0 | 242 795 B | 4 | Sí |
+| Dashboard | 100 | 0.44 s | 0.57 s | 0 ms | 0.012 | 243 585 B | 7 | Sí |
+| Pedidos | 100 | 0.44 s | 0.56 s | 0 ms | 0.012 | 243 985 B | 7 | Sí |
+| Rutas | 94 | 0.46 s | 1.68 s | 0 ms | 0.004 | 738 824 B | 25 | No (LCP) |
+
+### Escritorio - DESPUÉS
+
+| Pantalla | Score | FCP | LCP | TBT | CLS | Peso | Solicitudes | Cumple los 6 umbrales |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
+| Login | 100 | 0.32 s | 0.32 s | 0 ms | 0 | 68 156 B | 4 | Sí |
+| Dashboard | 100 | 0.18 s | 0.26 s | 0 ms | 0.012 | 1 524 B | 9 | Sí |
+| Pedidos | 100 | 0.19 s | 0.3 s | 0 ms | 0.014 | 4 840 B | 9 | Sí |
+| Rutas | 98 | 0.23 s | 1.07 s | 0 ms | 0.016 | 371 959 B | 26 | Sí |
+
+**Después de las optimizaciones las 4 pantallas cumplen los 6 umbrales en escritorio.** Antes, la pantalla Rutas no
+cumplía el LCP.
+
+### Móvil (información adicional)
+
+ANTES:
+
+| Pantalla | Score | FCP | LCP | TBT | CLS | Peso | Solicitudes | Cumple los 6 umbrales |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
+| Login | 97 | 2.1 s | 2.25 s | 0 ms | 0 | 242 795 B | 4 | No (FCP, LCP) |
+| Dashboard | 95 | 2.1 s | 2.56 s | 0 ms | 0.019 | 243 585 B | 7 | No (FCP, LCP) |
+| Pedidos | 95 | 2.1 s | 2.56 s | 0 ms | 0.019 | 243 985 B | 7 | No (FCP, LCP) |
+| Rutas | 77 | 2.19 s | 5.51 s | 0 ms | 0.019 | 643 153 B | 19 | No (Score, FCP, LCP) |
+
+DESPUÉS:
+
+| Pantalla | Score | FCP | LCP | TBT | CLS | Peso | Solicitudes | Cumple los 6 umbrales |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
+| Login | 100 | 1.35 s | 1.35 s | 0 ms | 0 | 68 156 B | 4 | No (FCP) |
+| Dashboard | 100 | 0.62 s | 0.92 s | 61 ms | 0.019 | 1 524 B | 9 | Sí |
+| Pedidos | 99 | 0.69 s | 1.07 s | 106 ms | 0.021 | 4 840 B | 9 | No (TBT, CLS) |
+| Rutas | 92 | 0.92 s | 3.29 s | 72 ms | 0.019 | 276 330 B | 20 | No (LCP) |
+
+En móvil (red 4G lenta simulada) mejoran todas las pantallas, pero el login sigue con FCP de 1.35 s y Rutas con LCP
+alto porque el mapa descarga teselas de OpenStreetMap, que son imágenes de un servidor externo. Se registran como
+mejora pendiente.
+
+### Antes vs. después por pantalla (escritorio)
+
+| Pantalla | Indicador | Antes | Después | Mejora |
+|---|---|:-:|:-:|:-:|
+| Login | FCP | 0.44 s | 0.32 s | -27.3 % |
+| Login | LCP | 0.44 s | 0.32 s | -27.3 % |
+| Login | Peso | 242 795 B | 68 156 B | -71.9 % |
+| Login | Score | 100 | 100 | +0 |
+| Dashboard | FCP | 0.44 s | 0.18 s | -59.1 % |
+| Dashboard | LCP | 0.57 s | 0.26 s | -54.4 % |
+| Dashboard | Peso | 243 585 B | 1 524 B | -99.4 % |
+| Dashboard | Score | 100 | 100 | +0 |
+| Pedidos | FCP | 0.44 s | 0.19 s | -56.8 % |
+| Pedidos | LCP | 0.56 s | 0.3 s | -46.4 % |
+| Pedidos | Peso | 243 985 B | 4 840 B | -98.0 % |
+| Pedidos | Score | 100 | 100 | +0 |
+| Rutas | FCP | 0.46 s | 0.23 s | -50.0 % |
+| Rutas | LCP | 1.68 s | 1.07 s | -36.3 % |
+| Rutas | Peso | 738 824 B | 371 959 B | -49.7 % |
+| Rutas | Score | 94 | 98 | +4 |
+
+En las pantallas con sesión el peso baja casi a cero porque los archivos de `/assets/` ya están en la caché del
+navegador (optimización 7); antes se volvían a descargar en cada pantalla. El peso de Rutas incluye las teselas del
+mapa de OpenStreetMap.
+
+### Sesión completa (login + 3 pantallas, escritorio)
+
+| | Antes | Después | Reducción |
 |---|:-:|:-:|:-:|
-| Performance | 97 | **100** | +3 |
-| SEO | 91 | **100** | +9 |
-| FCP | 2.1 s | **1.4 s** | -33 % |
-| LCP | 2.1 s | **1.4 s** | -33 % |
-| TBT | 0 ms | 10 ms | sin cambio real (ambos muy por debajo de 200 ms) |
-| Speed Index | 2.1 s | **1.4 s** | -33 % |
-| Transferencia | 242 795 B | **66 697 B** | **-72.5 %** |
-| Compresión de texto | No aprobado | Aprobado | |
-| Caché eficiente | No aprobado | Aprobado | |
-| CO₂e por visita | 0.0815 g | **0.0224 g** | -72.5 % |
+| Bytes transferidos | 1,469,189 B | 446,479 B | **69.6 %** |
 
-En escritorio el puntaje se mantuvo en 100, el SEO subió de 91 a 100 y FCP/LCP bajaron de 0.4 s a 0.3 s.
+### Archivos JavaScript del build
 
-### Archivos descargados en el login
-
-| Antes | Bytes | Después | Bytes |
-|---|:-:|---|:-:|
-| login (HTML) | 690 | login (HTML) | 1 252 |
-| index.js | 238 040 | index.js | 2 893 |
-| index.css | 3 375 | react.js (Brotli) | 61 310 |
-| favicon.ico (inexistente) | 690 | index.css | 1 242 |
-| **Total** | **242 795** | **Total** | **66 697** |
-
-En una segunda visita los archivos de `/assets/` ya están en caché: solo se transfiere el HTML (1 252 B).
+| Archivo | Antes | Después |
+|---|:-:|:-:|
+| `index.js` (código inicial de la app) | 238 040 B | **7 823 B** |
+| `react.js` (librerías, en caché 1 año) | - | 225 757 B |
+| `Rutas.js` (mapa, solo al abrir Rutas) | 154 920 B | 155 395 B |
 
 ### API (300 pedidos, 15 vehículos, 9 rutas)
 
@@ -206,51 +272,44 @@ En una segunda visita los archivos de `/assets/` ya están en caché: solo se tr
 
 ## 1.5 Análisis con el Sustainable Web Design Model v4
 
-**Metodología:**
+**Metodología (SWDM v4, https://sustainablewebdesign.org/estimating-digital-emissions/):**
 
 ```text
-E (g CO2e) = Ancho de banda (GB) × 0.815 kWh/GB × 442 g CO2e/kWh
+g CO2e (primera visita) = GB × 0,300 kWh/GB × 494 g CO2e/kWh = GB × 148,2
+g CO2e (visita media)   = primera visita × 0,755
+GB = bytes / 1 000 000 000   (gigabyte decimal)
 ```
 
-- 0.815 kWh/GB: energía de centros de datos, redes y dispositivos por GB transferido (SWDM).
-- 442 g CO₂e/kWh: intensidad de carbono promedio global de la electricidad.
-- GB = bytes / 1 073 741 824.
+- 0,300 kWh/GB es la suma de las intensidades operativa (0,194) e incorporada (0,106) de centros de datos, redes y
+  dispositivos de la versión 4 del modelo.
+- 494 g CO₂e/kWh es la intensidad global de la red eléctrica que usa el modelo por defecto.
+- 0,755 es el factor de visita media del modelo (parte de los visitantes vuelve y ya tiene archivos en caché).
+- El ejemplo de cátedra usa 0,815 kWh/GB y 442 g/kWh, que son coeficientes de la versión 3 del modelo; aquí se
+  aplican los de la versión 4.
 
-### Escenario de referencia: anti-patrón de la consigna (8.4 MB)
+### Pantalla de login
 
-- Transferencia: 8.4 MB = 0.0082031 GB
-- Energía: 0.0082031 × 0.815 = 0.0066855 kWh
-- Emisiones: 0.0066855 × 442 = **2.955 g CO₂e / visita**
+| Escenario | Bytes | GB | g CO₂e primera visita | g CO₂e visita media |
+|---|:-:|:-:|:-:|:-:|
+| Ejemplo de cátedra (8,4 MB) | 8 400 000 | 0,0084 | 1.2449 | 0.9399 |
+| EcoLogística antes | 242,795 | 0.000243 | 0.0360 | 0.0272 |
+| **EcoLogística después** | **68,156** | **0.000068** | **0.0101** | **0.0076** |
 
-### Escenario anterior: 242 795 bytes
+### Proyección anual (500 000 visitas)
 
-- Transferencia: 0.0002261 GB
-- Energía: 0.0001843 kWh
-- Emisiones: **0.0815 g CO₂e / visita**
-
-### Escenario posterior: 66 697 bytes
-
-- Transferencia: 0.0000621 GB
-- Energía: 0.0000506 kWh
-- Emisiones: **0.0224 g CO₂e / visita**
-
-### Ahorro y proyección anual (500 000 visitas)
-
-| Escenario | g CO₂e / visita | kg CO₂e / año |
+| Escenario | kg CO₂e / año (primera visita) | kg CO₂e / año (visita media) |
 |---|:-:|:-:|
-| Anti-patrón 8.4 MB | 2.955 | 1 477.5 |
-| EcoLogística antes | 0.0815 | 40.7 |
-| **EcoLogística después** | **0.0224** | **11.2** |
-| **Ahorro frente a nuestra versión anterior** | 0.0591 | **29.5 kg** |
-| **Ahorro frente al anti-patrón** | 2.933 | **1 466.3 kg** |
+| Ejemplo de cátedra 8,4 MB | 622.44 | 469.94 |
+| EcoLogística antes (login) | 17.99 | 13.58 |
+| **EcoLogística después (login)** | **5.05** | **3.81** |
+| **Ahorro frente a nuestra versión anterior** | **12.94** | **9.77** |
 
-Con un promedio de 22 kg de CO₂ absorbidos por árbol al año (el mismo supuesto que usa el módulo de
-compensación del sistema), el ahorro frente a nuestra versión anterior equivale a lo que absorben unos
-**1.3 árboles por año**, y frente al anti-patrón, unos **67 árboles por año**.
+Sesión completa de un planificador (login + Dashboard + Pedidos + Rutas): 0.2177 g antes y 0.0662 g
+después por sesión; con 500 000 sesiones al año, 108.87 kg frente a 33.08 kg
+(**75.79 kg CO₂e menos al año**).
 
-Este cálculo solo considera la pantalla de inicio. En el uso diario el ahorro es mayor por la API: un
-planificador que abre Pedidos y Rutas descargaba 178 384 B y ahora descarga 11 260 B (-93.7 %), y las
-consultas repetidas responden con 304 sin cuerpo.
+Con 22 kg de CO₂ absorbidos por árbol al año (supuesto del módulo de compensación), el ahorro de la sesión completa
+equivale a lo que absorben unos **3.4 árboles por año**.
 
 ## 1.6 Evidencias
 
@@ -258,23 +317,25 @@ Todas las evidencias están en la carpeta [`evidencias/`](evidencias/):
 
 | Evidencia | Archivo |
 |---|---|
-| Lighthouse móvil ANTES | [lighthouse-antes-movil.png](evidencias/lighthouse-antes-movil.png) · [reporte HTML](evidencias/lighthouse-antes-movil.html) |
-| Lighthouse escritorio ANTES | [lighthouse-antes-escritorio.png](evidencias/lighthouse-antes-escritorio.png) · [reporte HTML](evidencias/lighthouse-antes-escritorio.html) |
-| Lighthouse móvil DESPUÉS | [lighthouse-despues-movil.png](evidencias/lighthouse-despues-movil.png) · [reporte HTML](evidencias/lighthouse-despues-movil.html) |
-| Lighthouse escritorio DESPUÉS | [lighthouse-despues-escritorio.png](evidencias/lighthouse-despues-escritorio.png) · [reporte HTML](evidencias/lighthouse-despues-escritorio.html) |
-| Métricas consolidadas (Lighthouse, API y SWDM) | [metricas-consolidadas.json](evidencias/metricas-consolidadas.json) |
-| Pruebas automáticas de paginación, gzip y ETag | `backend/tests/test_api.py` (`test_paginacion_de_pedidos`, `test_gzip_y_etag`, `test_filtro_rutas_por_varios_estados`) |
-| Auditoría continua | `.github/workflows/green-audit.yml` + `frontend/lighthouserc.cjs` |
+| Lighthouse user flow escritorio ANTES (4 pantallas) | [flujo-antes-escritorio.html](evidencias/flujo-antes-escritorio.html) · [json](evidencias/flujo-antes-escritorio.json) |
+| Lighthouse user flow escritorio DESPUÉS (4 pantallas) | [flujo-despues-escritorio.html](evidencias/flujo-despues-escritorio.html) · [json](evidencias/flujo-despues-escritorio.json) |
+| Lighthouse user flow móvil ANTES | [flujo-antes-movil.html](evidencias/flujo-antes-movil.html) · [json](evidencias/flujo-antes-movil.json) |
+| Lighthouse user flow móvil DESPUÉS | [flujo-despues-movil.html](evidencias/flujo-despues-movil.html) · [json](evidencias/flujo-despues-movil.json) |
+| Login (mediana de 3 corridas) antes y después | [lighthouse-antes-movil.png](evidencias/lighthouse-antes-movil.png) · [lighthouse-despues-movil.png](evidencias/lighthouse-despues-movil.png) · reportes HTML |
+| Cálculo SWDM v4 | [swdm-v4-resultados.json](evidencias/swdm-v4-resultados.json) |
+| Métricas de la API | [metricas-consolidadas.json](evidencias/metricas-consolidadas.json) |
+| Pruebas automáticas de paginación, gzip y ETag | `backend/tests/test_api.py` |
+| Auditoría continua con los 6 umbrales | `.github/workflows/green-audit.yml` + `frontend/lighthouserc.cjs` |
 
-![Lighthouse móvil DESPUÉS](evidencias/lighthouse-despues-movil.png)
+![Lighthouse móvil DESPUÉS](<evidencias/lighthouse-despues-movil.png>)
 
 ### Cómo repetir la medición
 
 ```bash
 cd frontend
 npm run build
-node scripts/servidor-estatico.mjs dist 4173
-npx lighthouse http://localhost:4173/login --view
+node scripts/servidor-estatico.mjs dist 4175
+npx lighthouse http://localhost:4175/login --preset=desktop --view
 ```
 
 ## Historial de control de cambios
@@ -282,3 +343,4 @@ npx lighthouse http://localhost:4173/login --view
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
 | 1.0.0 | 13/11/2026 | Fernando Chaupis | Informe de la Inspección 04 con mediciones antes y después |
+| 1.1.0 | 14/11/2026 | Fernando Chaupis | Medición de 4 pantallas con sesión iniciada (escritorio y móvil), tabla de los 6 umbrales de la consigna y cálculo con los coeficientes oficiales de SWDM v4 |

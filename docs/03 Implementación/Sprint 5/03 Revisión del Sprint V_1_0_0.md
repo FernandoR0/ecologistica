@@ -21,9 +21,14 @@
 | ID | Criterio verificado | Estado |
 |---|---|---|
 | ENB-001 | CI, auditoría Green IT y SonarQube Cloud en GitHub Actions | Completada |
+| US-013 | Descargar un reporte PDF del periodo | Completada |
+| US-014 | Agregar un pedido nuevo o cancelar uno en una ruta en curso | Completada |
+| US-015 | Registrar el punto de partida del conductor y los datos de acceso del cliente | Completada |
+| US-016 | Ajustar los parámetros del motor, gestionar usuarios y revisar la auditoría | Completada |
+| US-017 | Ver combustible ahorrado, cumplimiento de ventanas y equivalentes ambientales | Completada |
 | ENB-002 | 4 pruebas E2E y prueba de carga (30 s para 150 pedidos) | Completada |
 
-**Story points completados:** 5 de 10
+**Story points completados:** 29 de 34
 
 ## Demostración del trabajo completado
 

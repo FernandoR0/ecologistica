@@ -6,7 +6,7 @@
 | Organización | DistriRápido S.A.C. - Huancayo, Junín |
 | Curso | Taller de Proyectos 2 - Universidad Continental |
 | Entregable | Inspección 04 - Green IT |
-| Versión | 1.0.0 |
+| Versión | 1.1.0 |
 | Fecha | 13/11/2026 |
 | Elaborado por | Fernando Rodrigo Chaupis Espinoza |
 | Revisado por | Docente: Daniel Gamarra Moreno |
@@ -23,7 +23,7 @@ característica **Eficiencia de desempeño**:
 | Subcaracterística | Cómo se aplica en EcoLogística |
 |---|---|
 | Comportamiento temporal | FCP móvil de 2.1 s a 1.4 s; `GET /api/rutas` de 144.8 ms a 19.1 ms |
-| Utilización de recursos | 72.5 % menos bytes en el login; JSON comprimido; caché de indicadores |
+| Utilización de recursos | 71.9 % menos bytes en el login y 69.6 % en una sesión completa; JSON comprimido; caché de indicadores |
 | Capacidad | Paginación de 12 registros: el tamaño de la respuesta no crece con la cantidad de pedidos |
 
 También aporta a **Mantenibilidad** (código separado por pantalla, módulo de paginación reutilizable) y a
@@ -35,7 +35,7 @@ Aplicamos los principios de la GSF para software verde:
 
 | Principio | Aplicación |
 |---|---|
-| Eficiencia de carbono | Emitir menos CO₂ por unidad de trabajo: 0.0224 g por visita al login frente a 0.0815 g antes |
+| Eficiencia de carbono | Emitir menos CO₂ por unidad de trabajo: 0,0101 g por visita al login frente a 0,0360 g antes (SWDM v4) |
 | Eficiencia energética | Menos CPU por solicitud: archivos precomprimidos en el build, caché de indicadores, consultas sin N+1 |
 | Eficiencia de hardware | Contenedores livianos (`python:3.12-slim`, `nginx-unprivileged:alpine`, `postgres:16-alpine`) |
 | Medición | Lighthouse y SWDM en cada cambio con el workflow `green-audit.yml` |
@@ -48,7 +48,7 @@ Numeración según el borrador vigente de las WSG (https://w3c.github.io/sustywe
 | Guía WSG | Qué pide | Dónde lo cumplimos |
 |---|---|---|
 | 2.7 Avoid unnecessary or an overabundance of assets | Evitar recursos de más | Sin imágenes rasterizadas; íconos del mapa en CSS |
-| 3.1 Identify relevant technical indicators | Definir indicadores y metas | `lighthouserc.cjs`: performance ≥ 0.9, peso ≤ 500 KB, compresión obligatoria |
+| 3.1 Identify relevant technical indicators | Definir indicadores y metas | `lighthouserc.cjs` con los 6 umbrales de la consigna: score ≥ 90, FCP ≤ 1 s, LCP ≤ 1,4 s, TBT ≤ 85 ms, CLS ≤ 0,02 y peso ≤ 1,1 MB |
 | 3.2 Minify your HTML, CSS, and JavaScript | Minificar | Build de Vite (esbuild) |
 | 3.3 Use code-splitting within projects | Dividir el código | `React.lazy` por pantalla y chunk de React aparte |
 | 3.4 Apply tree shaking to code | Eliminar código no usado | Rollup en el build de producción |
@@ -90,7 +90,8 @@ El workflow `.github/workflows/green-audit.yml` corre en cada push a `main` y en
 1. Compila el frontend (`npm run build`), que genera los `.br` y `.gz`.
 2. Publica el peso de cada archivo en el resumen del job.
 3. Ejecuta Lighthouse CI tres veces sobre el login con `frontend/lighthouserc.cjs`.
-4. Falla si el performance o la accesibilidad bajan de 90, si el peso supera 500 KB o si falta compresión.
+4. Falla si no se cumple alguno de los 6 umbrales de la consigna (score ≥ 90, FCP ≤ 1 s, LCP ≤ 1,4 s, TBT ≤ 85 ms,
+   CLS ≤ 0,02, peso ≤ 1,1 MB), si la accesibilidad baja de 90 o si falta compresión.
 
 ## 2.3 Integración continua y versiones
 
@@ -126,14 +127,15 @@ git push origin main
 | 1 | Consultas magras e índices | Utilización de recursos | Eficiencia energética | 3.24 | `/api/rutas` 144.8 ms a 19.1 ms |
 | 2 | Paginación de 12 registros | Capacidad | Eficiencia de carbono | 3.24 | `/api/pedidos` 75 526 B a 267 B |
 | 3 | Imágenes WebP / AVIF | Utilización de recursos | Eficiencia de carbono | 2.7 | 0 imágenes rasterizadas; íconos en CSS/SVG |
-| 4 | Code splitting (React.lazy) | Comportamiento temporal | Eficiencia de carbono | 3.3, 3.4 | JS de la app 232 KB a 7.2 KB en el login |
+| 4 | Code splitting (React.lazy) | Comportamiento temporal | Eficiencia de carbono | 3.3, 3.4 | JS de la app 232,5 KB a 7,6 KB en el login |
 | 5 | Bibliotecas pesadas y API nativa | Utilización de recursos | Eficiencia de hardware | 3.17, 3.23 | 4 dependencias de producción en el frontend |
 | 6 | SVG en línea / menos solicitudes | Comportamiento temporal | Eficiencia de carbono | 3.18 | Solicitud a `favicon.ico` eliminada |
 | 7 | Caché en servidor y en cliente | Comportamiento temporal | Eficiencia energética | 4.2 | Segunda visita 1 252 B; API responde 304; indicadores 19.2 ms a 3.1 ms |
-| 8 | Compresión Brotli y Gzip | Utilización de recursos | Eficiencia de carbono | 4.3 | Login 242 795 B a 66 697 B (-72.5 %) |
+| 8 | Compresión Brotli y Gzip | Utilización de recursos | Eficiencia de carbono | 4.3 | Login 242 795 B a 68 156 B (-71,9 %); sesión completa -69,6 % |
 
 ## Historial de control de cambios
 
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
 | 1.0.0 | 13/11/2026 | Fernando Chaupis | Estándares, guía de desarrollo verde y matriz de optimizaciones de la Inspección 04 |
+| 1.1.0 | 14/11/2026 | Fernando Chaupis | Umbrales de la consigna en Lighthouse CI y cifras actualizadas con SWDM v4 |

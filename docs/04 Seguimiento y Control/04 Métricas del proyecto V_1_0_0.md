@@ -19,7 +19,7 @@
 | 2 | 18 | 2 de 2 | 0 |
 | 3 | 18 | 3 de 3 | 0 |
 | 4 | 13 | 3 de 3 | 0 |
-| 5 | 5 | 1 de 2 | 1 (DEF-03) |
+| 5 | 29 | 6 de 7 | 0 |
 
 ## Métricas de producto
 | Métrica | Valor actual | Meta |

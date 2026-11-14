@@ -20,7 +20,7 @@
 
 | Variables de control | Descripción del estado |
 | --- | --- |
-| **Alcance** | Se comprometieron 10 SP (ENB-001, ENB-002). ENB-001 completado. ENB-002: pruebas E2E y de carga listas; la encuesta SUS está pendiente. |
+| **Alcance** | Se comprometieron 34 SP (ENB-001, ENB-002, US-013 a US-017). ENB-001 y US-013 a US-017 completados. ENB-002: pruebas E2E y de carga listas; la encuesta SUS está pendiente. |
 | **Cronograma** | Calendario del curso: 13/11/2026 - 26/11/2026 · Inspección 04. |
 | **Costos** | Sin gastos adicionales: se usan solo herramientas libres. La ejecución se mantiene dentro de la línea base de S/ 7 425. |
 | **Calidad** | Pruebas del sprint en verde: 4 pruebas E2E (Playwright), prueba de carga, 43 pruebas de frontend. Cobertura actual: backend 90 %, frontend 99.7 %. |

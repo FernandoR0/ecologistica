@@ -18,4 +18,4 @@
 | 2 | 18 | 18 | 100 % | Ninguna | - |
 | 3 | 18 | 18 | 100 % | Ninguna | - |
 | 4 | 13 | 13 | 100 % | Ninguna | - |
-| 5 | 10 | 5 | 50 % | Encuesta SUS pendiente | Aplicar la encuesta a 5 usuarios |
+| 5 | 34 | 29 | 85 % | Encuesta SUS pendiente | Aplicar la encuesta a 5 usuarios |

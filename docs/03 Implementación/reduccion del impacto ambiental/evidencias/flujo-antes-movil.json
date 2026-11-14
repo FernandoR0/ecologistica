@@ -1,0 +1,46 @@
+[
+  {
+    "pantalla": "Login",
+    "performance": 97,
+    "accesibilidad": 100,
+    "FCP_s": 2.1,
+    "LCP_s": 2.25,
+    "TBT_ms": 0,
+    "CLS": 0,
+    "bytes": 242795,
+    "solicitudes": 4
+  },
+  {
+    "pantalla": "Dashboard",
+    "performance": 95,
+    "accesibilidad": 100,
+    "FCP_s": 2.1,
+    "LCP_s": 2.56,
+    "TBT_ms": 0,
+    "CLS": 0.019,
+    "bytes": 243585,
+    "solicitudes": 7
+  },
+  {
+    "pantalla": "Pedidos",
+    "performance": 95,
+    "accesibilidad": 100,
+    "FCP_s": 2.1,
+    "LCP_s": 2.56,
+    "TBT_ms": 0,
+    "CLS": 0.019,
+    "bytes": 243985,
+    "solicitudes": 7
+  },
+  {
+    "pantalla": "Rutas",
+    "performance": 77,
+    "accesibilidad": 99,
+    "FCP_s": 2.19,
+    "LCP_s": 5.51,
+    "TBT_ms": 0,
+    "CLS": 0.019,
+    "bytes": 643153,
+    "solicitudes": 19
+  }
+]

@@ -55,6 +55,11 @@ Hitos en GitHub: https://github.com/FernandoR0/ecologistica/milestones?state=all
 | 12 | [#12](https://github.com/FernandoR0/ecologistica/issues/12) | US-012 | Ver un plan para compensar el CO₂ y registrar lo compensado | EP-03 | 3 | Sprint 4 | Cerrado |
 | 13 | [#13](https://github.com/FernandoR0/ecologistica/issues/13) | ENB-001 | CI/CD, Docker y auditoría Green IT | EP-04 | 5 | Sprint 5 | Cerrado |
 | 14 | [#14](https://github.com/FernandoR0/ecologistica/issues/14) | ENB-002 | Pruebas E2E, prueba de carga y usabilidad SUS | EP-04 | 5 | Sprint 5 | Abierto |
+| 15 | [#15](https://github.com/FernandoR0/ecologistica/issues/15) | US-013 | Descargar un reporte PDF del periodo | EP-03 | 5 | Sprint 5 | Cerrado |
+| 16 | [#16](https://github.com/FernandoR0/ecologistica/issues/16) | US-014 | Agregar un pedido nuevo o cancelar uno en una ruta en curso | EP-02 | 5 | Sprint 5 | Cerrado |
+| 17 | [#17](https://github.com/FernandoR0/ecologistica/issues/17) | US-015 | Registrar el punto de partida del conductor y los datos de acceso del cliente | EP-01 | 3 | Sprint 5 | Cerrado |
+| 18 | [#18](https://github.com/FernandoR0/ecologistica/issues/18) | US-016 | Ajustar los parámetros del motor, gestionar usuarios y revisar la auditoría | EP-04 | 8 | Sprint 5 | Cerrado |
+| 19 | [#19](https://github.com/FernandoR0/ecologistica/issues/19) | US-017 | Ver combustible ahorrado, cumplimiento de ventanas y equivalentes ambientales | EP-03 | 3 | Sprint 5 | Cerrado |
 
 Backlog en GitHub: https://github.com/FernandoR0/ecologistica/issues?q=is%3Aissue
 
@@ -66,18 +71,17 @@ Backlog en GitHub: https://github.com/FernandoR0/ecologistica/issues?q=is%3Aissu
 | 2 | Generar rutas optimizadas con el motor VRPTW + Green VRP y verlas en el mapa. | 18 |
 | 3 | Rutas realistas: jornada del conductor, preferencias del cliente y re-optimización ante incidentes. | 18 |
 | 4 | Medir el impacto: dashboard, reporte de sostenibilidad y plan de compensación de carbono. | 13 |
-| 5 | Calidad y despliegue: CI/CD, pruebas E2E, prueba de carga, SUS y auditoría Green IT. | 10 |
+| 5 | Calidad y despliegue: CI/CD, pruebas E2E, prueba de carga, SUS y auditoría Green IT. | 34 |
 
 ## Evidencia 4: Tablero Scrum Activo
 
-Estado actual: 13 issues cerrados (hechos) y 1 abierto (ENB-002: falta la encuesta SUS).
+Estado actual: 18 issues cerrados (hechos) y 1 abierto (ENB-002: falta la encuesta SUS).
 
 ## Evidencia 5: Gestión de Versiones / Release
 
 | Versión | Contenido |
 |---|---|
-| 1.0.0 | RF-001 a RF-010, motor VRPTW + Green VRP, CI |
-| 1.1.0 | Inspección 04 (Green IT), actualización de dependencias, pruebas E2E y de carga |
+| v1.0.0 (PMV) | RF-001 a RF-012, motor VRPTW + Green VRP con Búsqueda Tabú, Inspección 04, SonarQube, pruebas E2E y de carga. Tag y release: https://github.com/FernandoR0/ecologistica/releases/tag/v1.0.0 |
 
 ### Capturas
 

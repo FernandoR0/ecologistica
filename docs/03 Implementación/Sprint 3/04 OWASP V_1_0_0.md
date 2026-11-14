@@ -27,7 +27,7 @@ Revisión del código del backend (FastAPI) y del frontend (React) frente al OWA
 | A06:2025-Insecure Design | **Limpio** | Reglas de negocio en el servidor (capacidad, ventanas, jornada, pedidos planificados no editables); bajas lógicas para conservar historial. |
 | A07:2025-Authentication Failures | **Limpio** | Bloqueo de 15 minutos tras 5 intentos fallidos y mensaje genérico «Credenciales inválidas». Prueba `test_bloqueo_tras_cinco_intentos`. |
 | A08:2025-Software or Data Integrity Failures | **Limpio** (corregido) | CI en GitHub Actions en cada push; dependencias de Python bloqueadas por hash (`requirements*.lock`), `npm ci --ignore-scripts` y la acción de SonarQube fijada por SHA; dependencias fijadas; el frontend se compila en el pipeline. |
-| A09:2025-Security Logging and Alerting Failures | **Bajo Revisión** | Los errores se registran en el log del servidor, pero falta una bitácora de auditoría de acciones críticas (quién generó o re-optimizó una ruta). Pendiente para un próximo sprint. |
+| A09:2025-Security Logging and Alerting Failures | **Limpio** (corregido) | Bitácora de auditoría (`auditoria`): cada escritura y cada inicio de sesión, correcto o fallido, se guarda con usuario, recurso, fecha y código de respuesta; el ADMIN la consulta en Administración. No se guardan contraseñas ni cuerpos de las peticiones. Prueba `test_auditoria_registra_escrituras_e_inicios_de_sesion`. |
 | A10:2025-Mishandling of Exceptional Conditions | **Limpio** | Los errores de negocio responden 409 con un mensaje claro; un pedido imposible no tumba el plan (se informa como no asignado). Prueba `test_descarta_pedido_imposible_sin_romper_plan`. |
 
 ## 2. Detalles de Security Hotspots y Vulnerabilidades Críticas

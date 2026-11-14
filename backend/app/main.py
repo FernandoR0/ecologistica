@@ -29,7 +29,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(
     title="EcoLogística API",
-    version="1.1.0",
+    version="1.0.0",
     description="Optimización de rutas sostenibles de última milla (VRPTW + Green VRP) - DistriRápido S.A.C.",
     lifespan=lifespan,
 )

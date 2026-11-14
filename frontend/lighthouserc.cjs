@@ -10,10 +10,14 @@ module.exports = {
     },
     assert: {
       assertions: {
+        // Umbrales de la consigna (Inspección 04, perfil escritorio)
         'categories:performance': ['error', { minScore: 0.9 }],
+        'first-contentful-paint': ['error', { maxNumericValue: 1000 }],
+        'largest-contentful-paint': ['error', { maxNumericValue: 1400 }],
+        'total-blocking-time': ['error', { maxNumericValue: 85 }],
+        'cumulative-layout-shift': ['error', { maxNumericValue: 0.02 }],
+        'total-byte-weight': ['error', { maxNumericValue: 1100000 }],
         'categories:accessibility': ['error', { minScore: 0.9 }],
-        'categories:best-practices': ['warn', { minScore: 0.9 }],
-        'total-byte-weight': ['error', { maxNumericValue: 500000 }],
         'uses-text-compression': ['error', { minScore: 1 }],
         'uses-long-cache-ttl': ['warn', { minScore: 0.9 }],
       },

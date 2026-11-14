@@ -41,10 +41,10 @@
 
 | Épica | Nombre | Historias |
 |---|---|---|
-| EP-01 | Gestión operativa e identidad | US-001, US-002, US-003, US-004 |
-| EP-02 | Motor de rutas y operación en campo | US-005, US-006, US-007, US-008, US-009 |
-| EP-03 | Sostenibilidad e indicadores | US-010, US-011, US-012 |
-| EP-04 | Calidad y despliegue | ENB-001, ENB-002 |
+| EP-01 | Gestión operativa e identidad | US-001, US-002, US-003, US-004, US-015 |
+| EP-02 | Motor de rutas y operación en campo | US-005, US-006, US-007, US-008, US-009, US-014 |
+| EP-03 | Sostenibilidad e indicadores | US-010, US-011, US-012, US-013, US-017 |
+| EP-04 | Calidad, administración y despliegue | US-016, ENB-001, ENB-002 |
 
 #### US-001 - Iniciar sesión con mi correo y contraseña y ver solo lo que mi rol permite
 
@@ -117,6 +117,36 @@
 **Como** administrador, **quiero** ver un plan para compensar el CO₂ y registrar lo compensado, **para** avanzar hacia la neutralidad de carbono.
 
 **Requisito:** RF-010 · **Story points:** 3 · **Sprint:** 4 · **Issue:** [#12](https://github.com/FernandoR0/ecologistica/issues/12)
+
+#### US-013 - Descargar un reporte PDF del periodo
+
+**Como** gerente, **quiero** descargar un reporte PDF del periodo, **para** presentar el impacto ambiental y económico.
+
+**Requisito:** RF-006 · **Story points:** 5 · **Sprint:** 5 · **Issue:** [#15](https://github.com/FernandoR0/ecologistica/issues/15)
+
+#### US-014 - Agregar un pedido nuevo o cancelar uno en una ruta en curso
+
+**Como** planificador, **quiero** agregar un pedido nuevo o cancelar uno en una ruta en curso, **para** no rehacer todo el plan del día.
+
+**Requisito:** RF-007 · **Story points:** 5 · **Sprint:** 5 · **Issue:** [#16](https://github.com/FernandoR0/ecologistica/issues/16)
+
+#### US-015 - Registrar el punto de partida del conductor y los datos de acceso del cliente
+
+**Como** planificador, **quiero** registrar el punto de partida del conductor y los datos de acceso del cliente, **para** que la ruta sea real desde el primer kilómetro.
+
+**Requisito:** RF-008, RF-009 · **Story points:** 3 · **Sprint:** 5 · **Issue:** [#17](https://github.com/FernandoR0/ecologistica/issues/17)
+
+#### US-016 - Ajustar los parámetros del motor, gestionar usuarios y revisar la auditoría
+
+**Como** administrador, **quiero** ajustar los parámetros del motor, gestionar usuarios y revisar la auditoría, **para** controlar el sistema sin tocar el código.
+
+**Requisito:** RF-011, RF-012 · **Story points:** 8 · **Sprint:** 5 · **Issue:** [#18](https://github.com/FernandoR0/ecologistica/issues/18)
+
+#### US-017 - Ver combustible ahorrado, cumplimiento de ventanas y equivalentes ambientales
+
+**Como** gerente, **quiero** ver combustible ahorrado, cumplimiento de ventanas y equivalentes ambientales, **para** medir el beneficio en litros, soles y árboles.
+
+**Requisito:** RF-005 · **Story points:** 3 · **Sprint:** 5 · **Issue:** [#19](https://github.com/FernandoR0/ecologistica/issues/19)
 
 ## C. Historias Técnicas (Enablers)
 
