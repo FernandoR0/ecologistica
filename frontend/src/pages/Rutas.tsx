@@ -16,7 +16,7 @@ export function Rutas() {
   const [incidente, setIncidente] = useState({ ruta: 0, tipo: 'TRAFICO', hora_actual: '10:00', demora_min: 30, completados: '' });
 
   const cargar = useCallback(() => {
-    const ruta = gestiona ? '/rutas?' : '/rutas/mias';
+    const ruta = gestiona ? '/rutas?estado=PLANIFICADA,EN_CURSO&limite=100' : '/rutas/mias';
     api<Ruta[]>(ruta)
       .then((rs) => setRutas(rs.filter((r) => r.estado === 'PLANIFICADA' || r.estado === 'EN_CURSO')))
       .catch((e) => setError(e.message));

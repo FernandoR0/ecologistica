@@ -69,3 +69,4 @@ th { background: #eef2ec; }
   .usuario { margin-top: 0; flex-direction: row; align-items: center; }
   main { padding: 1rem; }
 }
+.paginacion { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.8rem; font-size: 0.9rem; }

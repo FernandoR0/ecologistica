@@ -50,6 +50,21 @@ export async function api<T>(ruta: string, opciones: RequestInit = {}): Promise<
   return resp.status === 204 ? (undefined as T) : resp.json();
 }
 
+/** GET paginado: devuelve la página pedida y el total (cabecera X-Total-Count). */
+export async function apiPaginado<T>(ruta: string, pagina: number, limite = 12): Promise<{ datos: T[]; total: number }> {
+  const token = tokenStore.get();
+  const sep = ruta.includes('?') ? '&' : '?';
+  const resp = await fetch(`${API_URL}${ruta}${sep}pagina=${pagina}&limite=${limite}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!resp.ok) {
+    const cuerpo = await resp.json().catch(() => ({}));
+    throw new ApiError(resp.status, mensajeError(cuerpo.detail, resp.status));
+  }
+  const datos: T[] = await resp.json();
+  return { datos, total: Number(resp.headers.get('X-Total-Count') ?? datos.length) };
+}
+
 export const post = <T>(ruta: string, body: unknown) => api<T>(ruta, { method: 'POST', body: JSON.stringify(body) });
 export const put = <T>(ruta: string, body: unknown) => api<T>(ruta, { method: 'PUT', body: JSON.stringify(body) });
 export const del = (ruta: string) => api<void>(ruta, { method: 'DELETE' });

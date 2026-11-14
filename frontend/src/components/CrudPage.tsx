@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { api, del, post, put } from '../api';
+import { api, apiPaginado, del, post, put } from '../api';
+
+const POR_PAGINA = 12;
 
 export interface Campo {
   nombre: string;
@@ -25,19 +27,38 @@ type Fila = Record<string, unknown> & { id: number };
 /** Página genérica de listado + formulario de alta/edición. */
 export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTexto = 'Desactivar' }: Props) {
   const [filas, setFilas] = useState<Fila[]>([]);
+  const [pagina, setPagina] = useState(1);
+  const [total, setTotal] = useState(0);
   const [editando, setEditando] = useState<Fila | null>(null);
   const [form, setForm] = useState<Record<string, unknown>>({});
   const [error, setError] = useState('');
+  const paginas = Math.max(1, Math.ceil(total / POR_PAGINA));
 
   const cargar = useCallback(() => {
-    api<Fila[]>(ruta).then(setFilas).catch((e) => setError(e.message));
-  }, [ruta]);
+    apiPaginado<Fila>(ruta, pagina, POR_PAGINA)
+      .then((r) => {
+        setFilas(r.datos);
+        setTotal(r.total);
+      })
+      .catch((e) => setError(e.message));
+  }, [ruta, pagina]);
   useEffect(cargar, [cargar]);
 
-  const abrir = (fila: Fila | null) => {
-    setEditando(fila);
-    setForm(fila ?? Object.fromEntries(campos.map((c) => [c.nombre, c.tipo === 'checkbox' ? true : ''])));
+  const abrir = async (fila: Fila | null) => {
     setError('');
+    if (!fila) {
+      setEditando(null);
+      setForm(Object.fromEntries(campos.map((c) => [c.nombre, c.tipo === 'checkbox' ? true : ''])));
+      return;
+    }
+    // El listado trae solo columnas resumidas; para editar se pide el registro completo
+    try {
+      const completo = await api<Fila>(`${ruta}/${fila.id}`);
+      setEditando(completo);
+      setForm(completo);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   };
 
   const guardar = async (e: FormEvent) => {
@@ -142,6 +163,13 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
           </tbody>
         </table>
       </div>
+      {total > POR_PAGINA && (
+        <nav className="paginacion" aria-label="Paginación">
+          <button className="secundario" disabled={pagina === 1} onClick={() => setPagina(pagina - 1)}>Anterior</button>
+          <span>Página {pagina} de {paginas} · {total} registros</span>
+          <button className="secundario" disabled={pagina >= paginas} onClick={() => setPagina(pagina + 1)}>Siguiente</button>
+        </nav>
+      )}
     </section>
   );
 }
