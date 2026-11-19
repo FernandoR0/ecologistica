@@ -60,7 +60,7 @@ test.describe('Gestión operativa (RF-001, RF-002, RF-008, RF-009)', () => {
     await page.getByRole('button', { name: '+ Nuevo' }).click();
     const fp = page.getByRole('form', { name: 'Formulario Pedidos' });
     await fp.getByLabel('Código').fill(codigo);
-    await fp.getByLabel('Cliente').selectOption({ label: nombre });
+    await fp.getByRole('combobox', { name: /^Cliente/ }).selectOption({ label: nombre });
     await fp.getByLabel('Peso (kg)').fill('80');
     await fp.getByLabel('Volumen (m³)').fill('0.4');
     await fp.getByLabel('Prioridad').selectOption('EXPRESS');
@@ -84,7 +84,7 @@ test.describe('Gestión operativa (RF-001, RF-002, RF-008, RF-009)', () => {
     await page.getByRole('button', { name: '+ Nuevo' }).click();
     const fp = page.getByRole('form', { name: 'Formulario Pedidos' });
     await fp.getByLabel('Código').fill(unico('MAL', info));
-    await fp.getByLabel('Cliente').selectOption({ index: 1 });
+    await fp.getByRole('combobox', { name: /^Cliente/ }).selectOption({ index: 1 });
     await fp.getByLabel('Peso (kg)').fill('10');
     await fp.getByLabel('Entregar desde (vacío = horario del cliente)').fill('12:00');
     await fp.getByLabel('Entregar hasta').fill('09:00');

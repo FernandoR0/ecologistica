@@ -1,5 +1,6 @@
 """Configuración central leída de variables de entorno (.env)."""
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEV_SECRET = "solo-desarrollo-cambiar-en-produccion-0123456789"  # noqa: S105 - solo para desarrollo
@@ -32,6 +33,15 @@ class Settings(BaseSettings):
     # Compensación de carbono (RF-010)
     COSTO_TCO2_SOLES: float = 60.0
     CO2_ABSORBIDO_ARBOL_KG_ANIO: float = 22.0
+
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def _driver_psycopg(cls, url: str) -> str:
+        # Render y otros PaaS entregan "postgres://" o "postgresql://"; SQLAlchemy necesita el driver psycopg 3
+        for prefijo in ("postgres://", "postgresql://"):
+            if url.startswith(prefijo):
+                return "postgresql+psycopg://" + url.removeprefix(prefijo)
+        return url
 
     @property
     def lista_cors(self) -> list[str]:

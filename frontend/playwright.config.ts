@@ -34,7 +34,8 @@ export default defineConfig({
     timezoneId: 'America/Lima',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    // En Windows la ruta del video de WebKit supera 260 caracteres: solo se graba en CI (Linux)
+    video: process.env.CI ? 'retain-on-failure' : 'off',
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
@@ -53,7 +54,7 @@ export default defineConfig({
           env: { E2E_API_PORT: puertoApi },
         },
         {
-          command: process.env.E2E_SKIP_BUILD ? 'npx vite preview --port 4173 --strictPort' : 'npm run build:e2e && npx vite preview --port 4173 --strictPort',
+          command: process.env.E2E_SKIP_BUILD ? 'npx vite preview --host 127.0.0.1 --port 4173 --strictPort' : 'npm run build:e2e && npx vite preview --host 127.0.0.1 --port 4173 --strictPort',
           url: 'http://127.0.0.1:4173',
           reuseExistingServer: !process.env.CI,
           timeout: 180_000,

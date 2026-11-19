@@ -1,0 +1,31 @@
+# Blueprint de Render: API FastAPI (Docker) + PostgreSQL 16 gestionado.
+# Los despliegues los dispara .github/workflows/deploy-production.yml con el Deploy Hook (GitHub Secret).
+services:
+  - type: web
+    name: ecologistica-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    autoDeploy: false
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ecologistica-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SOLVER_TIME_LIMIT_S
+        value: "20"
+      - key: CORS_ORIGINS
+        value: https://ecologistica.vercel.app
+
+databases:
+  - name: ecologistica-db
+    databaseName: ecologistica
+    user: eco
+    plan: free
+    region: oregon
+    postgresMajorVersion: "16"
