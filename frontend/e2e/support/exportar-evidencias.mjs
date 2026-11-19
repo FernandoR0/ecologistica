@@ -1,11 +1,17 @@
 // Exporta un resumen versionable de la corrida y una captura del reporte HTML.
-// Uso: node e2e/support/exportar-evidencias.mjs <carpeta-destino>
+// Uso: node e2e/support/exportar-evidencias.mjs "03 Inplementación/Sprint 4/evidencias/local-AAAAMMDD" (relativo a docs/)
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { chromium } from '@playwright/test';
 
-const destino = resolve(process.argv[2] ?? 'evidencias');
+// Solo se acepta un destino dentro de docs/ del repositorio (evita escribir fuera del proyecto)
+const DOCS = resolve('..', 'docs');
+const destino = resolve(DOCS, process.argv[2] ?? join('03 Inplementación', 'Sprint 4', 'evidencias', 'local'));
+if (!destino.startsWith(DOCS + sep)) {
+  console.error(`Destino fuera de docs/: ${destino}`);
+  process.exit(1);
+}
 mkdirSync(destino, { recursive: true });
 
 const r = JSON.parse(readFileSync(join('test-results', 'results.json'), 'utf8'));
