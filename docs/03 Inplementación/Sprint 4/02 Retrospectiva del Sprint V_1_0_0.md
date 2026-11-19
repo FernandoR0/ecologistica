@@ -13,7 +13,7 @@
 - **Técnicas:** el tiempo de cada tramo debe simularse con el perfil horario (hora punta) después de resolver; si se
   mide en minutos enteros, los tramos cortos parecen congestionados.
 - **Arquitectura:** separar el motor (módulo puro) de la base de datos permitió agregar volumen, descansos y zonas sin
-  tocar los routers, y probarlo con 23 pruebas unitarias.
+  tocar los routers, y probarlo con 22 pruebas unitarias.
 - **Pruebas:** WebKit en Windows no graba video cuando la ruta supera 260 caracteres y `vite preview` escucha solo en
   IPv6; ambos se resolvieron en la configuración de Playwright.
 - **Gestión:** revisar el enunciado oficial al inicio de cada sprint evita cambios de alcance tardíos.
