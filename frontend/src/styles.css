@@ -70,3 +70,24 @@ th { background: #eef2ec; }
   main { padding: 1rem; }
 }
 .paginacion { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.8rem; font-size: 0.9rem; }
+
+/* Mapa: leyenda y avisos */
+.leyenda { font-size: 0.85rem; margin: -0.5rem 0 1rem; }
+.muestra { display: inline-block; width: 0.9rem; height: 0.9rem; border-radius: 2px; vertical-align: middle; margin: 0 0.15rem 0 0.4rem; }
+.aviso { background: #fff7ed; border: 1px solid #fdba74; color: #7c2d12; padding: 0.5rem 0.8rem; border-radius: 8px; }
+.mensaje-ahorro { font-size: 1.15rem; font-weight: 600; color: var(--primario-osc); }
+
+/* Modo conductor: texto e íconos grandes y alto contraste (RNF-05 del caso) */
+.modo-conductor { max-width: 640px; }
+.modo-conductor .grande { font-size: 1.25rem; }
+.modo-conductor .siguiente { border: 2px solid var(--primario-osc); border-radius: 10px; padding: 1rem; margin: 1rem 0; }
+.modo-conductor .alerta { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; padding: 0.5rem; border-radius: 8px; font-weight: 600; }
+.boton-grande { font-size: 1.3rem; padding: 0.9rem 1.6rem; width: 100%; }
+.lista-grande li { font-size: 1.1rem; padding: 0.3rem 0; }
+.lista-grande .hecho { text-decoration: line-through; color: #4b5563; }
+
+/* Encuesta SUS */
+fieldset legend { font-weight: 600; }
+.escala { display: flex; flex-wrap: wrap; gap: 0.6rem 1.2rem; }
+.opcion { display: flex; align-items: center; gap: 0.4rem; flex-direction: row; }
+textarea { width: 100%; min-height: 4rem; }

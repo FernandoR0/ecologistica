@@ -7,7 +7,11 @@ export interface Campo {
   nombre: string;
   etiqueta: string;
   tipo?: 'text' | 'number' | 'time' | 'select' | 'checkbox';
-  opciones?: string[];
+  /** Opciones de un select: texto simple o pares valor/etiqueta (por ejemplo, clientes). */
+  opciones?: (string | { valor: string | number; etiqueta: string })[];
+  /** El select guarda un número (por ejemplo, un ID). */
+  numerico?: boolean;
+  ayuda?: string;
   requerido?: boolean;
   soloCrear?: boolean;
   paso?: string;
@@ -68,7 +72,7 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
       if (editando && c.soloCrear) continue;
       const v = form[c.nombre];
       if (v === '' || v === undefined || v === null) continue;
-      datos[c.nombre] = c.tipo === 'number' ? Number(v) : v;
+      datos[c.nombre] = c.tipo === 'number' || c.numerico ? Number(v) : v;
     }
     try {
       if (editando) await put(`${ruta}/${editando.id}`, datos);
@@ -100,7 +104,7 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
       {formAbierto && (
         <form className="tarjeta form-grid" onSubmit={guardar} aria-label={`Formulario ${titulo}`}>
           {campos.map((c) => (
-            <label key={c.nombre}>
+            <label key={c.nombre} title={c.ayuda}>
               {c.etiqueta}
               {c.tipo === 'select' ? (
                 <select
@@ -110,7 +114,11 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
                   onChange={(e) => setForm({ ...form, [c.nombre]: e.target.value })}
                 >
                   <option value="">—</option>
-                  {c.opciones?.map((o) => <option key={o}>{o}</option>)}
+                  {c.opciones?.map((o) =>
+                    typeof o === 'string'
+                      ? <option key={o}>{o}</option>
+                      : <option key={o.valor} value={o.valor}>{o.etiqueta}</option>,
+                  )}
                 </select>
               ) : c.tipo === 'checkbox' ? (
                 <input

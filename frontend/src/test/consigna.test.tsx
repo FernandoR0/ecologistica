@@ -14,7 +14,8 @@ afterEach(() => {
 });
 
 const CONF = {
-  velocidad_kmh: 25, factor_vial: 1.3, peso_co2: 1, servicio_min: 10, limite_segundos: 30, precio_combustible_soles: 16.5,
+  velocidad_kmh: 25, velocidad_punta_kmh: 15, factor_vial: 1.3, peso_co2: 1, servicio_min: 10, limite_segundos: 30,
+  precio_diesel_galon: 17.5, costo_mantenimiento_km: 1.2, digitos_placa_restringidos: '',
 };
 
 describe('Administración (RF-012)', () => {
