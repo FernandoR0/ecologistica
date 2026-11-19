@@ -1,55 +1,60 @@
+[← Volver al README Principal](../../README.md)
+
 # Cronograma de Sprints
 
-**Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
+| Metadato | Valor |
+|---|---|
+| Nombre del Proyecto | EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C. |
+| Líder del Proyecto | Fernando Rodrigo Chaupis Espinoza |
+| Fecha | 15/09/2026 |
+| Versión | 1.0.0 |
 
-**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
-
-**Docente:** Daniel Gamarra Moreno
-
-**Fecha:** 13/11/2026
-
-**Versión:** 1.0.0
+Documento complementario a los cuatro artefactos de planificación: fija la línea base de fechas que se usa en el
+seguimiento (valor ganado, burndown y burnup).
 
 ---
 
-## 1. Calendario vigente
+## 1. Calendario
 
-Calendario del curso Taller de Proyectos 2 (2026-II). Cada sprint dura 2 semanas calendario. Entre el 30/09 y el
-15/10 no hay sprint; el Sprint 3 arranca el 16/10/2026.
-
-| Sprint | Inicio | Fin | Hito del curso | Objetivo | Historias | SP |
+| Sprint | Inicio | Fin | Inspección del curso | Objetivo del sprint (Sprint Goal) | Ítems | SP |
 |:-:|---|---|---|---|---|:-:|
-| 1 | 02/09/2026 | 15/09/2026 | Hito 1 | Base del sistema: autenticación con roles y gestión de flota, conductores y pedidos. | US-001, US-002, US-003, US-004 | 16 |
-| 2 | 16/09/2026 | 29/09/2026 | Hito 2 | Generar rutas optimizadas con el motor VRPTW + Green VRP y verlas en el mapa. | US-005, US-006 | 18 |
-| 3 | 16/10/2026 | 29/10/2026 | - | Rutas realistas: jornada del conductor, preferencias del cliente y re-optimización ante incidentes. | US-007, US-008, US-009 | 18 |
-| 4 | 30/10/2026 | 12/11/2026 | Hito 3 | Medir el impacto: dashboard, reporte de sostenibilidad y plan de compensación de carbono. | US-010, US-011, US-012 | 13 |
-| 5 | 13/11/2026 | 26/11/2026 | Inspección 04 | Calidad y despliegue: CI/CD, pruebas E2E, prueba de carga, SUS y auditoría Green IT. | ENB-001, ENB-002 | 10 |
-| Cierre | 27/11/2026 | 13/12/2026 | Hito 4 (entrega final) | Documentos de cierre y sustentación | - | - |
+| 1 | 02/09/2026 | 15/09/2026 | Sprint 1 | Base operativa: acceso por roles y registro de flota, conductores, clientes y pedidos con CI activo. | US-001 a US-005, ENB-001 | 22 |
+| 2 | 16/09/2026 | 29/09/2026 | Sprint 2 | Generar rutas optimizadas con Búsqueda Tabú y verlas en el mapa cumpliendo 45 s. | US-006, US-007, ENB-002 | 21 |
+| 3 | 16/10/2026 | 29/10/2026 | Sprint 3 (Inspección 03) | Rutas realistas y seguras: jornada y descansos, re-optimización, restricciones locales y auditoría de calidad. | US-008, US-009, US-010, ENB-003 | 23 |
+| 4 | 30/10/2026 | 19/11/2026 | Inspección 04 (Green IT) e Inspección 05 (Sprint 4) | Medir el impacto, liberar en producción y validar con usuarios: indicadores, reportes, modo conductor, Green IT, E2E, SUS y CD. | US-011 a US-015, ENB-004 a ENB-007 | 36 |
+| Cierre | 20/11/2026 | 04/12/2026 | Evaluación final y sustentación | Reportes de cierre, video y sustentación. | - | - |
 
+Entre el 30/09 y el 15/10/2026 no hay sprint: corresponde a la evaluación parcial del semestre.
+
+```mermaid
+gantt
+  title Cronograma de EcoLogística (línea base)
+  dateFormat  DD/MM/YYYY
+  axisFormat  %d/%m
+  section Inicio y planificación
+  Documentos de inicio y arquitectura :done, i1, 02/09/2026, 11/09/2026
+  Planificación y Jira                 :done, i2, 11/09/2026, 15/09/2026
+  section Sprints
+  Sprint 1 :s1, 02/09/2026, 15/09/2026
+  Sprint 2 :s2, 16/09/2026, 29/09/2026
+  Sprint 3 :s3, 16/10/2026, 29/10/2026
+  Sprint 4 :s4, 30/10/2026, 19/11/2026
+  section Cierre
+  Reportes de cierre y video :c1, 20/11/2026, 04/12/2026
 ```
-02/09          16/09          16/10          30/10          13/11          27/11      13/12
- |---- S1 ----| |---- S2 ----| … |---- S3 ----| |---- S4 ----| |---- S5 ----| |-- Cierre --|
- Hito 1         Hito 2                            Hito 3                                 Hito 4
-```
 
-## 2. Actividades por sprint
+## 2. Hitos
 
-| Sprint | Actividad | ID | SP |
-|:-:|---|---|:-:|
-| 1 | Iniciar sesión con mi correo y contraseña y ver solo lo que mi rol permite | US-001 | 5 |
-| 1 | Registrar y actualizar los vehículos de la flota | US-002 | 3 |
-| 1 | Registrar conductores y asignarles un vehículo | US-003 | 3 |
-| 1 | Registrar pedidos con ubicación, peso y ventana horaria | US-004 | 5 |
-| 2 | Generar rutas optimizadas con un clic | US-005 | 13 |
-| 2 | Ver las rutas en un mapa con las paradas numeradas | US-006 | 5 |
-| 3 | Que mi ruta no supere mi jornada máxima | US-007 | 5 |
-| 3 | Registrar el horario en que cada cliente prefiere recibir | US-008 | 5 |
-| 3 | Re-optimizar una ruta cuando ocurre un incidente | US-009 | 8 |
-| 4 | Ver un dashboard con los indicadores de la operación | US-010 | 5 |
-| 4 | Ver el reporte de CO₂ emitido, evitado y compensado | US-011 | 5 |
-| 4 | Ver un plan para compensar el CO₂ y registrar lo compensado | US-012 | 3 |
-| 5 | CI/CD, Docker y auditoría Green IT | ENB-001 | 5 |
-| 5 | Pruebas E2E, prueba de carga y usabilidad SUS | ENB-002 | 5 |
+| Hito | Fecha | Criterio de cumplimiento |
+|---|---|---|
+| H1 - Inicio y arquitectura | 11/09/2026 | 13 documentos en `docs/01 Inicio` |
+| H2 - Planificación | 15/09/2026 | 4 artefactos en `docs/02 Planificación` y proyecto Jira configurado |
+| H3 - Sprint 1 | 15/09/2026 | 4 documentos del sprint y CI en verde |
+| H4 - Sprint 2 | 29/09/2026 | Motor de rutas ≤ 45 s y mapa |
+| H5 - Sprint 3 | 29/10/2026 | 5 informes del Sprint 3 (revisión, retrospectiva, calidad, OWASP, WCAG) |
+| H6 - Inspección 04 | 13/11/2026 | 2 documentos de reducción del impacto ambiental y `green-audit.yml` |
+| H7 - Sprint 4 | 19/11/2026 | 4 documentos del Sprint 4 y 3 workflows en verde con despliegue a producción |
+| H8 - Cierre | 04/12/2026 | 7 reportes de cierre, video y sustentación |
 
 ---
 
@@ -57,4 +62,6 @@ Calendario del curso Taller de Proyectos 2 (2026-II). Cada sprint dura 2 semanas
 
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
-| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |
+| 1.0.0 | 15/09/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial con 4 sprints |
+
+[← Volver al README Principal](../../README.md)
