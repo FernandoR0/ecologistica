@@ -1,8 +1,12 @@
+[← Volver al README Principal](../../../README.md)
+
 # Reporte de Seguridad OWASP Top 10 (2025)
 
 **Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
 
 **Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
+
+**Herramienta de Escaneo:** SonarQube / SonarCloud
 
 **Docente:** Daniel Gamarra Moreno
 
@@ -59,3 +63,6 @@ cd backend && pytest tests/test_auth.py -v        # 7 pruebas de seguridad aprob
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
 | 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |
+| 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Ubicación oficial `Sprint 03`, plantilla de la consigna y enlace de retorno al README |
+
+[← Volver al README Principal](../../../README.md)

@@ -1,0 +1,532 @@
+{
+  "fecha": "2026-11-19T21:46:54.250Z",
+  "total": 75,
+  "aprobadas": 75,
+  "casos": [
+    {
+      "archivo": "accesibilidad.spec.ts",
+      "caso": "pantalla de acceso sin violaciones @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 1390
+    },
+    {
+      "archivo": "accesibilidad.spec.ts",
+      "caso": "pantallas internas sin violaciones",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 9067
+    },
+    {
+      "archivo": "accesibilidad.spec.ts",
+      "caso": "pantalla de acceso sin violaciones @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 3327
+    },
+    {
+      "archivo": "accesibilidad.spec.ts",
+      "caso": "pantallas internas sin violaciones",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 12731
+    },
+    {
+      "archivo": "accesibilidad.spec.ts",
+      "caso": "pantalla de acceso sin violaciones @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 1343
+    },
+    {
+      "archivo": "accesibilidad.spec.ts",
+      "caso": "pantallas internas sin violaciones",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 14990
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "muestra la pantalla de acceso @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 544
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "rechaza credenciales inválidas sin navegar @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 771
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "valida campos obligatorios y formato de correo sin enviar la petición @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 839
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "inicia sesión, recorre los módulos y cierra sesión",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 3154
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "bloquea la cuenta 15 minutos tras 3 intentos fallidos (RN-001)",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 2854
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "el auditor solo consulta: no puede generar rutas",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 2215
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "muestra la pantalla de acceso @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 1703
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "rechaza credenciales inválidas sin navegar @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 1547
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "valida campos obligatorios y formato de correo sin enviar la petición @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 1778
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "inicia sesión, recorre los módulos y cierra sesión",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 4682
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "bloquea la cuenta 15 minutos tras 3 intentos fallidos (RN-001)",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 3419
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "el auditor solo consulta: no puede generar rutas",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 3075
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "muestra la pantalla de acceso @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 1081
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "rechaza credenciales inválidas sin navegar @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 1768
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "valida campos obligatorios y formato de correo sin enviar la petición @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 2387
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "inicia sesión, recorre los módulos y cierra sesión",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 7096
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "bloquea la cuenta 15 minutos tras 3 intentos fallidos (RN-001)",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 5116
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "el auditor solo consulta: no puede generar rutas",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 4685
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "el health check de la API responde 200 @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 44
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "la interfaz y sus recursos estáticos no devuelven errores @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 459
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "códigos HTTP del proxy /api: 401 sin token y 404 en ruta inexistente @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 100
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "10 sondeos consecutivos de disponibilidad con latencia p50 y p95 @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 252
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "pérdida de conexión: mensaje comprensible y botón habilitado @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 632
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "backend 503: mensaje de indisponibilidad con su código @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 622
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "API lenta: el botón muestra \"Ingresando…\" deshabilitado y luego el resultado @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 2528
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "el health check de la API responde 200 @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 47
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "la interfaz y sus recursos estáticos no devuelven errores @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 889
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "códigos HTTP del proxy /api: 401 sin token y 404 en ruta inexistente @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 119
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "10 sondeos consecutivos de disponibilidad con latencia p50 y p95 @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 263
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "pérdida de conexión: mensaje comprensible y botón habilitado @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 1211
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "backend 503: mensaje de indisponibilidad con su código @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 1274
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "API lenta: el botón muestra \"Ingresando…\" deshabilitado y luego el resultado @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 3296
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "el health check de la API responde 200 @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 41
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "la interfaz y sus recursos estáticos no devuelven errores @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 985
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "códigos HTTP del proxy /api: 401 sin token y 404 en ruta inexistente @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 88
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "10 sondeos consecutivos de disponibilidad con latencia p50 y p95 @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 282
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "pérdida de conexión: mensaje comprensible y botón habilitado @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 1961
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "backend 503: mensaje de indisponibilidad con su código @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 1577
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "API lenta: el botón muestra \"Ingresando…\" deshabilitado y luego el resultado @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 3567
+    },
+    {
+      "archivo": "gestion.spec.ts",
+      "caso": "registra un vehículo, calcula su factor de emisión y rechaza la placa duplicada",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 3493
+    },
+    {
+      "archivo": "gestion.spec.ts",
+      "caso": "registra un cliente y un pedido que hereda su horario y punto de referencia",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 3576
+    },
+    {
+      "archivo": "gestion.spec.ts",
+      "caso": "rechaza una ventana que termina antes de empezar (422)",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 2314
+    },
+    {
+      "archivo": "gestion.spec.ts",
+      "caso": "rechaza una licencia que no corresponde al tipo de vehículo (RN-015)",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 2397
+    },
+    {
+      "archivo": "gestion.spec.ts",
+      "caso": "registra un vehículo, calcula su factor de emisión y rechaza la placa duplicada",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 4593
+    },
+    {
+      "archivo": "gestion.spec.ts",
+      "caso": "registra un cliente y un pedido que hereda su horario y punto de referencia",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 5436
+    },
+    {
+      "archivo": "gestion.spec.ts",
+      "caso": "rechaza una ventana que termina antes de empezar (422)",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 3356
+    },
+    {
+      "archivo": "gestion.spec.ts",
+      "caso": "rechaza una licencia que no corresponde al tipo de vehículo (RN-015)",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 3087
+    },
+    {
+      "archivo": "gestion.spec.ts",
+      "caso": "registra un vehículo, calcula su factor de emisión y rechaza la placa duplicada",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 7238
+    },
+    {
+      "archivo": "gestion.spec.ts",
+      "caso": "registra un cliente y un pedido que hereda su horario y punto de referencia",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 7727
+    },
+    {
+      "archivo": "gestion.spec.ts",
+      "caso": "rechaza una ventana que termina antes de empezar (422)",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 4692
+    },
+    {
+      "archivo": "gestion.spec.ts",
+      "caso": "rechaza una licencia que no corresponde al tipo de vehículo (RN-015)",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 4674
+    },
+    {
+      "archivo": "rendimiento.spec.ts",
+      "caso": "TTFB, FCP y LCP de la pantalla de acceso dentro del presupuesto @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 1003
+    },
+    {
+      "archivo": "rendimiento.spec.ts",
+      "caso": "las APIs de los listados responden en menos de 500 ms",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 2464
+    },
+    {
+      "archivo": "rendimiento.spec.ts",
+      "caso": "TTFB, FCP y LCP de la pantalla de acceso dentro del presupuesto @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 1483
+    },
+    {
+      "archivo": "rendimiento.spec.ts",
+      "caso": "las APIs de los listados responden en menos de 500 ms",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 4078
+    },
+    {
+      "archivo": "rendimiento.spec.ts",
+      "caso": "TTFB, FCP y LCP de la pantalla de acceso dentro del presupuesto @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 1542
+    },
+    {
+      "archivo": "rendimiento.spec.ts",
+      "caso": "las APIs de los listados responden en menos de 500 ms",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 5223
+    },
+    {
+      "archivo": "rutas.spec.ts",
+      "caso": "genera el plan con Búsqueda Tabú y lo muestra en el mapa con tramos y congestión",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 8741
+    },
+    {
+      "archivo": "rutas.spec.ts",
+      "caso": "re-optimiza una ruta ante un accidente y conserva la trazabilidad",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 19053
+    },
+    {
+      "archivo": "rutas.spec.ts",
+      "caso": "descarga el reporte PDF de sostenibilidad",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 1841
+    },
+    {
+      "archivo": "rutas.spec.ts",
+      "caso": "genera el plan con Búsqueda Tabú y lo muestra en el mapa con tramos y congestión",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 9698
+    },
+    {
+      "archivo": "rutas.spec.ts",
+      "caso": "re-optimiza una ruta ante un accidente y conserva la trazabilidad",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 19305
+    },
+    {
+      "archivo": "rutas.spec.ts",
+      "caso": "descarga el reporte PDF de sostenibilidad",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 2390
+    },
+    {
+      "archivo": "rutas.spec.ts",
+      "caso": "genera el plan con Búsqueda Tabú y lo muestra en el mapa con tramos y congestión",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 10379
+    },
+    {
+      "archivo": "rutas.spec.ts",
+      "caso": "re-optimiza una ruta ante un accidente y conserva la trazabilidad",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 21016
+    },
+    {
+      "archivo": "rutas.spec.ts",
+      "caso": "descarga el reporte PDF de sostenibilidad",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 3918
+    },
+    {
+      "archivo": "rutas.spec.ts",
+      "caso": "el conductor ve su siguiente entrega y la marca como entregada",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 7358
+    },
+    {
+      "archivo": "rutas.spec.ts",
+      "caso": "el conductor ve su siguiente entrega y la marca como entregada",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 7697
+    },
+    {
+      "archivo": "rutas.spec.ts",
+      "caso": "el conductor ve su siguiente entrega y la marca como entregada",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 8725
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../../README.md)
+
 # Informe de reducción del impacto ambiental
 
 | Campo | Valor |
@@ -92,6 +94,20 @@ Antes de las optimizaciones encontramos estos problemas:
 
 Archivos: `backend/app/api/routers/gestion.py`, `backend/app/api/routers/rutas.py`, `backend/app/models.py`, `backend/app/schemas.py`.
 
+**Código ANTES** (`backend/app/api/routers/rutas.py`, commit `3b1724c`): una consulta por cada parada (N+1) y todas las columnas.
+
+```python
+return db.scalars(select(Ruta).order_by(Ruta.id.desc())).all()   # paradas y pedidos con carga perezosa
+```
+
+**Código DESPUÉS** (commit `2ab9ad9`): 5 consultas en total, columnas mínimas e índices.
+
+```python
+q.options(selectinload(Ruta.paradas).selectinload(Parada.pedido),
+          selectinload(Ruta.vehiculo), selectinload(Ruta.conductor))
+estado: Mapped[str] = mapped_column(String(12), default="PLANIFICADA", index=True)
+```
+
 ### 2. Paginación de 12 registros
 
 - Nuevo módulo `backend/app/api/paginacion.py`: los listados de vehículos, conductores, pedidos y rutas aceptan
@@ -99,12 +115,43 @@ Archivos: `backend/app/api/routers/gestion.py`, `backend/app/api/routers/rutas.p
 - La tabla genérica del frontend (`CrudPage.tsx`) muestra los controles Anterior / Siguiente.
 - La pantalla Rutas pide solo las rutas vigentes: `GET /api/rutas?estado=PLANIFICADA,EN_CURSO`.
 
+**Código ANTES** (`backend/app/api/routers/crud.py`, commit `f5eb0b0`): devolvía la tabla completa.
+
+```python
+def listar(activo: bool | None = None, db: Session = Depends(get_db), _=Depends(get_current_user)):
+    q = select(model).order_by(model.id)
+    return db.scalars(q).all()
+```
+
+**Código DESPUÉS** (commit `2ab9ad9`): 12 registros por página y total en `X-Total-Count`.
+
+```python
+def listar(response: Response, activo: bool | None = None, p: Pagina = Depends(params_pagina),
+           db: Session = Depends(get_db), _=Depends(get_current_user)):
+    q = select(model).order_by(model.id)
+    return paginar(db, q, p, response)   # LIMIT 12 OFFSET (pagina-1)*12
+```
+
 ### 3. Imágenes WebP y AVIF
 
 La aplicación no usa fotografías ni imágenes rasterizadas: los íconos del mapa se dibujan con HTML y CSS
 (`L.divIcon`) en lugar de los PNG por defecto de Leaflet. El único recurso gráfico es el ícono de la pestaña, que
 se convirtió a **SVG en línea** (ver optimización 6). Si en el futuro se agregan fotos de entregas, la regla de
 la guía (documento 02) es servirlas en WebP o AVIF con `loading="lazy"`.
+
+**Código ANTES** (`MapaRutas.tsx`): marcador por defecto de Leaflet, que descarga `marker-icon.png` y `marker-shadow.png`.
+
+```tsx
+L.marker([p.pedido.lat, p.pedido.lng]).addTo(grupo);
+```
+
+**Código DESPUÉS** (commit `edf5779`): ícono hecho con HTML y CSS, sin imágenes rasterizadas.
+
+```tsx
+L.marker([p.pedido.lat, p.pedido.lng], {
+  icon: L.divIcon({ className: 'pin', html: `<span style="background:${color}">${p.orden}</span>` }),
+}).addTo(grupo);
+```
 
 ### 4. Code splitting con React.lazy y Suspense
 
@@ -119,6 +166,24 @@ la guía (documento 02) es servirlas en WebP o AVIF con `loading="lazy"`.
 |---|:-:|:-:|
 | `index.js` (código de la app) | 232.5 KB | **7.6 KB** |
 | `react.js` (librerías, en caché 1 año) | - | 220.5 KB |
+
+**Código ANTES** (`frontend/src/main.tsx`, commit `c0ec63b`): todas las pantallas en el archivo inicial.
+
+```tsx
+import { Layout } from './components/Layout';
+import { Conductores, Pedidos, Preferencias, Vehiculos } from './pages/Gestion';
+import { Inicio, SostenibilidadPage } from './pages/Paneles';
+```
+
+**Código DESPUÉS** (commit `edf5779`): cada pantalla se descarga al entrar en ella.
+
+```tsx
+const Layout = lazy(() => import('./components/Layout').then((m) => ({ default: m.Layout })));
+const Pedidos = lazy(() => import('./pages/Gestion').then((m) => ({ default: m.Pedidos })));
+const cargando = (texto: string, hijo: ReactNode) => (
+  <Suspense fallback={<p className="muted">{texto}</p>}>{hijo}</Suspense>
+);
+```
 
 ### 5. Bibliotecas pesadas y API nativa
 
@@ -136,6 +201,20 @@ Se revisaron las dependencias del frontend. El proyecto solo usa `react`, `react
 En el backend, la compresión, el ETag y la caché se hicieron con la librería estándar de Python (`hashlib`,
 `time`) y el middleware incluido en FastAPI, sin dependencias nuevas.
 
+**Alternativa descartada** (patrón habitual con axios, +13 KB comprimidos):
+
+```ts
+import axios from 'axios';
+const { data } = await axios.get(`${API_URL}/pedidos`, { headers: { Authorization: `Bearer ${token}` } });
+```
+
+**Código implementado** (`frontend/src/api.ts`): `fetch` nativo del navegador, 0 KB de dependencias.
+
+```ts
+const resp = await fetch(`${API_URL}${ruta}`, { headers: { Authorization: `Bearer ${token}` } });
+if (!resp.ok) throw new ApiError(resp.status, mensajeError((await resp.json()).detail, resp.status));
+```
+
 ### 6. SVG crítico en línea y menos solicitudes
 
 - El ícono de la pestaña ahora es un SVG en línea dentro de `index.html` (data URI). Se eliminó la solicitud a
@@ -143,6 +222,18 @@ En el backend, la compresión, el ETag y la caché se hicieron con la librería 
 - Se agregó `robots.txt` en `frontend/public/`. Antes esa ruta devolvía la página completa.
 - Los íconos de paradas del mapa son HTML con CSS, no imágenes.
 - El CSS de Leaflet va dentro del archivo de la pantalla Rutas, no como solicitud aparte en el login.
+
+**Código ANTES** (`frontend/index.html`): el navegador pedía `/favicon.ico`, que no existía y devolvía la página completa.
+
+```html
+<title>EcoLogística</title>
+```
+
+**Código DESPUÉS** (commit `edf5779`): ícono SVG en línea, sin solicitud adicional.
+
+```html
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E...%3C/svg%3E" />
+```
 
 ### 7. Caché en servidor y en cliente
 
@@ -156,12 +247,45 @@ En el backend, la compresión, el ETag y la caché se hicieron con la librería 
   compensación se guardan 60 s en memoria (`backend/app/core/cache.py`). Se limpia automáticamente en cuanto
   alguien registra o modifica datos.
 
+**Código ANTES** (`backend/app/main.py`): cada GET devolvía el cuerpo completo aunque no hubiera cambios.
+
+```python
+app.add_middleware(CORSMiddleware, allow_origins=settings.lista_cors)
+```
+
+**Código DESPUÉS** (commit `2ab9ad9`): ETag con respuesta 304 y caché de indicadores de 60 s.
+
+```python
+etag = 'W/"' + hashlib.blake2b(cuerpo, digest_size=10).hexdigest() + '"'
+if request.headers.get("if-none-match") == etag:
+    return Response(status_code=304, headers={"ETag": etag, "Cache-Control": "private, no-cache"})
+
+return cache.obtener(("dashboard", desde, hasta), lambda: indicadores.dashboard(db, desde, hasta))
+```
+
 ### 8. Compresión Brotli y Gzip
 
 - **Frontend:** el build genera versiones `.br` (Brotli nivel 11) y `.gz` (Gzip nivel 9) de cada archivo de
   texto mayor a 1 KB (plugin `precomprimir` en `vite.config.ts`). El servidor entrega la versión comprimida según
   la cabecera `Accept-Encoding`, sin gastar CPU en cada visita.
 - **Backend:** `GZipMiddleware` de FastAPI comprime las respuestas JSON mayores a 1 KB.
+
+**Código ANTES** (`frontend/vite.config.ts`): build sin archivos precomprimidos.
+
+```ts
+export default defineConfig({ plugins: [react()] });
+```
+
+**Código DESPUÉS** (commits `edf5779` y `2ab9ad9`): `.br` y `.gz` generados en el build y JSON comprimido en la API.
+
+```ts
+writeFileSync(`${ruta}.gz`, gzipSync(datos, { level: 9 }));
+writeFileSync(`${ruta}.br`, brotliCompressSync(datos, { params: { [constants.BROTLI_PARAM_QUALITY]: 11 } }));
+```
+
+```python
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+```
 
 ## 1.4 Tabla comparativa
 
@@ -344,3 +468,6 @@ npx lighthouse http://localhost:4175/login --preset=desktop --view
 |---|---|---|---|
 | 1.0.0 | 13/11/2026 | Fernando Chaupis | Informe de la Inspección 04 con mediciones antes y después |
 | 1.1.0 | 14/11/2026 | Fernando Chaupis | Medición de 4 pantallas con sesión iniciada (escritorio y móvil), tabla de los 6 umbrales de la consigna y cálculo con los coeficientes oficiales de SWDM v4 |
+| 1.2.0 | 19/11/2026 | Fernando Chaupis | Código ANTES y DESPUÉS en las 8 optimizaciones y enlace de retorno al README |
+
+[← Volver al README Principal](../../../README.md)

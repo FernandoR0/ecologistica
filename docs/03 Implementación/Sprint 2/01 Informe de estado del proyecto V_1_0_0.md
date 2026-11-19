@@ -1,44 +1,37 @@
+[← Volver al README Principal](../../../README.md)
+
 # Informe de estado del proyecto
 
 **Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
 
-**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza
 
-**Docente:** Daniel Gamarra Moreno
+| Campo | Detalle |
+|---|---|
+| Sprint | Sprint 2 (16/09/2026 - 29/09/2026) |
+| Sprint Goal | Generar rutas optimizadas con Búsqueda Tabú y verlas en el mapa cumpliendo 45 s. |
+| Story points completados | 21 de 21 |
 
-**Fecha:** 13/11/2026
+## Historias de Usuario completadas en este Sprint
 
-**Versión:** 1.0.0
+| Código | Título | Criterios de aceptación verificados | Pull Request / commit de cierre | Estado |
+|---|---|---|---|---|
+| US-006 | Generar rutas optimizadas | Plan factible con capacidad y jornada; ahorro de km y CO₂ frente a la ruta secuencial; pedidos que no caben se informan como no asignados. | [3b1724c](https://github.com/FernandoR0/ecologistica/commit/3b1724c) · [a4f1363 (no asignados)](https://github.com/FernandoR0/ecologistica/commit/a4f1363) | Done |
+| US-007 | Ver las rutas en el mapa | Cada ruta con su color y paradas numeradas sobre OpenStreetMap con su hora estimada. | [c0ec63b](https://github.com/FernandoR0/ecologistica/commit/c0ec63b) · [12998a6 (mosaicos OSM)](https://github.com/FernandoR0/ecologistica/commit/12998a6) | Done |
+| ENB-002 | Prueba de rendimiento del motor | Script `backend/scripts/prueba_carga.py`: 150 pedidos y 15 vehículos resueltos en 30 s (meta ≤ 45 s). | [555a49f](https://github.com/FernandoR0/ecologistica/commit/555a49f) | Done |
 
----
+## Demostración del trabajo completado
 
-**Periodo del Informe:** 16/09/2026 - 29/09/2026 (Sprint 2)
+Demostración a los stakeholders de las funcionalidades implementadas.
 
-**Sprint Goal:** Generar rutas optimizadas con el motor VRPTW + Green VRP y verlas en el mapa.
+- Entorno: ejecución local con datos de demostración de Huancayo, El Tambo y Chilca.
+- Se generó el plan para los pedidos pendientes con un clic, se revisó el mapa con las rutas y el ahorro frente a la ruta secuencial, y se ejecutó la prueba de carga de 150 pedidos y 15 vehículos.
+- Evidencias: ![Rutas generadas](<../../06 Anexos/evidencias/e2e-07-rutas-generadas.png>)
+- Pruebas automáticas: `backend/tests/test_motor.py` (capacidad, ventanas, Green VRP, jornada) y la prueba de carga.
 
-### Estado del proyecto
+## Pendientes
 
-| Variables de control | Descripción del estado |
-| --- | --- |
-| **Alcance** | Se comprometieron 18 SP (US-005, US-006). Todas las historias quedaron completadas y sus issues cerrados. |
-| **Cronograma** | Calendario del curso: 16/09/2026 - 29/09/2026 · Hito 2. |
-| **Costos** | Sin gastos adicionales: se usan solo herramientas libres. La ejecución se mantiene dentro de la línea base de S/ 7 425. |
-| **Calidad** | Pruebas del sprint en verde: test_motor.py (11 pruebas) y test_flujo_optimizar_reoptimizar_indicadores. Cobertura actual: backend 90 %, frontend 99.7 %. |
-
-### Riesgos
-
-| Riesgo | Responsable | Mitigación |
-| --- | --- | --- |
-| R-03 Poca disponibilidad de tiempo (proyecto individual) | Fernando Rodrigo Chaupis Espinoza | Priorizar el backlog y automatizar pruebas |
-| R-01 Tiempo del motor en instancias grandes | Fernando Rodrigo Chaupis Espinoza | Límite de tiempo y prueba de carga |
-
-### Próximos avances
-
-- Iniciar el Sprint 3: Rutas realistas: jornada del conductor, preferencias del cliente y re-optimización ante incidentes.
-
-### Notas
-
-- Backlog y estado de las historias: https://github.com/FernandoR0/ecologistica/milestone/2
+- La coloración de cada tramo por congestión, el tiempo por tramo y las capas de distritos y zonas del mapa se completaron en el Sprint 4 (commits [fabf1ca](https://github.com/FernandoR0/ecologistica/commit/fabf1ca) y [80e4054](https://github.com/FernandoR0/ecologistica/commit/80e4054)).
 
 ---
 
@@ -46,4 +39,7 @@
 
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
-| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |
+| 1.0.0 | 29/09/2026 | Fernando Rodrigo Chaupis Espinoza | Informe de estado del sprint |
+| 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Plantilla oficial de la consigna, enlaces a commits, enlace de retorno al README y nota de los campos completados en el Sprint 4 |
+
+[← Volver al README Principal](../../../README.md)

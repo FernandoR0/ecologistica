@@ -1,22 +1,16 @@
+[← Volver al README Principal](../../../README.md)
+
 # Registro de impedimentos
 
 **Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
 
-**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
-
-**Docente:** Daniel Gamarra Moreno
-
-**Fecha:** 13/11/2026
-
-**Versión:** 1.0.0
-
----
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza
 
 **Sprint 2:** 16/09/2026 - 29/09/2026
 
 | Impedimento # | Fecha de Registro | Descripción del Impedimento así como el Impacto en el Proyecto | Prioridad | Reportado por | Fecha tope de Resolución | Estado | Fecha de Resolución | Resolución/Comentarios |
 |---|---|---|---|---|---|---|---|---|
-| - | - | No se registraron impedimentos en este sprint. | - | - | - | - | - | - |
+| - | 29/09/2026 | No se registraron impedimentos durante el Sprint 2: ningún obstáculo detuvo el trabajo comprometido. | - | Fernando Rodrigo Chaupis Espinoza | - | No aplica | - | Se revisó en la retrospectiva del sprint. |
 
 ---
 
@@ -24,4 +18,7 @@
 
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
-| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |
+| 1.0.0 | 29/09/2026 | Fernando Rodrigo Chaupis Espinoza | Registro de impedimentos del sprint |
+| 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Plantilla oficial de la consigna, enlaces a commits, enlace de retorno al README y nota de los campos completados en el Sprint 4 |
+
+[← Volver al README Principal](../../../README.md)

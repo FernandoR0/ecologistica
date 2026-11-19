@@ -1,54 +1,47 @@
-# Retrospectiva del Sprint 2
+[← Volver al README Principal](../../../README.md)
+
+# Retrospectiva del sprint
 
 **Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
 
-**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
-
-**Docente:** Daniel Gamarra Moreno
-
-**Fecha:** 13/11/2026
-
-**Versión:** 1.0.0
-
----
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza
 
 ## ¿Qué aprendimos?
 
-- El VRPTW se modela en OR-Tools con dos dimensiones: capacidad (kg) y tiempo (viaje + servicio + espera).
-- Un pedido imposible no debe tumbar todo el plan: con disyunciones y penalización por prioridad el motor lo informa como no asignado y planifica el resto.
-- La distancia en línea recta subestima el recorrido real; se usa un factor vial de 1.3 configurable (supuesto S-02).
-- Con el objetivo Green VRP (distancia × emisión relativa) el motor prefiere el vehículo eléctrico para los tramos largos.
+- OR-Tools necesita valores enteros: se trabaja en metros y décimas de kilogramo para no perder precisión.
+- Una disyunción con penalización por prioridad evita que un solo pedido imposible deje sin solución todo el plan.
+- La línea base (ruta secuencial) debe calcularse con las mismas paradas para que el ahorro sea comparable.
 
 ## ¿Qué estamos haciendo bien?
 
-- El motor quedó separado de la base de datos (`app/optimization`), así se prueba sin levantar la API.
-- 11 pruebas del motor cubren capacidad, ventanas, jornada, pedidos imposibles y la preferencia por menos CO₂.
-- Se completaron los 18 SP comprometidos (2 de 2 historias).
+- Prototipar el motor como módulo puro (sin base de datos) permitió probarlo de forma aislada y rápida.
+- Medir el rendimiento con un script reproducible en lugar de pruebas manuales.
 
 ## ¿Qué podemos hacer mejor?
 
 ### Personas
 
-Las historias del motor (13 SP) concentran el riesgo técnico del proyecto; hay que reservarles más tiempo que a los CRUD.
+La curva de aprendizaje de OR-Tools consumió más horas de las previstas en la primera semana.
 
 ### Relaciones
 
-Mostrar el plan en el mapa durante la revisión hace entendible el resultado para quien no conoce el algoritmo.
+Faltó mostrar resultados intermedios del motor al patrocinador; solo se vio el resultado final en la revisión.
 
 ### Procesos
 
-Medir el tiempo de cálculo con instancias grandes (150 pedidos) en el mismo sprint en que se construye el motor, no al final.
+La estimación de US-006 (13 SP) fue correcta, pero no se dividió en subtareas de 8 horas o menos en Jira.
 
 ### Herramientas
 
-Leaflet pesa 155 KB y se descargaba en todas las pantallas; hay que cargarlo solo en la pantalla Rutas.
+El mapa base de OpenStreetMap exige enviar el Referer del sitio; sin él los mosaicos se bloquean en algunos proxys.
 
-## Acciones a realizar
+### Acciones a realizar
 
-| Acción | Eje | Responsable | Fecha |
-|---|---|---|---|
-| Prueba de carga con 150 pedidos y 15 vehículos | Procesos | Fernando Rodrigo Chaupis Espinoza | Sprint 5 |
-| Cargar el mapa solo al abrir Rutas (lazy loading) | Herramientas | Fernando Rodrigo Chaupis Espinoza | Sprint 5 |
+| Acción | Responsable | Métrica de seguimiento |
+|---|---|---|
+| Dividir las historias de 8 SP o más en subtareas de 8 horas o menos | Fernando Chaupis | 0 subtareas mayores a 8 h en el Sprint 3 |
+| Mostrar al patrocinador un avance a mitad de sprint | Fernando Chaupis | 1 demostración intermedia por sprint |
+| Ejecutar la prueba de carga en cada cambio del motor | Fernando Chaupis | P95 ≤ 45 s registrado en cada cambio |
 
 ---
 
@@ -56,4 +49,7 @@ Leaflet pesa 155 KB y se descargaba en todas las pantallas; hay que cargarlo sol
 
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
-| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |
+| 1.0.0 | 29/09/2026 | Fernando Rodrigo Chaupis Espinoza | Retrospectiva del sprint |
+| 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Plantilla oficial de la consigna, enlaces a commits, enlace de retorno al README y nota de los campos completados en el Sprint 4 |
+
+[← Volver al README Principal](../../../README.md)
