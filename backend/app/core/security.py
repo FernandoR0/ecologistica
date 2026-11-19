@@ -1,6 +1,5 @@
-"""Hash de contraseñas (bcrypt), tokens JWT y bloqueo por intentos fallidos."""
+"""Hash de contraseñas (bcrypt, costo 12), tokens JWT y bloqueo por intentos fallidos (RN-001)."""
 
-import time
 from datetime import UTC, datetime, timedelta
 
 import bcrypt
@@ -12,7 +11,7 @@ ALGORITMO = "HS256"
 
 
 def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt(rounds=12)).decode()
 
 
 def verify_password(password: str, password_hash: str) -> bool:
@@ -38,29 +37,22 @@ def decode_token(token: str) -> dict:
     return jwt.decode(token, settings.JWT_SECRET, algorithms=[ALGORITMO])
 
 
-class BloqueoLogin:
-    """Bloquea temporalmente un correo tras N intentos fallidos (OWASP A07)."""
-
-    def __init__(self) -> None:
-        self._fallos: dict[str, list[float]] = {}
-
-    def _vigentes(self, correo: str) -> list[float]:
-        limite = time.monotonic() - settings.BLOQUEO_LOGIN_MIN * 60
-        fallos = [t for t in self._fallos.get(correo, []) if t > limite]
-        self._fallos[correo] = fallos
-        return fallos
-
-    def bloqueado(self, correo: str) -> bool:
-        return len(self._vigentes(correo)) >= settings.MAX_INTENTOS_LOGIN
-
-    def registrar_fallo(self, correo: str) -> None:
-        self._vigentes(correo).append(time.monotonic())
-
-    def limpiar(self, correo: str | None = None) -> None:
-        if correo is None:
-            self._fallos.clear()
-        else:
-            self._fallos.pop(correo, None)
+def bloqueado(usuario, ahora: datetime | None = None) -> bool:
+    """RN-001: la cuenta está bloqueada mientras `bloqueado_hasta` sea futuro."""
+    ahora = ahora or datetime.now(UTC).replace(tzinfo=None)
+    return usuario.bloqueado_hasta is not None and usuario.bloqueado_hasta > ahora
 
 
-bloqueo_login = BloqueoLogin()
+def registrar_fallo(usuario) -> None:
+    """Suma un intento fallido; al llegar al máximo bloquea la cuenta `BLOQUEO_LOGIN_MIN` minutos."""
+    usuario.intentos_fallidos = (usuario.intentos_fallidos or 0) + 1
+    if usuario.intentos_fallidos >= settings.MAX_INTENTOS_LOGIN:
+        usuario.bloqueado_hasta = datetime.now(UTC).replace(tzinfo=None) + timedelta(
+            minutes=settings.BLOQUEO_LOGIN_MIN
+        )
+        usuario.intentos_fallidos = 0
+
+
+def limpiar_fallos(usuario) -> None:
+    usuario.intentos_fallidos = 0
+    usuario.bloqueado_hasta = None

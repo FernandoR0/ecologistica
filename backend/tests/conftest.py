@@ -10,12 +10,15 @@ from sqlalchemy.pool import StaticPool  # noqa: E402
 
 from app.core import cache  # noqa: E402
 from app.core.config import settings  # noqa: E402
-from app.core.security import bloqueo_login, hash_password  # noqa: E402
+from app.core.security import hash_password  # noqa: E402
 from app.db import Base, get_db  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models import Usuario  # noqa: E402
 
 settings.SOLVER_TIME_LIMIT_S = 1
+USUARIOS = [("admin@test.pe", "ADMIN"), ("plan@test.pe", "PLANIFICADOR"), ("cond@test.pe", "CONDUCTOR"),
+            ("audi@test.pe", "AUDITOR")]
+_HASH = hash_password("Secreta123")
 
 
 @pytest.fixture
@@ -30,10 +33,9 @@ def db():
 @pytest.fixture
 def client(db):
     app.dependency_overrides[get_db] = lambda: db
-    bloqueo_login.limpiar()
     cache.limpiar()
-    for correo, rol in [("admin@test.pe", "ADMIN"), ("plan@test.pe", "PLANIFICADOR"), ("cond@test.pe", "CONDUCTOR")]:
-        db.add(Usuario(correo=correo, nombre=rol.title(), rol=rol, password_hash=hash_password("Secreta123")))
+    for correo, rol in USUARIOS:
+        db.add(Usuario(correo=correo, nombre=rol.title(), rol=rol, password_hash=_HASH))
     db.commit()
     with TestClient(app) as c:
         yield c

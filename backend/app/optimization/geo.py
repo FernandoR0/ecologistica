@@ -30,6 +30,52 @@ def longitud_recorrido_km(puntos: list[tuple[float, float]], factor_vial: float 
     return sum(haversine_km(*a, *b) for a, b in zip(puntos, puntos[1:], strict=False)) * factor_vial
 
 
+Poligono = list[tuple[float, float]] | list[list[float]]
+
+# RN-011: horas punta de Huancayo (minutos desde medianoche)
+HORAS_PUNTA = ((7 * 60, 9 * 60), (17 * 60, 20 * 60))
+
+
+def punto_en_poligono(lat: float, lng: float, poligono: Poligono) -> bool:
+    """Prueba de inclusión por cruce de rayos (polígono como lista de [lat, lng])."""
+    dentro = False
+    n = len(poligono)
+    for i in range(n):
+        y1, x1 = poligono[i][0], poligono[i][1]
+        y2, x2 = poligono[(i + 1) % n][0], poligono[(i + 1) % n][1]
+        if (y1 > lat) != (y2 > lat):
+            x_cruce = x1 + (lat - y1) * (x2 - x1) / (y2 - y1)
+            if lng < x_cruce:
+                dentro = not dentro
+    return dentro
+
+
+def tramo_cruza(a: tuple[float, float], b: tuple[float, float], poligono: Poligono, muestras: int = 5) -> bool:
+    """Aproxima si el tramo recto a→b atraviesa el polígono muestreando puntos intermedios."""
+    for k in range(muestras + 1):
+        t = k / muestras
+        if punto_en_poligono(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, poligono):
+            return True
+    return False
+
+
+def es_hora_punta(minuto: int) -> bool:
+    return any(ini <= minuto < fin for ini, fin in HORAS_PUNTA)
+
+
+def velocidad_en(minuto: int, velocidad_kmh: float, velocidad_punta_kmh: float) -> float:
+    return velocidad_punta_kmh if es_hora_punta(minuto) else velocidad_kmh
+
+
+def nivel_congestion(velocidad_kmh: float) -> str:
+    """RN-011: verde ≥ 22 km/h, amarillo 16-21 km/h, rojo ≤ 15 km/h."""
+    if velocidad_kmh >= 22:
+        return "VERDE"
+    if velocidad_kmh > 15:
+        return "AMARILLO"
+    return "ROJO"
+
+
 def hora_a_min(hora: str) -> int:
     """'08:30' → 510."""
     h, m = hora.split(":")

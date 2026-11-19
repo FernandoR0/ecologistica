@@ -34,6 +34,7 @@ def generar(db: Session, desde: date | None = None, hasta: date | None = None) -
     s = indicadores.sostenibilidad(db, desde, hasta)
     plan = indicadores.plan_compensacion(db, desde, hasta)
     rutas = indicadores._rutas(db, desde, hasta)
+    lcc = indicadores.costo_ciclo_vida(db, desde, hasta)
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=2 * cm, rightMargin=2 * cm, topMargin=1.8 * cm,
@@ -83,7 +84,27 @@ def generar(db: Session, desde: date | None = None, hasta: date | None = None) -
                + [[f"#{r.id}", r.fecha.strftime("%d/%m/%Y"), r.vehiculo.placa, len(r.paradas), r.distancia_km,
                    r.co2_kg, round(r.distancia_base_km - r.distancia_km, 2)] for r in rutas]),
         Spacer(1, 10),
-        Paragraph("6. Plan de compensación", est["Heading2"]),
+        Paragraph("6. Costo del ciclo de vida de la flota", est["Heading2"]),
+        Paragraph(
+            f"Periodo de {lcc['dias']} días. Supuestos: diésel S/ {lcc['supuestos']['precio_diesel_galon']} por galón, "
+            f"mantenimiento S/ {lcc['supuestos']['mantenimiento_km']} por km, depreciación "
+            f"{int(lcc['supuestos']['depreciacion_anual'] * 100)} % anual y seguros (SOAT + vehicular) prorrateados.",
+            est["Normal"],
+        ),
+        _tabla([["Placa", "km", "Combustible", "Mant.", "Deprec.", "Seguros", "Total S/", "S/ por km"]]
+               + [[v["placa"], v["km"], v["combustible_soles"], v["mantenimiento_soles"], v["depreciacion_soles"],
+                   v["seguros_soles"], v["total_soles"], v["costo_por_km"]] for v in lcc["vehiculos"]]
+               + [["Total", "", "", "", "", "", lcc["total_soles"], ""]]),
+        Spacer(1, 10),
+        Paragraph("7. Créditos de carbono y meta de cero carbono neto", est["Heading2"]),
+        _tabla([
+            ["Indicador", "Valor"],
+            ["Ahorro en créditos de carbono (CO2 evitado a S/ 60 por t)", f"S/ {s['creditos_carbono_soles']}"],
+            ["CO2 compensado / CO2 emitido", f"{s['avance_cero_neto_pct']} %"],
+            ["Meta", plan["meta"]],
+        ], [9 * cm, 6 * cm]),
+        Spacer(1, 10),
+        Paragraph("8. Plan de compensación", est["Heading2"]),
         Paragraph(f"CO2 pendiente de compensar: {plan['co2_pendiente_kg']} kg", est["Normal"]),
     ]
     for o in plan["opciones"]:

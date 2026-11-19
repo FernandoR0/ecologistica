@@ -9,7 +9,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
-from app.api.routers import admin, auth, gestion, indicadores, rutas
+from app.api.routers import admin, auth, encuesta, gestion, indicadores, rutas
 from app.core import cache
 from app.core.config import DEV_SECRET, settings
 from app.core.security import decode_token
@@ -29,7 +29,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(
     title="EcoLogística API",
-    version="1.0.0",
+    version="1.1.0",
     description="Optimización de rutas sostenibles de última milla (VRPTW + Green VRP) - DistriRápido S.A.C.",
     lifespan=lifespan,
 )
@@ -118,8 +118,8 @@ app.add_middleware(
     expose_headers=["X-Total-Count", "ETag"],
 )
 
-for r in (auth.router, admin.router, gestion.vehiculos, gestion.conductores, gestion.pedidos, gestion.preferencias,
-          rutas.router, indicadores.router):
+for r in (auth.router, admin.router, gestion.vehiculos, gestion.conductores, gestion.pedidos, gestion.clientes,
+          rutas.router, indicadores.router, encuesta.router):
     app.include_router(r, prefix="/api")
 
 

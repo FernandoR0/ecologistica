@@ -1,4 +1,6 @@
-"""Fábrica de routers CRUD con baja lógica (campo `activo`) y paginación."""
+"""Fábrica de routers CRUD con baja lógica (campo `activo`), validación opcional y paginación."""
+
+from collections.abc import Callable
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel
@@ -11,18 +13,10 @@ from app.api.paginacion import Pagina, paginar, params_pagina
 from app.db import Base, get_db
 
 
-def _guardar(db: Session, obj) -> None:
-    try:
-        db.commit()
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(status.HTTP_409_CONFLICT, "Registro duplicado o referencia inválida") from None
-    db.refresh(obj)
-
-
-def crud_router(
+def crud_router(  # noqa: PLR0913 - configuración declarativa del router
     *, model: type[Base], entrada: type[BaseModel], cambio: type[BaseModel], salida: type[BaseModel],
-    prefix: str, tag: str,
+    prefix: str, tag: str, validar: Callable[[Session, Base], None] | None = None,
+    duplicado: str = "Registro duplicado o referencia inválida",
 ) -> APIRouter:
     router = APIRouter(prefix=prefix, tags=[tag])
 
@@ -31,6 +25,20 @@ def crud_router(
         if obj is None:
             raise HTTPException(status.HTTP_404_NOT_FOUND, f"{tag}: registro {item_id} no existe")
         return obj
+
+    def _guardar(db: Session, obj) -> None:
+        if validar:
+            try:
+                validar(db, obj)
+            except HTTPException:
+                db.rollback()
+                raise
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(status.HTTP_409_CONFLICT, duplicado) from None
+        db.refresh(obj)
 
     @router.get("", response_model=list[salida])
     def listar(
