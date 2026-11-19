@@ -17,7 +17,7 @@ concurrency:
 jobs:
   verificar:
     name: Verificar antes de desplegar
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.52 publica navegadores hasta Ubuntu 24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -31,7 +31,7 @@ jobs:
   api:
     name: API en Render
     needs: verificar
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.52 publica navegadores hasta Ubuntu 24.04
     environment: produccion
     steps:
       - name: Disparar el despliegue con el Deploy Hook
@@ -52,7 +52,7 @@ jobs:
   web:
     name: Frontend en Vercel
     needs: api
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.52 publica navegadores hasta Ubuntu 24.04
     environment: produccion
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -71,7 +71,7 @@ jobs:
   verificar-produccion:
     name: Pruebas @public sobre producción
     needs: web
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.52 publica navegadores hasta Ubuntu 24.04
     env:
       CI: "true"
       E2E_BASE_URL: ${{ vars.PRODUCCION_URL }}

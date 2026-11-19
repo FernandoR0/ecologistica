@@ -18,7 +18,7 @@ jobs:
   unitarias:
     name: Unitarias e integración
     if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.52 publica navegadores hasta Ubuntu 24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -47,7 +47,7 @@ jobs:
   e2e:
     name: E2E Playwright (${{ matrix.browser }})
     if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.52 publica navegadores hasta Ubuntu 24.04
     strategy:
       fail-fast: false
       matrix:
@@ -90,7 +90,7 @@ jobs:
   monitoreo-produccion:
     name: Monitoreo de producción (@public)
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.52 publica navegadores hasta Ubuntu 24.04
     env:
       CI: "true"
       E2E_BASE_URL: ${{ vars.PRODUCCION_URL }}
