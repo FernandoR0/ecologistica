@@ -37,6 +37,11 @@ export default defineConfig({
     allowedHosts: ['.app.github.dev'],
     proxy: { '/api': 'http://localhost:8000' },
   },
+  // `vite preview` sirve el mismo dist/ que se despliega; en E2E reenvía /api a la API de pruebas
+  preview: {
+    port: 4173,
+    proxy: { '/api': process.env.E2E_API_URL ?? 'http://localhost:8000' },
+  },
   build: {
     rollupOptions: {
       output: {
@@ -50,6 +55,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],
+    include: ['src/**/*.test.{ts,tsx}'],
     coverage: { reporter: ['text', 'lcov'], include: ['src/**'], exclude: ['src/**/*.test.{ts,tsx}', 'src/test/**', 'src/setupTests.ts', 'src/vite-env.d.ts', 'src/main.tsx'] },
   },
 });
