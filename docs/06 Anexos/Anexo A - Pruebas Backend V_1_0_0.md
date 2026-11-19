@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../README.md)
+
 # Anexo A: Pruebas del backend (pytest)
 
 | Campo | Valor |
@@ -56,3 +58,5 @@ python -m scripts.prueba_carga 30 5
 
 P95: **30 s** (meta ≤ 45 s), promedio 155.0 km por plan. El motor usa todo el tiempo límite para seguir mejorando la
 solución con la Búsqueda Tabú.
+
+[← Volver al README Principal](../../README.md)

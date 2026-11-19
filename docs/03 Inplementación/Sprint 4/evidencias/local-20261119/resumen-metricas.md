@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../../../../README.md)
+
 ## Resultados de Playwright
 
 | Navegador | Aprobadas | Total | Éxito |
@@ -39,3 +41,4 @@
 | webkit | Interfaz (/login) | 10/10 | 10 | 20 |
 | webkit | API (/api/health) | 10/10 | 13 | 18 |
 
+[← Volver al README Principal](../../../../../README.md)

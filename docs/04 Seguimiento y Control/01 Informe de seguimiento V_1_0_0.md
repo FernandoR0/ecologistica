@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../README.md)
+
 # Informe de seguimiento
 
 | Campo | Valor |
@@ -19,3 +21,5 @@
 | 3 | 18 | 18 | 100 % | Ninguna | - |
 | 4 | 13 | 13 | 100 % | Ninguna | - |
 | 5 | 34 | 29 | 85 % | Encuesta SUS pendiente | Aplicar la encuesta a 5 usuarios |
+
+[← Volver al README Principal](../../README.md)

@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../README.md)
+
 # Informe final
 
 | Campo | Valor |
@@ -45,3 +47,5 @@ Tiempo: los Sprints 1 a 4 se completaron al 100 % de sus SP; el Sprint 5 está a
 - Agregar una bitácora de auditoría de acciones críticas (OWASP A09).
 - Corregir el trazo de la ruta re-optimizada en el mapa (DEF-03).
 - Ejecutar `pip-audit` y `npm audit` en el CI.
+
+[← Volver al README Principal](../../README.md)

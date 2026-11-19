@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../README.md)
+
 # Anexo D: Usabilidad (SUS)
 
 | Campo | Valor |
@@ -33,3 +35,5 @@ realizar las tareas: (1) registrar un pedido, (2) generar rutas, (3) registrar u
 
 ## Resultados
 Llenar `sus_resultados.csv` con las respuestas reales. Puntaje promedio: _Completar_ (meta ≥ 70).
+
+[← Volver al README Principal](../../README.md)

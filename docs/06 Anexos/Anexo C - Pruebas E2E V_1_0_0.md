@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../README.md)
+
 # Anexo C: Pruebas E2E
 
 | Campo | Valor |
@@ -30,3 +32,5 @@ pytest e2e -v
 **Resultado: 4 de 4 aprobadas.** En cada pantalla también se ejecuta axe-core (WCAG 2.1 AA): 0 violaciones.
 
 ![Rutas generadas](evidencias/e2e-07-rutas-generadas.png)
+
+[← Volver al README Principal](../../README.md)

@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../README.md)
+
 # Acta de cierre
 
 | Campo | Valor |
@@ -34,3 +36,5 @@
 |---|---|---|---|
 | Product Owner | Fernando Rodrigo Chaupis Espinoza | | |
 | Docente | Daniel Gamarra Moreno | | |
+
+[← Volver al README Principal](../../README.md)

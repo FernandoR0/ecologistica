@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../README.md)
+
 # Anexo B: Pruebas del frontend (Vitest)
 
 | Campo | Valor |
@@ -43,3 +45,5 @@ npm test -- --coverage
 
 Antes de estas pruebas la cobertura era 10.7 %; se agregaron 38 pruebas para que el Quality Gate de SonarQube
 (cobertura ≥ 80 %) se cumpla. Las pantallas también se recorren en el navegador real con las pruebas E2E del Anexo C.
+
+[← Volver al README Principal](../../README.md)

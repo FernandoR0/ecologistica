@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../README.md)
+
 # Informe técnico integral
 
 | Campo | Valor |
@@ -40,3 +42,5 @@ La ruta afectada conserva sus paradas entregadas; las pendientes se replanifican
 - Distancias aproximadas (Haversine × 1.3): integrar OSRM o la matriz de distancias de una API vial.
 - Geocodificación de direcciones (Nominatim).
 - Rastreo GPS en tiempo real del vehículo.
+
+[← Volver al README Principal](../../README.md)

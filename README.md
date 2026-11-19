@@ -5,6 +5,8 @@
 Proyecto Final de Asignatura - Taller de Proyectos 2, Universidad Continental, 2026-II · Docente: Daniel Gamarra Moreno
 
 [![CI](https://github.com/FernandoR0/ecologistica/actions/workflows/ci.yml/badge.svg)](https://github.com/FernandoR0/ecologistica/actions/workflows/ci.yml)
+[![Tests](https://github.com/FernandoR0/ecologistica/actions/workflows/tests.yml/badge.svg)](https://github.com/FernandoR0/ecologistica/actions/workflows/tests.yml)
+[![Deploy](https://github.com/FernandoR0/ecologistica/actions/workflows/deploy-production.yml/badge.svg)](https://github.com/FernandoR0/ecologistica/actions/workflows/deploy-production.yml)
 [![Green IT](https://github.com/FernandoR0/ecologistica/actions/workflows/green-audit.yml/badge.svg)](https://github.com/FernandoR0/ecologistica/actions/workflows/green-audit.yml)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=FernandoR0_ecologistica&metric=alert_status)](https://sonarcloud.io/summary/overall?id=FernandoR0_ecologistica&branch=main)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=FernandoR0_ecologistica&metric=coverage)](https://sonarcloud.io/summary/overall?id=FernandoR0_ecologistica&branch=main)
@@ -26,7 +28,7 @@ Proyecto Final de Asignatura - Taller de Proyectos 2, Universidad Continental, 2
 10. [Despliegue](#despliegue) (incluye [GitHub Codespaces](#probar-en-github-codespaces))
 11. [Pruebas y calidad](#pruebas-y-calidad)
 12. [Video explicativo](#video-explicativo)
-13. [Documentación por fases](#documentación-por-fases)
+13. [Documentación por fases](#documentación-por-fases) · [Fase 02: Planificación](#fase-02-planificación-del-proyecto) · [Sprint 4](#sprint-4-inspección-05) · [Fase 02: Planificación](#fase-02-planificación-del-proyecto) · [Sprint 4](#sprint-4-inspección-05)
 14. [Versionamiento](#versionamiento)
 15. [Licencia](#licencia)
 
@@ -213,16 +215,82 @@ incidente, dashboard, reporte de sostenibilidad con PDF y administración.
 
 ## Documentación por fases
 
-Índice completo: [docs/00 Índice de documentación](docs/00%20%C3%8Dndice%20de%20documentaci%C3%B3n.md)
+Cada documento tiene un enlace de regreso a este README.
 
-| Fase | Documentos |
-|---|---|
-| 1. Inicio | [docs/01 Inicio](docs/01%20Inicio) - enfoque, acta, visión, supuestos, interesados, RF, RNF, usuarios, reglas, stack, BD, C4, restricciones |
-| 2. Planificación | [docs/02 Planificación](docs/02%20Planificaci%C3%B3n) - transformación ágil, artefactos Jira, riesgos, presupuesto, cronograma |
-| 3. Implementación | [Sprint 1](docs/03%20Implementaci%C3%B3n/Sprint%201) · [Sprint 2](docs/03%20Implementaci%C3%B3n/Sprint%202) · [Sprint 3](docs/03%20Implementaci%C3%B3n/Sprint%203) · [Sprint 4](docs/03%20Implementaci%C3%B3n/Sprint%204) · [Sprint 5](docs/03%20Implementaci%C3%B3n/Sprint%205) · [Inspección 04 - Green IT](docs/03%20Implementaci%C3%B3n/reduccion%20del%20impacto%20ambiental) |
-| 4. Seguimiento y Control | [docs/04 Seguimiento y Control](docs/04%20Seguimiento%20y%20Control) |
-| 5. Cierre | [docs/05 Cierre](docs/05%20Cierre) |
-| Anexos | [docs/06 Anexos](docs/06%20Anexos) - pruebas, SUS, manual de usuario, defectos, incidentes, informe técnico |
+## Fase 01: Inicio del Proyecto
+
+- [01. Selección del enfoque del proyecto V_1_0_0](docs/01%20Inicio/01.%20Selecci%C3%B3n%20del%20enfoque%20del%20proyecto%20V_1_0_0.md)
+- [02. Acta de constitución V_1_0_0](docs/01%20Inicio/02.%20Acta%20de%20constituci%C3%B3n%20V_1_0_0.md)
+- [03. Declaración de la visión V_1_0_0](docs/01%20Inicio/03.%20Declaraci%C3%B3n%20de%20la%20visi%C3%B3n%20V_1_0_0.md)
+- [04. Registro de supuestos y restricciones V_1_0_0](docs/01%20Inicio/04.%20Registro%20de%20supuestos%20y%20restricciones%20V_1_0_0.md)
+- [05. Registro de interesados V_1_0_0](docs/01%20Inicio/05.%20Registro%20de%20interesados%20V_1_0_0.md)
+- [06. Requisitos funcionales V_1_0_0](docs/01%20Inicio/06.%20Requisitos%20funcionales%20V_1_0_0.md)
+- [07. Requisitos no funcionales V_1_0_0](docs/01%20Inicio/07.%20Requisitos%20no%20funcionales%20V_1_0_0.md)
+- [08. Usuarios V_1_0_0](docs/01%20Inicio/08.%20Usuarios%20V_1_0_0.md)
+- [09. Reglas de negocio V_1_0_0](docs/01%20Inicio/09.%20Reglas%20de%20negocio%20V_1_0_0.md)
+- [10. Stack tecnológico V_1_0_0](docs/01%20Inicio/10.%20Stack%20tecnol%C3%B3gico%20V_1_0_0.md)
+- [11. Base de datos V_1_0_0](docs/01%20Inicio/11.%20Base%20de%20datos%20V_1_0_0.md)
+- [12. Modelo C4 V_1_0_0](docs/01%20Inicio/12.%20Modelo%20C4%20V_1_0_0.md)
+- [13. Restricciones V_1_0_0](docs/01%20Inicio/13.%20Restricciones%20V_1_0_0.md)
+
+## Fase 02: Planificación del Proyecto
+
+- [01 Transformando a ágil V_1_0_0](docs/02%20Planificaci%C3%B3n/01%20Transformando%20a%20%C3%A1gil%20V_1_0_0.md)
+- [02 Artefactos Jira V_1_0_0](docs/02%20Planificaci%C3%B3n/02%20Artefactos%20Jira%20V_1_0_0.md)
+- [03 Registro de riesgos V_1_0_0](docs/02%20Planificaci%C3%B3n/03%20Registro%20de%20riesgos%20V_1_0_0.md)
+- [04 Presupuesto del proyecto V_1_0_0](docs/02%20Planificaci%C3%B3n/04%20Presupuesto%20del%20proyecto%20V_1_0_0.md)
+- [05 Cronograma de sprints V_1_0_0](docs/02%20Planificaci%C3%B3n/05%20Cronograma%20de%20sprints%20V_1_0_0.md)
+
+## Fase 03: Implementación
+
+### Sprint 1
+
+- [01 Informe de estado del proyecto V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%201/01%20Informe%20de%20estado%20del%20proyecto%20V_1_0_0.md)
+- [02 Registro de Impedimentos V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%201/02%20Registro%20de%20Impedimentos%20V_1_0_0.md)
+- [03 Revisión del Sprint V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%201/03%20Revisi%C3%B3n%20del%20Sprint%20V_1_0_0.md)
+- [04 Retrospectiva del Sprint V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%201/04%20Retrospectiva%20del%20Sprint%20V_1_0_0.md)
+
+### Sprint 2
+
+- [01 Informe de estado del proyecto V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%202/01%20Informe%20de%20estado%20del%20proyecto%20V_1_0_0.md)
+- [02 Registro de Impedimentos V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%202/02%20Registro%20de%20Impedimentos%20V_1_0_0.md)
+- [03 Revisión del Sprint V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%202/03%20Revisi%C3%B3n%20del%20Sprint%20V_1_0_0.md)
+- [04 Retrospectiva del Sprint V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%202/04%20Retrospectiva%20del%20Sprint%20V_1_0_0.md)
+
+### Sprint 03
+
+- [01 Revisión del Sprint V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/01%20Revisi%C3%B3n%20del%20Sprint%20V_1_0_0.md)
+- [02 Retrospectiva del Sprint V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/02%20Retrospectiva%20del%20Sprint%20V_1_0_0.md)
+- [03 Calidad de código V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/03%20Calidad%20de%20c%C3%B3digo%20V_1_0_0.md)
+- [04 OWASP V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/04%20OWASP%20V_1_0_0.md)
+- [05 WCAG V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/05%20WCAG%20V_1_0_0.md)
+
+### Inspección 04 - Reducción del impacto ambiental
+
+- [01 Informe de reduccion del impacto ambiental V_1_0_0](docs/03%20Implementaci%C3%B3n/reduccion%20del%20impacto%20ambiental/01%20Informe%20de%20reduccion%20del%20impacto%20ambiental%20V_1_0_0.md)
+- [02 Estandares Ingeniería de software V_1_0_0](docs/03%20Implementaci%C3%B3n/reduccion%20del%20impacto%20ambiental/02%20Estandares%20Ingenier%C3%ADa%20de%20software%20V_1_0_0.md)
+
+### Sprint 4 (Inspección 05)
+
+- [01 Revisión del Sprint V_1_0_0](docs/03%20Inplementaci%C3%B3n/Sprint%204/01%20Revisi%C3%B3n%20del%20Sprint%20V_1_0_0.md)
+- [02 Retrospectiva del Sprint V_1_0_0](docs/03%20Inplementaci%C3%B3n/Sprint%204/02%20Retrospectiva%20del%20Sprint%20V_1_0_0.md)
+- [03 Analisis PlayWrigth V_1_0_0](docs/03%20Inplementaci%C3%B3n/Sprint%204/03%20Analisis%20PlayWrigth%20V_1_0_0.md)
+- [04 Usabilidad V_1_0_0](docs/03%20Inplementaci%C3%B3n/Sprint%204/04%20Usabilidad%20V_1_0_0.md)
+
+### Estado de los workflows del Sprint 4
+
+[![CI](https://github.com/FernandoR0/ecologistica/actions/workflows/ci.yml/badge.svg)](https://github.com/FernandoR0/ecologistica/actions/workflows/ci.yml) [![Tests](https://github.com/FernandoR0/ecologistica/actions/workflows/tests.yml/badge.svg)](https://github.com/FernandoR0/ecologistica/actions/workflows/tests.yml) [![Deploy a producción](https://github.com/FernandoR0/ecologistica/actions/workflows/deploy-production.yml/badge.svg)](https://github.com/FernandoR0/ecologistica/actions/workflows/deploy-production.yml)
+
+## Anexos
+
+- [Anexo A - Pruebas Backend V_1_0_0](docs/06%20Anexos/Anexo%20A%20-%20Pruebas%20Backend%20V_1_0_0.md)
+- [Anexo B - Pruebas Frontend V_1_0_0](docs/06%20Anexos/Anexo%20B%20-%20Pruebas%20Frontend%20V_1_0_0.md)
+- [Anexo C - Pruebas E2E V_1_0_0](docs/06%20Anexos/Anexo%20C%20-%20Pruebas%20E2E%20V_1_0_0.md)
+- [Anexo D - Usabilidad SUS V_1_0_0](docs/06%20Anexos/Anexo%20D%20-%20Usabilidad%20SUS%20V_1_0_0.md)
+- [Informe técnico integral V_1_0_0](docs/06%20Anexos/Informe%20t%C3%A9cnico%20integral%20V_1_0_0.md)
+- [Manual de usuario V_1_0_0](docs/06%20Anexos/Manual%20de%20usuario%20V_1_0_0.md)
+- [Registro de defectos V_1_0_0](docs/06%20Anexos/Registro%20de%20defectos%20V_1_0_0.md)
+- [Registro de incidentes V_1_0_0](docs/06%20Anexos/Registro%20de%20incidentes%20V_1_0_0.md)
 
 ## Versionamiento
 
