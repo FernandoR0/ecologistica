@@ -3,26 +3,39 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user, solo_admin
-from app.core.security import bloqueo_login, create_token, hash_password, verify_password
+from app.api.deps import get_current_user, require_roles, solo_admin
+from app.core.security import (
+    bloqueado,
+    create_token,
+    hash_password,
+    limpiar_fallos,
+    registrar_fallo,
+    verify_password,
+)
 from app.db import get_db
 from app.models import Usuario
 from app.schemas import LoginIn, TokenOut, UsuarioIn, UsuarioOut
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
+MENSAJE_BLOQUEO = "Cuenta bloqueada 15 minutos por intentos fallidos"
 
 
 @router.post("/login", response_model=TokenOut)
 def login(datos: LoginIn, request: Request, db: Session = Depends(get_db)):
     correo = datos.correo.lower()
     request.state.correo_login = correo
-    if bloqueo_login.bloqueado(correo):
-        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "Cuenta bloqueada temporalmente por intentos fallidos")
     user = db.scalar(select(Usuario).where(Usuario.correo == correo))
+    if user is not None and bloqueado(user):
+        raise HTTPException(status.HTTP_423_LOCKED, MENSAJE_BLOQUEO)
     if user is None or not user.activo or not verify_password(datos.password, user.password_hash):
-        bloqueo_login.registrar_fallo(correo)
+        if user is not None:
+            registrar_fallo(user)
+            db.commit()
+            if bloqueado(user):
+                raise HTTPException(status.HTTP_423_LOCKED, MENSAJE_BLOQUEO)
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Credenciales inválidas")
-    bloqueo_login.limpiar(correo)
+    limpiar_fallos(user)
+    db.commit()
     return TokenOut(access_token=create_token(user.id, user.rol, user.correo), usuario=UsuarioOut.model_validate(user))
 
 
@@ -46,5 +59,5 @@ def crear_usuario(datos: UsuarioIn, db: Session = Depends(get_db), _: Usuario = 
 
 
 @router.get("/usuarios", response_model=list[UsuarioOut])
-def listar_usuarios(db: Session = Depends(get_db), _: Usuario = Depends(solo_admin)):
+def listar_usuarios(db: Session = Depends(get_db), _: Usuario = Depends(require_roles("ADMIN", "AUDITOR"))):
     return db.scalars(select(Usuario).order_by(Usuario.id)).all()

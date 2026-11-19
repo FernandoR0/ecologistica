@@ -1,0 +1,12 @@
+{
+  "navegador": "webkit",
+  "prueba": "tiempos-api",
+  "entorno": "local",
+  "endpoints": {
+    "GET /api/pedidos": 31,
+    "GET /api/vehiculos": 20,
+    "GET /api/conductores": 43,
+    "GET /api/clientes": 16,
+    "GET /api/indicadores": 10
+  }
+}

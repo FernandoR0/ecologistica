@@ -27,7 +27,7 @@ def instancia(semilla: int) -> Instancia:
             peso_kg=rnd.choice([20, 40, 60, 80, 120]), ventana_inicio=hora_a_min(ini), ventana_fin=hora_a_min(fin),
             servicio_min=10, prioridad=rnd.choice([1, 2, 2, 3]),
         ))
-    emisiones = [0.295, 0.196, 0.036]  # diésel 11 L, GLP 13 L, eléctrico 18 kWh por 100 km
+    emisiones = [0.298, 0.201, 0.036]  # diésel 9 km/L, GLP 7,5 km/L, eléctrico 5,5 km/kWh
     vehiculos = [VehiculoRecurso(id=k + 1, capacidad_kg=rnd.choice([600, 1000, 1500]), emision_kg_km=emisiones[k % 3])
                  for k in range(15)]
     return Instancia(DEPOSITO, pedidos, vehiculos)

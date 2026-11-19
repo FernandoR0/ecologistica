@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../README.md)
+
 # Manual de usuario
 
 | Campo | Valor |
@@ -37,3 +39,5 @@ Además de lo anterior, en **Sostenibilidad** registra acciones de compensación
 
 ## 5. Preguntas frecuentes
 - *¿Por qué un pedido quedó "sin asignar"?* No cabe en ningún vehículo, su ventana horaria es imposible o excede la jornada del conductor.
+
+[← Volver al README Principal](../../README.md)

@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../../README.md)
+
 # Estándares de ingeniería de software y guía de desarrollo verde
 
 | Campo | Valor |
@@ -60,6 +62,33 @@ Numeración según el borrador vigente de las WSG (https://w3c.github.io/sustywe
 | 4.2 Optimize browser caching | Caché del navegador | `immutable` para `/assets/`, ETag + 304 en la API |
 | 4.3 Compress your files | Comprimir | Brotli y Gzip en el frontend; Gzip en la API |
 
+### Pautas WSG 1.0 de las secciones 1, 2 y 3 aplicadas
+
+| Pauta | Aplicación en EcoLogística |
+|---|---|
+| 1.2 Assess and research visitor needs | El modo conductor y el dashboard muestran solo lo que cada rol necesita (menos datos y pantallas) |
+| 2.4 Avoid unnecessary or an overabundance of assets / diseño ligero | Interfaz sin fotografías ni fuentes externas; íconos en CSS y SVG en línea |
+| 3.1 Identify relevant technical indicators | Umbrales de Lighthouse en `lighthouserc.cjs` y presupuesto de Web Vitals en las pruebas Playwright |
+
+### Los 4 principios de la Green Software Foundation
+
+| Principio | Aplicación |
+|---|---|
+| Eficiencia de carbono | Menos gramos de CO₂e por visita (SWDM v4: 0,0360 g → 0,0101 g en el login) |
+| Eficiencia energética | Menos CPU por solicitud: precompresión en el build, caché de indicadores, consultas sin N+1 |
+| Conciencia de carbono | El motor Green VRP penaliza las emisiones de cada vehículo; los procesos pesados (prueba de carga) se ejecutan bajo demanda |
+| Eficiencia de hardware | Contenedores livianos (`python:3.12-slim`, `nginx-unprivileged:alpine`) y API sin estado que escala por réplicas |
+
+### Pautas de código limpio (Clean Code, SOLID, DRY, YAGNI)
+
+| Principio | Backend (FastAPI) | Frontend (React) |
+|---|---|---|
+| Clean Code | Nombres en español del dominio (`planificar`, `ventana_efectiva`); funciones cortas con una sola tarea | Componentes por pantalla; textos de error de la API mostrados tal cual |
+| SOLID - Responsabilidad única | Routers (HTTP), servicios (casos de uso) y `optimization/` (modelo matemático puro) separados | `api.ts` concentra el acceso HTTP; las pantallas solo presentan |
+| SOLID - Abierto/cerrado | `crud_router` genera los CRUD y admite una función `validar` sin modificarse | `CrudPage` recibe campos y columnas por configuración |
+| DRY | Paginación (`paginar`) y auditoría como middleware, escritas una sola vez | Un solo `CrudPage` para flota, conductores, clientes y pedidos |
+| YAGNI | Sin colas ni microservicios: el motor corre en proceso con límite de tiempo | Sin librerías de estado global ni de gráficos: React y CSS propios |
+
 ## 2.2 Guía de desarrollo verde
 
 Estas reglas son obligatorias para todo el equipo al agregar código nuevo.
@@ -107,6 +136,7 @@ El workflow `.github/workflows/green-audit.yml` corre en cada push a `main` y en
 ### Secuencia Git usada para versionar este entregable
 
 ```powershell
+mkdir "docs/03 Implementación/reduccion del impacto ambiental"
 git status
 git pull origin main
 git add backend/app backend/tests
@@ -139,3 +169,6 @@ git push origin main
 |---|---|---|---|
 | 1.0.0 | 13/11/2026 | Fernando Chaupis | Estándares, guía de desarrollo verde y matriz de optimizaciones de la Inspección 04 |
 | 1.1.0 | 14/11/2026 | Fernando Chaupis | Umbrales de la consigna en Lighthouse CI y cifras actualizadas con SWDM v4 |
+| 1.2.0 | 19/11/2026 | Fernando Chaupis | Pautas WSG 1.2, 2.4 y 3.1, 4 principios GSF, pautas Clean Code/SOLID/DRY/YAGNI y `mkdir` en la secuencia Git |
+
+[← Volver al README Principal](../../../README.md)

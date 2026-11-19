@@ -1,24 +1,32 @@
-/** RF-012 · Usuarios, parámetros del motor y bitácora de auditoría (solo ADMIN). */
+/** RF-012 · Usuarios, parámetros del motor, auditoría y resultados SUS. El AUDITOR solo consulta y exporta. */
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { api, apiPaginado, post, put, type Rol, type Usuario } from '../api';
+import { api, apiPaginado, descargar, post, put, type Rol, type Usuario } from '../api';
+import { useAuth } from '../auth';
 
 interface UsuarioFila extends Usuario { activo: boolean }
 interface Configuracion {
-  velocidad_kmh: number; factor_vial: number; peso_co2: number; servicio_min: number; limite_segundos: number;
-  precio_combustible_soles: number;
+  velocidad_kmh: number; velocidad_punta_kmh: number; factor_vial: number; peso_co2: number; servicio_min: number;
+  limite_segundos: number; precio_diesel_galon: number; costo_mantenimiento_km: number; digitos_placa_restringidos: string;
+}
+interface ResultadosSus {
+  n: number; promedio: number; grado: string; adjetivo: string; aprobado: boolean;
+  respuestas: { id: number; codigo_participante: string; perfil: string; respuestas: number[]; puntaje: number }[];
 }
 interface Registro { id: number; fecha: string; correo: string | null; accion: string; recurso: string; estado_http: number }
 
-const CAMPOS_CONF: { nombre: keyof Configuracion; etiqueta: string; paso: string }[] = [
+type CampoNumerico = Exclude<keyof Configuracion, 'digitos_placa_restringidos'>;
+const CAMPOS_CONF: { nombre: CampoNumerico; etiqueta: string; paso: string }[] = [
   { nombre: 'velocidad_kmh', etiqueta: 'Velocidad urbana promedio (km/h)', paso: '0.1' },
+  { nombre: 'velocidad_punta_kmh', etiqueta: 'Velocidad en hora punta 7-9 y 17-20 (km/h)', paso: '0.1' },
   { nombre: 'factor_vial', etiqueta: 'Factor vial (calles / línea recta)', paso: '0.01' },
   { nombre: 'peso_co2', etiqueta: 'Peso del CO₂ en el objetivo (Green VRP)', paso: '0.1' },
   { nombre: 'servicio_min', etiqueta: 'Minutos de descarga por parada', paso: '1' },
   { nombre: 'limite_segundos', etiqueta: 'Tiempo máximo del motor (s)', paso: '1' },
-  { nombre: 'precio_combustible_soles', etiqueta: 'Precio del diésel (S/ por galón)', paso: '0.01' },
+  { nombre: 'precio_diesel_galon', etiqueta: 'Precio del diésel (S/ por galón)', paso: '0.01' },
+  { nombre: 'costo_mantenimiento_km', etiqueta: 'Costo de mantenimiento (S/ por km)', paso: '0.01' },
 ];
 
-function Usuarios() {
+function Usuarios({ soloLectura }: { soloLectura: boolean }) {
   const [lista, setLista] = useState<UsuarioFila[]>([]);
   const [form, setForm] = useState({ nombre: '', correo: '', password: '', rol: 'PLANIFICADOR' as Rol });
   const [error, setError] = useState('');
@@ -51,24 +59,24 @@ function Usuarios() {
     <div className="tarjeta">
       <h2>Usuarios</h2>
       {error && <p className="error" role="alert">{error}</p>}
-      <form className="form-grid" onSubmit={crear} aria-label="Crear usuario">
+      {!soloLectura && <form className="form-grid" onSubmit={crear} aria-label="Crear usuario">
         <label>Nombre<input required minLength={3} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} /></label>
         <label>Correo<input type="email" required value={form.correo} onChange={(e) => setForm({ ...form, correo: e.target.value })} /></label>
         <label>Contraseña inicial<input type="password" required minLength={8} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /></label>
         <label>Rol
           <select value={form.rol} onChange={(e) => setForm({ ...form, rol: e.target.value as Rol })}>
-            <option>ADMIN</option><option>PLANIFICADOR</option><option>CONDUCTOR</option>
+            <option>ADMIN</option><option>PLANIFICADOR</option><option>CONDUCTOR</option><option>AUDITOR</option>
           </select>
         </label>
         <div className="acciones"><button type="submit">Crear usuario</button></div>
-      </form>
+      </form>}
       <table>
-        <thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th /></tr></thead>
+        <thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th>{!soloLectura && <th>Acción</th>}</tr></thead>
         <tbody>
           {lista.map((u) => (
             <tr key={u.id}>
               <td>{u.nombre}</td><td>{u.correo}</td><td>{u.rol}</td><td>{u.activo ? 'Activo' : 'Inactivo'}</td>
-              <td><button className="secundario" onClick={() => cambiar(u)}>{u.activo ? 'Desactivar' : 'Activar'}</button></td>
+              {!soloLectura && <td><button className="secundario" onClick={() => cambiar(u)}>{u.activo ? 'Desactivar' : 'Activar'}</button></td>}
             </tr>
           ))}
         </tbody>
@@ -107,6 +115,9 @@ function ParametrosMotor() {
             onChange={(e) => setConf({ ...conf, [c.nombre]: Number(e.target.value) })} />
         </label>
       ))}
+      <label>Regla de placa por día (ej. 1:1,2;3:5,6 = lunes dígitos 1 y 2; vacío = sin restricción)
+        <input value={conf.digitos_placa_restringidos} onChange={(e) => setConf({ ...conf, digitos_placa_restringidos: e.target.value })} />
+      </label>
       <div className="acciones"><button type="submit">Guardar parámetros</button></div>
       {mensaje && <p role="status">{mensaje}</p>}
       {error && <p className="error" role="alert">{error}</p>}
@@ -127,7 +138,10 @@ function Auditoria() {
   const paginas = Math.max(1, Math.ceil(total / 12));
   return (
     <div className="tarjeta">
-      <h2>Bitácora de auditoría</h2>
+      <header className="fila-titulo">
+        <h2>Bitácora de auditoría</h2>
+        <button className="secundario" onClick={() => descargar('/auditoria/exportar.csv', 'auditoria.csv')}>Exportar CSV</button>
+      </header>
       <div className="tabla-scroll">
         <table>
           <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Recurso</th><th>Resultado</th></tr></thead>
@@ -152,13 +166,47 @@ function Auditoria() {
   );
 }
 
+function ResultadosEncuesta() {
+  const [r, setR] = useState<ResultadosSus | null>(null);
+  useEffect(() => {
+    api<ResultadosSus>('/sus/resultados').then(setR).catch(() => setR(null));
+  }, []);
+  if (!r) return null;
+  return (
+    <div className="tarjeta">
+      <h2>Resultados de la encuesta SUS</h2>
+      <p>
+        n = {r.n} · promedio <b>{r.promedio}</b> · grado {r.grado} ({r.adjetivo}) ·{' '}
+        {r.aprobado ? 'supera el umbral de 68' : 'no supera el umbral de 68'}
+      </p>
+      <div className="tabla-scroll">
+        <table>
+          <thead><tr><th>Participante</th><th>Perfil</th>{Array.from({ length: 10 }, (_, i) => <th key={i}>P{i + 1}</th>)}<th>SUS</th></tr></thead>
+          <tbody>
+            {r.respuestas.map((f) => (
+              <tr key={f.id}>
+                <td>{f.codigo_participante}</td><td>{f.perfil}</td>
+                {f.respuestas.map((v, i) => <td key={i}>{v}</td>)}<td>{f.puntaje}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 export function Administracion() {
+  const { usuario } = useAuth();
+  const esAdmin = usuario?.rol === 'ADMIN';
   return (
     <section>
       <h1>Administración</h1>
-      <Usuarios />
-      <ParametrosMotor />
+      {!esAdmin && <p className="muted">Acceso de auditor: solo consulta y exportación.</p>}
+      <Usuarios soloLectura={!esAdmin} />
+      {esAdmin && <ParametrosMotor />}
       <Auditoria />
+      <ResultadosEncuesta />
     </section>
   );
 }

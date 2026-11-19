@@ -14,7 +14,9 @@ const Rutas = lazy(() => import('./pages/Rutas').then((m) => ({ default: m.Rutas
 const Pedidos = lazy(() => import('./pages/Gestion').then((m) => ({ default: m.Pedidos })));
 const Vehiculos = lazy(() => import('./pages/Gestion').then((m) => ({ default: m.Vehiculos })));
 const Conductores = lazy(() => import('./pages/Gestion').then((m) => ({ default: m.Conductores })));
-const Preferencias = lazy(() => import('./pages/Gestion').then((m) => ({ default: m.Preferencias })));
+const Clientes = lazy(() => import('./pages/Gestion').then((m) => ({ default: m.Clientes })));
+const MiRuta = lazy(() => import('./pages/MiRuta').then((m) => ({ default: m.MiRuta })));
+const Encuesta = lazy(() => import('./pages/Encuesta').then((m) => ({ default: m.Encuesta })));
 const Administracion = lazy(() => import('./pages/Administracion').then((m) => ({ default: m.Administracion })));
 
 const GESTION = ['ADMIN', 'PLANIFICADOR'] as const;
@@ -30,13 +32,15 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/login" element={<Login />} />
           <Route element={<Protegida>{cargando('Cargando…', <Layout />)}</Protegida>}>
             <Route index element={cargando('Cargando indicadores…', <Inicio />)} />
-            <Route path="rutas" element={cargando('Cargando mapa…', <Rutas />)} />
+            <Route path="rutas" element={<Protegida roles={['ADMIN', 'PLANIFICADOR', 'AUDITOR']}>{cargando('Cargando mapa…', <Rutas />)}</Protegida>} />
+            <Route path="mi-ruta" element={<Protegida roles={['CONDUCTOR']}>{cargando('Cargando tu ruta…', <MiRuta />)}</Protegida>} />
+            <Route path="encuesta" element={cargando('Cargando encuesta…', <Encuesta />)} />
             <Route path="pedidos" element={<Protegida roles={[...GESTION]}>{cargando('Cargando pedidos…', <Pedidos />)}</Protegida>} />
             <Route path="vehiculos" element={<Protegida roles={[...GESTION]}>{cargando('Cargando flota…', <Vehiculos />)}</Protegida>} />
             <Route path="conductores" element={<Protegida roles={[...GESTION]}>{cargando('Cargando conductores…', <Conductores />)}</Protegida>} />
-            <Route path="preferencias" element={<Protegida roles={[...GESTION]}>{cargando('Cargando preferencias…', <Preferencias />)}</Protegida>} />
+            <Route path="clientes" element={<Protegida roles={[...GESTION]}>{cargando('Cargando clientes…', <Clientes />)}</Protegida>} />
             <Route path="sostenibilidad" element={cargando('Cargando reporte…', <SostenibilidadPage />)} />
-            <Route path="administracion" element={<Protegida roles={['ADMIN']}>{cargando('Cargando administración…', <Administracion />)}</Protegida>} />
+            <Route path="administracion" element={<Protegida roles={['ADMIN', 'AUDITOR']}>{cargando('Cargando administración…', <Administracion />)}</Protegida>} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -4,13 +4,15 @@ import type { Rol } from '../api';
 
 const MENU: { a: string; texto: string; roles?: Rol[] }[] = [
   { a: '/', texto: 'Dashboard' },
-  { a: '/rutas', texto: 'Rutas' },
+  { a: '/rutas', texto: 'Rutas', roles: ['ADMIN', 'PLANIFICADOR', 'AUDITOR'] },
+  { a: '/mi-ruta', texto: 'Mi ruta', roles: ['CONDUCTOR'] },
   { a: '/pedidos', texto: 'Pedidos', roles: ['ADMIN', 'PLANIFICADOR'] },
   { a: '/vehiculos', texto: 'Flota', roles: ['ADMIN', 'PLANIFICADOR'] },
   { a: '/conductores', texto: 'Conductores', roles: ['ADMIN', 'PLANIFICADOR'] },
-  { a: '/preferencias', texto: 'Preferencias', roles: ['ADMIN', 'PLANIFICADOR'] },
+  { a: '/clientes', texto: 'Clientes', roles: ['ADMIN', 'PLANIFICADOR'] },
   { a: '/sostenibilidad', texto: 'Sostenibilidad' },
-  { a: '/administracion', texto: 'Administración', roles: ['ADMIN'] },
+  { a: '/administracion', texto: 'Administración', roles: ['ADMIN', 'AUDITOR'] },
+  { a: '/encuesta', texto: 'Encuesta SUS' },
 ];
 
 export function Layout() {

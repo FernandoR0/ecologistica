@@ -44,6 +44,7 @@ export const USUARIOS: Record<Rol, { id: number; correo: string; nombre: string;
   ADMIN: { id: 1, correo: 'admin@ecologistica.pe', nombre: 'Administrador', rol: 'ADMIN' },
   PLANIFICADOR: { id: 2, correo: 'plan@ecologistica.pe', nombre: 'Rosa', rol: 'PLANIFICADOR' },
   CONDUCTOR: { id: 3, correo: 'cond@ecologistica.pe', nombre: 'Luis', rol: 'CONDUCTOR' },
+  AUDITOR: { id: 4, correo: 'audi@ecologistica.pe', nombre: 'Auditor', rol: 'AUDITOR' },
 };
 
 /** Renderiza con sesión iniciada (token en sessionStorage y /auth/me simulado). */
@@ -59,17 +60,23 @@ export function renderConSesion(ui: ReactNode, rol: Rol, rutas: Record<string, M
 }
 
 export const VEHICULO = {
-  id: 1, placa: 'ABC-101', tipo: 'Furgón', capacidad_kg: 1500, combustible: 'DIESEL', consumo_100km: 11, activo: true,
+  id: 1, placa: 'ABC-101', tipo: 'CAMIONETA', capacidad_kg: 1500, volumen_m3: 8, combustible: 'DIESEL', rendimiento: 9,
+  factor_emision_kg_km: 0.2978, anio_fabricacion: 2018, restringido_centro: false, activo: true,
 };
+
+const pedido = (id: number, cliente: string, lat: number, lng: number, peso: number) => ({
+  id, codigo: `PED-00${id}`, cliente_nombre: cliente, direccion: 'Jr. Real 100', punto_referencia: 'Frente al mercado',
+  lat, lng, peso_kg: peso, ventana_inicio: '08:00', ventana_fin: '12:00',
+});
 
 export const RUTA = {
   id: 7, fecha: '2026-11-16', vehiculo: VEHICULO, conductor: { id: 1, nombre: 'Luis Quispe' },
-  hora_inicio: '08:00', hora_fin: '10:30', distancia_km: 12.5, duracion_min: 150, co2_kg: 3.68,
+  hora_inicio: '08:00', hora_fin: '10:30', distancia_km: 12.5, duracion_min: 150, descanso_min: 0, co2_kg: 3.68,
   distancia_base_km: 20.1, co2_base_kg: 5.9, estado: 'PLANIFICADA', ruta_origen_id: null,
   paradas: [
-    { id: 1, orden: 1, hora_llegada: '08:20', estado: 'PENDIENTE',
-      pedido: { id: 11, codigo: 'PED-0011', cliente: 'Bodega Doña Rosa', lat: -12.06, lng: -75.21, peso_kg: 80 } },
-    { id: 2, orden: 2, hora_llegada: '09:05', estado: 'PENDIENTE',
-      pedido: { id: 12, codigo: 'PED-0012', cliente: 'Minimarket El Sol', lat: -12.07, lng: -75.2, peso_kg: 120 } },
+    { id: 1, orden: 1, hora_llegada: '08:20', distancia_tramo_km: 2.4, tiempo_tramo_min: 10, congestion: 'ROJO' as const,
+      fuera_ventana: false, estado: 'PENDIENTE', pedido: pedido(11, 'Bodega Doña Rosa', -12.06, -75.21, 80) },
+    { id: 2, orden: 2, hora_llegada: '09:05', distancia_tramo_km: 1.8, tiempo_tramo_min: 5, congestion: 'VERDE' as const,
+      fuera_ventana: true, estado: 'PENDIENTE', pedido: pedido(12, 'Minimarket El Sol', -12.07, -75.2, 120) },
   ],
 };

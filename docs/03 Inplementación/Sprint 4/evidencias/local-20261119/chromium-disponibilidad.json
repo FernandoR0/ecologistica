@@ -1,0 +1,23 @@
+{
+  "navegador": "chromium",
+  "prueba": "disponibilidad",
+  "entorno": "local",
+  "destinos": [
+    {
+      "destino": "Interfaz (/login)",
+      "url": "/login",
+      "total": 10,
+      "exitosas": 10,
+      "p50_ms": 8,
+      "p95_ms": 11
+    },
+    {
+      "destino": "API (/api/health)",
+      "url": "/api/health",
+      "total": 10,
+      "exitosas": 10,
+      "p50_ms": 14,
+      "p95_ms": 19
+    }
+  ]
+}

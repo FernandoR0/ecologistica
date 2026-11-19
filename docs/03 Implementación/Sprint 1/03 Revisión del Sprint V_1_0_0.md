@@ -1,46 +1,34 @@
-# Revisión del Sprint 1
+[← Volver al README Principal](../../../README.md)
+
+# Revisión del sprint
 
 **Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
 
-**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
-
-**Docente:** Daniel Gamarra Moreno
-
-**Fecha:** 13/11/2026
-
-**Versión:** 1.0.0
-
----
-
-**Sprint 1:** 02/09/2026 - 15/09/2026
-
-**Sprint Goal:** Base del sistema: autenticación con roles y gestión de flota, conductores y pedidos.
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza
 
 ## Historias de Usuario completadas en este Sprint
 
-| ID | Criterio verificado | Estado |
-|---|---|---|
-| US-001 | Login, bloqueo tras 5 intentos y 403 por rol | Completada |
-| US-002 | Alta, edición, placa duplicada (409) y baja lógica | Completada |
-| US-003 | Conductor con vehículo asignado | Completada |
-| US-004 | Pedidos validados y listado paginado | Completada |
-
-**Story points completados:** 16 de 16
+| Código | Título | Criterios de aceptación verificados | Pull Request / commit de cierre | Estado |
+|---|---|---|---|---|
+| US-001 | Iniciar sesión según mi rol | Acceso correcto abre el Dashboard con el menú del rol; credenciales inválidas responden 401; endpoints protegidos responden 401/403 según el rol. | [f5eb0b0](https://github.com/FernandoR0/ecologistica/commit/f5eb0b0) (API) · [c0ec63b](https://github.com/FernandoR0/ecologistica/commit/c0ec63b) (pantalla) | Done |
+| US-002 | Gestionar la flota | Alta, edición y baja lógica de vehículos; placa duplicada responde 409. | [f5eb0b0](https://github.com/FernandoR0/ecologistica/commit/f5eb0b0) · [c0ec63b](https://github.com/FernandoR0/ecologistica/commit/c0ec63b) | Done |
+| US-003 | Gestionar conductores | Alta con DNI de 8 dígitos y vehículo asignado; DNI duplicado responde 409. | [f5eb0b0](https://github.com/FernandoR0/ecologistica/commit/f5eb0b0) · [c0ec63b](https://github.com/FernandoR0/ecologistica/commit/c0ec63b) | Done |
+| US-004 | Registrar clientes y sus preferencias | Horario preferido y días de atención; horario con fin antes del inicio rechazado (422). | [f5eb0b0](https://github.com/FernandoR0/ecologistica/commit/f5eb0b0) · [c0ec63b](https://github.com/FernandoR0/ecologistica/commit/c0ec63b) | Done |
+| US-005 | Registrar pedidos | Pedido con ubicación, peso y ventana; ventana inválida rechazada (422); listado paginado de 12 en 12. | [f5eb0b0](https://github.com/FernandoR0/ecologistica/commit/f5eb0b0) · [2ab9ad9 (paginación)](https://github.com/FernandoR0/ecologistica/commit/2ab9ad9) | Done |
+| ENB-001 | Integración continua | `ci.yml` ejecuta Ruff, pytest, ESLint, Vitest y build en cada push. | [e584b29](https://github.com/FernandoR0/ecologistica/commit/e584b29) | Done |
 
 ## Demostración del trabajo completado
 
-- **US-001:** Login, bloqueo tras 5 intentos y 403 por rol. ![US-001](<../../06 Anexos/evidencias/e2e-01-login.png>)
-- **US-002:** Alta, edición, placa duplicada (409) y baja lógica. ![US-002](<../../06 Anexos/evidencias/e2e-04-flota.png>)
-- **US-003:** Conductor con vehículo asignado. ![US-003](<../../06 Anexos/evidencias/e2e-05-conductores.png>)
-- **US-004:** Pedidos validados y listado paginado. ![US-004](<../../06 Anexos/evidencias/e2e-03-pedidos.png>)
+Demostración a los stakeholders de las funcionalidades implementadas.
 
-Pruebas automáticas del sprint: test_auth.py (7 pruebas), test_crud_vehiculo_y_duplicado, test_validacion_pedido.
+- Entorno: ejecución local con `docker compose up` (PostgreSQL 16, API FastAPI y frontend React).
+- Se mostró el acceso con los tres roles iniciales, el alta de un vehículo y el rechazo de la placa duplicada, el alta de un conductor con su vehículo y el registro de un pedido con ventana horaria.
+- Evidencias: ![Acceso](<../../06 Anexos/evidencias/e2e-01-login.png>) ![Flota](<../../06 Anexos/evidencias/e2e-04-flota.png>) ![Pedidos](<../../06 Anexos/evidencias/e2e-03-pedidos.png>)
+- Pruebas automáticas que respaldan la demostración: `backend/tests/test_auth.py` y `backend/tests/test_api.py` (CRUD, duplicados y validaciones).
 
 ## Pendientes
 
-- Ninguno. Todas las historias comprometidas quedaron completadas.
-
-## Retroalimentación del docente
+- Los campos del enunciado oficial que no estaban en el primer formulario (volumen, año de fabricación, factor de emisión del vehículo; categoría de licencia, experiencia y disponibilidad del conductor; prioridad y tipo de producto del pedido) y el rol AUDITOR se incorporaron en el Sprint 4 como cambio de alcance aprobado (ver la revisión del Sprint 4, commit [fabf1ca](https://github.com/FernandoR0/ecologistica/commit/fabf1ca)).
 
 ---
 
@@ -48,4 +36,7 @@ Pruebas automáticas del sprint: test_auth.py (7 pruebas), test_crud_vehiculo_y_
 
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
-| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |
+| 1.0.0 | 15/09/2026 | Fernando Rodrigo Chaupis Espinoza | Revisión del sprint |
+| 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Plantilla oficial de la consigna, enlaces a commits, enlace de retorno al README y nota de los campos completados en el Sprint 4 |
+
+[← Volver al README Principal](../../../README.md)

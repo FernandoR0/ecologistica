@@ -25,3 +25,10 @@ frontend/coverage/
 .DS_Store
 Thumbs.db
 *.tsbuildinfo
+
+# Pruebas E2E
+playwright-report/
+test-results/
+blob-report/
+build/
+e2e_test.db

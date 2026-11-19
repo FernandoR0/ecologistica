@@ -1,0 +1,10 @@
+{
+  "navegador": "chromium",
+  "prueba": "web-vitals",
+  "entorno": "local",
+  "ttfb_ms": 5,
+  "fcp_ms": 192,
+  "lcp_ms": 192,
+  "load_ms": 86,
+  "bytes": 79288
+}

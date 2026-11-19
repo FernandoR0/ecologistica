@@ -118,6 +118,7 @@ describe('Layout', () => {
     const menu = await screen.findByRole('navigation', { name: 'Menú principal' });
     await screen.findByText(/Luis/);
     expect(menu).not.toHaveTextContent('Pedidos');
-    expect(menu).toHaveTextContent('Rutas');
+    expect(menu).toHaveTextContent('Mi ruta');
+    expect(menu).toHaveTextContent('Encuesta SUS');
   });
 });

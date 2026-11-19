@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../README.md)
+
 # Artefactos Jira - Evidencia de Configuración
 
 **Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
@@ -101,3 +103,5 @@ Estado actual: 18 issues cerrados (hechos) y 1 abierto (ENB-002: falta la encues
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
 | 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |
+
+[← Volver al README Principal](../../README.md)

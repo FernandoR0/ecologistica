@@ -1,6 +1,6 @@
-/** RF-001 flota · RF-002 pedidos · RF-008 conductores · RF-009 preferencias. */
-import { useEffect, useState, type FormEvent } from 'react';
-import { api, del, put } from '../api';
+/** RF-001 flota · RF-002 pedidos · RF-008 conductores · RF-009 clientes. */
+import { useEffect, useState } from 'react';
+import { api, type Cliente, type Vehiculo } from '../api';
 import { useAuth } from '../auth';
 import { CrudPage } from '../components/CrudPage';
 
@@ -8,6 +8,9 @@ const usePuedeEditar = () => {
   const { usuario } = useAuth();
   return usuario?.rol === 'ADMIN' || usuario?.rol === 'PLANIFICADOR';
 };
+
+const DISTRITOS = ['Huancayo', 'El Tambo', 'Chilca'];
+const CATEGORIAS = ['A-I', 'A-IIa', 'A-IIb', 'A-IIIa', 'A-IIIb', 'A-IIIc', 'B-IIb', 'B-IIc'];
 
 export function Vehiculos() {
   return (
@@ -17,25 +20,42 @@ export function Vehiculos() {
       puedeEditar={usePuedeEditar()}
       campos={[
         { nombre: 'placa', etiqueta: 'Placa', requerido: true, soloCrear: true },
-        { nombre: 'tipo', etiqueta: 'Tipo' },
-        { nombre: 'capacidad_kg', etiqueta: 'Capacidad (kg)', tipo: 'number', requerido: true },
-        { nombre: 'combustible', etiqueta: 'Combustible', tipo: 'select', opciones: ['DIESEL', 'GASOLINA', 'GLP', 'GNV', 'ELECTRICO'] },
-        { nombre: 'consumo_100km', etiqueta: 'Consumo /100 km (L o kWh)', tipo: 'number', paso: '0.1', requerido: true },
+        { nombre: 'tipo', etiqueta: 'Tipo', tipo: 'select', opciones: ['CAMIONETA', 'FURGON', 'MOTO'], requerido: true },
+        { nombre: 'capacidad_kg', etiqueta: 'Capacidad de carga (kg)', tipo: 'number', requerido: true },
+        { nombre: 'volumen_m3', etiqueta: 'Volumen (m³)', tipo: 'number', paso: '0.1', requerido: true },
+        { nombre: 'combustible', etiqueta: 'Combustible', tipo: 'select', opciones: ['DIESEL', 'GASOLINA', 'GLP', 'GNV', 'ELECTRICO'], requerido: true },
+        { nombre: 'rendimiento', etiqueta: 'Rendimiento (km/L, km/m³ o km/kWh)', tipo: 'number', paso: '0.1', requerido: true },
+        { nombre: 'anio_fabricacion', etiqueta: 'Año de fabricación', tipo: 'number', requerido: true },
+        { nombre: 'valor_adquisicion_soles', etiqueta: 'Valor de adquisición (S/)', tipo: 'number' },
+        { nombre: 'seguro_anual_soles', etiqueta: 'Seguros por año: SOAT + vehicular (S/)', tipo: 'number' },
         { nombre: 'activo', etiqueta: 'Activo', tipo: 'checkbox' },
       ]}
       columnas={[
         { campo: 'placa', etiqueta: 'Placa' },
         { campo: 'tipo', etiqueta: 'Tipo' },
-        { campo: 'capacidad_kg', etiqueta: 'Capacidad (kg)' },
+        { campo: 'capacidad_kg', etiqueta: 'kg' },
+        { campo: 'volumen_m3', etiqueta: 'm³' },
         { campo: 'combustible', etiqueta: 'Combustible' },
-        { campo: 'consumo_100km', etiqueta: 'Consumo' },
+        { campo: 'rendimiento', etiqueta: 'Rendimiento' },
+        { campo: 'factor_emision_kg_km', etiqueta: 'kg CO₂/km' },
+        { campo: 'anio_fabricacion', etiqueta: 'Año' },
+        { campo: 'restringido_centro', etiqueta: 'Restringido en el Centro' },
         { campo: 'activo', etiqueta: 'Activo' },
       ]}
     />
   );
 }
 
+function useVehiculos() {
+  const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
+  useEffect(() => {
+    api<Vehiculo[]>('/vehiculos?activo=true&limite=100').then(setVehiculos).catch(() => setVehiculos([]));
+  }, []);
+  return vehiculos.map((v) => ({ valor: v.id, etiqueta: `${v.placa} (${v.tipo})` }));
+}
+
 export function Conductores() {
+  const vehiculos = useVehiculos();
   return (
     <CrudPage
       titulo="Conductores"
@@ -44,11 +64,14 @@ export function Conductores() {
       campos={[
         { nombre: 'nombre', etiqueta: 'Nombre', requerido: true },
         { nombre: 'dni', etiqueta: 'DNI', requerido: true, soloCrear: true },
-        { nombre: 'licencia', etiqueta: 'Licencia', requerido: true },
-        { nombre: 'telefono', etiqueta: 'Teléfono' },
-        { nombre: 'hora_inicio', etiqueta: 'Inicio de jornada', tipo: 'time' },
-        { nombre: 'jornada_max_min', etiqueta: 'Jornada máx. (min)', tipo: 'number' },
-        { nombre: 'vehiculo_id', etiqueta: 'ID vehículo asignado', tipo: 'number' },
+        { nombre: 'licencia', etiqueta: 'N.º de licencia', requerido: true },
+        { nombre: 'categoria_licencia', etiqueta: 'Categoría de licencia', tipo: 'select', opciones: CATEGORIAS, requerido: true },
+        { nombre: 'anios_experiencia', etiqueta: 'Años de experiencia', tipo: 'number' },
+        { nombre: 'telefono', etiqueta: 'Teléfono de contacto' },
+        { nombre: 'disponible_desde', etiqueta: 'Disponible desde', tipo: 'time' },
+        { nombre: 'disponible_hasta', etiqueta: 'Disponible hasta', tipo: 'time' },
+        { nombre: 'jornada_max_min', etiqueta: 'Jornada máxima (min)', tipo: 'number' },
+        { nombre: 'vehiculo_id', etiqueta: 'Vehículo asignado', tipo: 'select', opciones: vehiculos, numerico: true },
         { nombre: 'partida_lat', etiqueta: 'Punto de partida: latitud (vacío = depósito)', tipo: 'number', paso: 'any' },
         { nombre: 'partida_lng', etiqueta: 'Punto de partida: longitud', tipo: 'number', paso: 'any' },
         { nombre: 'activo', etiqueta: 'Activo', tipo: 'checkbox' },
@@ -56,9 +79,11 @@ export function Conductores() {
       columnas={[
         { campo: 'nombre', etiqueta: 'Nombre' },
         { campo: 'dni', etiqueta: 'DNI' },
-        { campo: 'licencia', etiqueta: 'Licencia' },
-        { campo: 'hora_inicio', etiqueta: 'Inicio' },
-        { campo: 'jornada_max_min', etiqueta: 'Jornada (min)' },
+        { campo: 'categoria_licencia', etiqueta: 'Licencia' },
+        { campo: 'anios_experiencia', etiqueta: 'Experiencia (años)' },
+        { campo: 'telefono', etiqueta: 'Teléfono' },
+        { campo: 'disponible_desde', etiqueta: 'Desde' },
+        { campo: 'disponible_hasta', etiqueta: 'Hasta' },
         { campo: 'vehiculo_id', etiqueta: 'Vehículo' },
         { campo: 'activo', etiqueta: 'Activo' },
       ]}
@@ -66,7 +91,46 @@ export function Conductores() {
   );
 }
 
+export function Clientes() {
+  return (
+    <CrudPage
+      titulo="Clientes"
+      ruta="/clientes"
+      puedeEditar={usePuedeEditar()}
+      campos={[
+        { nombre: 'nombre', etiqueta: 'Nombre del cliente', requerido: true },
+        { nombre: 'telefono', etiqueta: 'Teléfono' },
+        { nombre: 'direccion', etiqueta: 'Dirección', requerido: true },
+        { nombre: 'distrito', etiqueta: 'Distrito', tipo: 'select', opciones: DISTRITOS, requerido: true },
+        { nombre: 'punto_referencia', etiqueta: 'Punto de referencia', ayuda: 'Ejemplo: frente a la bodega El Ahorro' },
+        { nombre: 'restricciones_acceso', etiqueta: 'Restricciones de acceso', ayuda: 'Ejemplo: calle angosta, solo camioneta' },
+        { nombre: 'hora_desde', etiqueta: 'Recibe desde', tipo: 'time' },
+        { nombre: 'hora_hasta', etiqueta: 'Recibe hasta', tipo: 'time' },
+        { nombre: 'dias_atencion', etiqueta: 'Días de atención (LU,MA,MI,JU,VI,SA,DO)' },
+        { nombre: 'lat', etiqueta: 'Latitud', tipo: 'number', paso: 'any', requerido: true },
+        { nombre: 'lng', etiqueta: 'Longitud', tipo: 'number', paso: 'any', requerido: true },
+        { nombre: 'activo', etiqueta: 'Activo', tipo: 'checkbox' },
+      ]}
+      columnas={[
+        { campo: 'nombre', etiqueta: 'Cliente' },
+        { campo: 'distrito', etiqueta: 'Distrito' },
+        { campo: 'hora_desde', etiqueta: 'Desde' },
+        { campo: 'hora_hasta', etiqueta: 'Hasta' },
+        { campo: 'dias_atencion', etiqueta: 'Días' },
+        { campo: 'punto_referencia', etiqueta: 'Punto de referencia' },
+        { campo: 'restricciones_acceso', etiqueta: 'Restricciones de acceso' },
+      ]}
+    />
+  );
+}
+
 export function Pedidos() {
+  const [clientes, setClientes] = useState<{ valor: number; etiqueta: string }[]>([]);
+  useEffect(() => {
+    api<Cliente[]>('/clientes?activo=true&limite=100')
+      .then((cs) => setClientes(cs.map((c) => ({ valor: c.id, etiqueta: c.nombre }))))
+      .catch(() => setClientes([]));
+  }, []);
   return (
     <CrudPage
       titulo="Pedidos"
@@ -75,94 +139,29 @@ export function Pedidos() {
       puedeEditar={usePuedeEditar()}
       campos={[
         { nombre: 'codigo', etiqueta: 'Código', requerido: true, soloCrear: true },
-        { nombre: 'cliente', etiqueta: 'Cliente', requerido: true },
-        { nombre: 'direccion', etiqueta: 'Dirección', requerido: true },
-        { nombre: 'distrito', etiqueta: 'Distrito', tipo: 'select', opciones: ['Huancayo', 'El Tambo', 'Chilca', 'Pilcomayo'] },
-        { nombre: 'lat', etiqueta: 'Latitud', tipo: 'number', paso: 'any', requerido: true },
-        { nombre: 'lng', etiqueta: 'Longitud', tipo: 'number', paso: 'any', requerido: true },
-        { nombre: 'peso_kg', etiqueta: 'Peso (kg)', tipo: 'number', requerido: true },
-        { nombre: 'ventana_inicio', etiqueta: 'Ventana desde', tipo: 'time' },
-        { nombre: 'ventana_fin', etiqueta: 'Ventana hasta', tipo: 'time' },
-        { nombre: 'prioridad', etiqueta: 'Prioridad (1 alta – 3 baja)', tipo: 'number' },
+        { nombre: 'cliente_id', etiqueta: 'Cliente', tipo: 'select', opciones: clientes, numerico: true, requerido: true, soloCrear: true },
+        { nombre: 'direccion', etiqueta: 'Dirección (vacío = la del cliente)' },
+        { nombre: 'punto_referencia', etiqueta: 'Punto de referencia' },
+        { nombre: 'lat', etiqueta: 'Latitud (vacío = la del cliente)', tipo: 'number', paso: 'any' },
+        { nombre: 'lng', etiqueta: 'Longitud', tipo: 'number', paso: 'any' },
+        { nombre: 'peso_kg', etiqueta: 'Peso (kg)', tipo: 'number', paso: '0.1', requerido: true },
+        { nombre: 'volumen_m3', etiqueta: 'Volumen (m³)', tipo: 'number', paso: '0.01' },
+        { nombre: 'ventana_inicio', etiqueta: 'Entregar desde (vacío = horario del cliente)', tipo: 'time' },
+        { nombre: 'ventana_fin', etiqueta: 'Entregar hasta', tipo: 'time' },
+        { nombre: 'prioridad', etiqueta: 'Prioridad', tipo: 'select', opciones: ['EXPRESS', 'ESTANDAR', 'ECONOMICO'] },
+        { nombre: 'tipo_producto', etiqueta: 'Tipo de producto', tipo: 'select', opciones: ['PERECEDERO', 'NO_PERECEDERO'] },
       ]}
       columnas={[
         { campo: 'codigo', etiqueta: 'Código' },
-        { campo: 'cliente', etiqueta: 'Cliente' },
-        { campo: 'distrito', etiqueta: 'Distrito' },
-        { campo: 'peso_kg', etiqueta: 'Peso' },
+        { campo: 'cliente_nombre', etiqueta: 'Cliente' },
+        { campo: 'peso_kg', etiqueta: 'kg' },
+        { campo: 'volumen_m3', etiqueta: 'm³' },
         { campo: 'ventana_inicio', etiqueta: 'Desde' },
         { campo: 'ventana_fin', etiqueta: 'Hasta' },
         { campo: 'prioridad', etiqueta: 'Prioridad' },
+        { campo: 'tipo_producto', etiqueta: 'Producto' },
         { campo: 'estado', etiqueta: 'Estado' },
       ]}
     />
-  );
-}
-
-interface Preferencia {
-  id: number; cliente: string; hora_desde: string; hora_hasta: string; dias: string;
-  punto_referencia?: string | null; restricciones_acceso?: string | null; notas?: string | null;
-}
-
-export function Preferencias() {
-  const [lista, setLista] = useState<Preferencia[]>([]);
-  const [form, setForm] = useState({
-    cliente: '', hora_desde: '09:00', hora_hasta: '11:00', dias: '1,2,3,4,5,6', punto_referencia: '', restricciones_acceso: '', notas: '',
-  });
-  const [error, setError] = useState('');
-  const puede = usePuedeEditar();
-  const cargar = () => {
-    api<Preferencia[]>('/preferencias').then(setLista).catch((e) => setError(e.message));
-  };
-  useEffect(cargar, []);
-
-  const guardar = async (e: FormEvent) => {
-    e.preventDefault();
-    const { cliente, ...datos } = form;
-    try {
-      await put(`/preferencias/${encodeURIComponent(cliente)}`, {
-        ...datos,
-        punto_referencia: datos.punto_referencia || null,
-        restricciones_acceso: datos.restricciones_acceso || null,
-        notas: datos.notas || null,
-      });
-      setError('');
-      cargar();
-    } catch (err) {
-      setError((err as Error).message);
-    }
-  };
-
-  return (
-    <section>
-      <h1>Preferencias de recepción</h1>
-      <p className="muted">El motor de rutas solo programa la entrega dentro del horario preferido por el cliente.</p>
-      {error && <p className="error" role="alert">{error}</p>}
-      {puede && (
-        <form className="tarjeta form-grid" onSubmit={guardar} aria-label="Formulario de preferencia">
-          <label>Cliente (igual que en el pedido)<input required value={form.cliente} onChange={(e) => setForm({ ...form, cliente: e.target.value })} /></label>
-          <label>Desde<input type="time" required value={form.hora_desde} onChange={(e) => setForm({ ...form, hora_desde: e.target.value })} /></label>
-          <label>Hasta<input type="time" required value={form.hora_hasta} onChange={(e) => setForm({ ...form, hora_hasta: e.target.value })} /></label>
-          <label>Días (1=lun … 7=dom)<input value={form.dias} onChange={(e) => setForm({ ...form, dias: e.target.value })} /></label>
-          <label>Punto de referencia<input value={form.punto_referencia} onChange={(e) => setForm({ ...form, punto_referencia: e.target.value })} /></label>
-          <label>Restricciones de acceso<input value={form.restricciones_acceso} onChange={(e) => setForm({ ...form, restricciones_acceso: e.target.value })} /></label>
-          <label>Notas<input value={form.notas} onChange={(e) => setForm({ ...form, notas: e.target.value })} /></label>
-          <div className="acciones"><button type="submit">Guardar</button></div>
-        </form>
-      )}
-      <table>
-        <thead><tr><th>Cliente</th><th>Horario</th><th>Días</th><th>Punto de referencia</th><th>Restricciones de acceso</th><th>Notas</th>{puede && <th />}</tr></thead>
-        <tbody>
-          {lista.map((p) => (
-            <tr key={p.id}>
-              <td>{p.cliente}</td><td>{p.hora_desde} – {p.hora_hasta}</td><td>{p.dias}</td><td>{p.punto_referencia ?? '—'}</td><td>{p.restricciones_acceso ?? '—'}</td><td>{p.notas ?? '—'}</td>
-              {puede && (
-                <td><button className="peligro" onClick={() => del(`/preferencias/${encodeURIComponent(p.cliente)}`).then(cargar)}>Eliminar</button></td>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </section>
   );
 }

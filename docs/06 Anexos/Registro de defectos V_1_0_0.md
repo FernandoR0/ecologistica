@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../README.md)
+
 # Registro de defectos
 
 | Campo | Valor |
@@ -17,3 +19,5 @@
 | DEF-01 | 13/11/2026 | Rutas (frontend) | El mensaje de pedidos sin asignar mostraba solo los IDs y se leía como una cantidad (detectado en E2E) | Baja | 5 | Cerrado | este cambio |
 | DEF-02 | 13/11/2026 | Dependencias | PyJWT 2.10.1, Starlette 0.46.2 y react-router 7.5.0 con vulnerabilidades publicadas (pip-audit / npm audit) | Alta | 5 | Cerrado | este cambio |
 | DEF-03 | 13/11/2026 | Mapa de rutas | Una ruta re-optimizada se dibuja desde el depósito y no desde la última entrega | Baja | 5 | Cerrado | af5e453 (la ruta guarda su punto de partida) |
+
+[← Volver al README Principal](../../README.md)

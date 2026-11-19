@@ -1,55 +1,49 @@
-# Retrospectiva del Sprint 1
+[← Volver al README Principal](../../../README.md)
+
+# Retrospectiva del sprint
 
 **Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
 
-**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
-
-**Docente:** Daniel Gamarra Moreno
-
-**Fecha:** 13/11/2026
-
-**Versión:** 1.0.0
-
----
+**Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza
 
 ## ¿Qué aprendimos?
 
-- bcrypt solo admite contraseñas de hasta 72 bytes; se limitó la contraseña a 72 caracteres en la validación para no devolver un error 500.
-- Validar en la API que las coordenadas estén dentro del Valle del Mantaro evita pedidos que luego no se pueden planificar.
+- bcrypt solo admite contraseñas de hasta 72 bytes; se limitó la longitud en la validación para no devolver un error 500.
+- Validar en la API que las coordenadas estén dentro del área de operación evita pedidos que luego no se pueden planificar.
 - Las bajas lógicas (vehículos y conductores inactivos, pedidos cancelados) conservan el historial de rutas.
-- Responder 409 (duplicado) y 422 (dato inválido) con mensajes claros facilita escribir los criterios Gherkin como pruebas.
+- Responder 409 (duplicado) y 422 (dato inválido) con mensajes claros permite escribir los escenarios Gherkin como pruebas automáticas.
 
 ## ¿Qué estamos haciendo bien?
 
-- Cada historia se construyó completa: modelo, API, pantalla y prueba automática.
-- Los secretos quedan fuera del repositorio (`.env` en `.gitignore`, solo `.env.example`).
-- Se completaron los 16 SP comprometidos (4 de 4 historias).
+- Escribir la prueba de cada criterio de aceptación junto con el endpoint.
+- El pipeline de CI desde el primer sprint: ningún cambio entra a `main` con pruebas en rojo.
+- Commits pequeños con Conventional Commits, fáciles de enlazar desde la revisión.
 
 ## ¿Qué podemos hacer mejor?
 
 ### Personas
 
-Al ser un proyecto individual, todo el camino crítico depende de una sola persona. Conviene empezar cada sprint por la historia de mayor valor para que el incremento sea demostrable aunque falte tiempo.
+Al cumplir todos los roles, el tiempo de documentación compitió con el de desarrollo; las tareas de documentación se dejaban para el final del sprint.
 
 ### Relaciones
 
-La validación depende de la revisión con el docente. Hay que llegar con datos de demostración cargados para mostrar el flujo completo sin preparar nada en vivo.
+La validación con el patrocinador se hizo solo en la revisión; conviene preparar la demostración con datos de Huancayo desde el inicio del sprint para recoger observaciones antes.
 
 ### Procesos
 
-Escribir el criterio de aceptación en Gherkin antes del código y convertirlo en prueba antes de cerrar el issue.
+Las historias se cerraron al final del sprint y no de forma continua; el tablero no reflejaba el avance diario.
 
 ### Herramientas
 
-El CI todavía no revisa seguridad ni calidad (solo lint y pruebas).
+Faltaba un entorno reproducible para la demostración; se resolvió con Docker Compose y datos de demostración (`python -m app.seed`).
 
-## Acciones a realizar
+### Acciones a realizar
 
-| Acción | Eje | Responsable | Fecha |
-|---|---|---|---|
-| Convertir cada criterio Gherkin en una prueba automática antes de cerrar el issue | Procesos | Fernando Rodrigo Chaupis Espinoza | Sprint 2 |
-| Mantener `python -m app.seed` con datos demo para las revisiones | Relaciones | Fernando Rodrigo Chaupis Espinoza | Sprint 2 |
-| Agregar análisis de calidad y seguridad al CI | Herramientas | Fernando Rodrigo Chaupis Espinoza | Sprint 5 |
+| Acción | Responsable | Métrica de seguimiento |
+|---|---|---|
+| Reservar 1 hora diaria para documentación del sprint | Fernando Chaupis | Documentos del sprint listos 1 día antes de la revisión |
+| Mover las tarjetas en Jira al terminar cada tarea | Fernando Chaupis | Tablero actualizado diariamente (100 % de días con movimiento) |
+| Ensayar la demostración con datos demo antes de la revisión | Fernando Chaupis | Demostración sin fallos en vivo |
 
 ---
 
@@ -57,4 +51,7 @@ El CI todavía no revisa seguridad ni calidad (solo lint y pruebas).
 
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
-| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |
+| 1.0.0 | 15/09/2026 | Fernando Rodrigo Chaupis Espinoza | Retrospectiva del sprint |
+| 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Plantilla oficial de la consigna, enlaces a commits, enlace de retorno al README y nota de los campos completados en el Sprint 4 |
+
+[← Volver al README Principal](../../../README.md)

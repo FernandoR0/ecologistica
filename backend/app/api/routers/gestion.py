@@ -1,16 +1,19 @@
-"""RF-001 flota · RF-002 pedidos · RF-008 conductores · RF-009 preferencias."""
+"""RF-001 flota · RF-002 pedidos · RF-008 conductores · RF-009 clientes."""
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session, load_only
+from sqlalchemy.orm import Session
 
 from app.api.deps import gestion, get_current_user
 from app.api.paginacion import Pagina, paginar, params_pagina
 from app.api.routers.crud import crud_router
 from app.db import get_db
-from app.models import Conductor, Pedido, PreferenciaCliente, Vehiculo
+from app.models import Cliente, Conductor, Pedido, Vehiculo
 from app.schemas import (
+    ClienteIn,
+    ClienteOut,
+    ClienteUpdate,
     ConductorIn,
     ConductorOut,
     ConductorUpdate,
@@ -18,19 +21,47 @@ from app.schemas import (
     PedidoOut,
     PedidoResumen,
     PedidoUpdate,
-    PreferenciaIn,
-    PreferenciaOut,
     VehiculoIn,
     VehiculoOut,
     VehiculoUpdate,
 )
 
+# RN-015: categoría mínima de licencia por tipo de vehículo
+ORDEN_A = ("A-I", "A-IIa", "A-IIb", "A-IIIa", "A-IIIb", "A-IIIc")
+LICENCIA_MINIMA = {"CAMIONETA": "A-I", "FURGON": "A-IIb"}
+LICENCIAS_MOTO = ("B-IIb", "B-IIc")
+
+
+def licencia_valida(categoria: str, tipo_vehiculo: str) -> bool:
+    if tipo_vehiculo == "MOTO":
+        return categoria in LICENCIAS_MOTO
+    minima = LICENCIA_MINIMA.get(tipo_vehiculo, "A-I")
+    return categoria in ORDEN_A and ORDEN_A.index(categoria) >= ORDEN_A.index(minima)
+
+
+def _validar_conductor(db: Session, cond: Conductor) -> None:
+    if cond.vehiculo_id is None:
+        return
+    veh = db.get(Vehiculo, cond.vehiculo_id)
+    if veh is None:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "El vehículo asignado no existe")
+    if not licencia_valida(cond.categoria_licencia, veh.tipo):
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            f"La licencia {cond.categoria_licencia} no es válida para un vehículo tipo {veh.tipo}",
+        )
+
+
 vehiculos = crud_router(
-    model=Vehiculo, entrada=VehiculoIn, cambio=VehiculoUpdate, salida=VehiculoOut, prefix="/vehiculos", tag="Flota"
+    model=Vehiculo, entrada=VehiculoIn, cambio=VehiculoUpdate, salida=VehiculoOut, prefix="/vehiculos", tag="Flota",
+    duplicado="La placa ya está registrada",
 )
 conductores = crud_router(
     model=Conductor, entrada=ConductorIn, cambio=ConductorUpdate, salida=ConductorOut,
-    prefix="/conductores", tag="Conductores",
+    prefix="/conductores", tag="Conductores", validar=_validar_conductor, duplicado="El DNI ya está registrado",
+)
+clientes = crud_router(
+    model=Cliente, entrada=ClienteIn, cambio=ClienteUpdate, salida=ClienteOut, prefix="/clientes", tag="Clientes",
 )
 
 # ---------------- Pedidos ----------------
@@ -52,8 +83,7 @@ def listar_pedidos(
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
-    # Para el listado solo se leen las columnas que muestra la tabla
-    q = select(Pedido).options(load_only(*(getattr(Pedido, c) for c in PedidoResumen.model_fields))).order_by(Pedido.id)
+    q = select(Pedido).order_by(Pedido.id.desc())
     if estado:
         q = q.where(Pedido.estado == estado.upper())
     return paginar(db, q, p, response)
@@ -66,13 +96,28 @@ def obtener_pedido(pedido_id: int, db: Session = Depends(get_db), _=Depends(get_
 
 @pedidos.post("", response_model=PedidoOut, status_code=201)
 def crear_pedido(datos: PedidoIn, db: Session = Depends(get_db), _=Depends(gestion)):
-    p = Pedido(**datos.model_dump())
+    cliente = db.get(Cliente, datos.cliente_id)
+    if cliente is None or not cliente.activo:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "El cliente no existe o está inactivo")
+    valores = datos.model_dump()
+    # Si no se indican, se usan la dirección, la ubicación y el horario preferido del cliente (RN-007)
+    for campo, por_defecto in (
+        ("direccion", cliente.direccion), ("punto_referencia", cliente.punto_referencia),
+        ("lat", cliente.lat), ("lng", cliente.lng),
+        ("ventana_inicio", cliente.hora_desde), ("ventana_fin", cliente.hora_hasta),
+    ):
+        if valores[campo] is None:
+            valores[campo] = por_defecto
+    if valores["ventana_inicio"] >= valores["ventana_fin"]:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "La ventana debe terminar después de empezar")
+    p = Pedido(**valores)
     db.add(p)
     try:
         db.commit()
     except IntegrityError:
         db.rollback()
         raise HTTPException(status.HTTP_409_CONFLICT, "Código de pedido duplicado") from None
+    db.refresh(p)
     return p
 
 
@@ -83,6 +128,9 @@ def actualizar_pedido(pedido_id: int, datos: PedidoUpdate, db: Session = Depends
         raise HTTPException(status.HTTP_409_CONFLICT, "El pedido ya está en una ruta; re-optimice la ruta")
     for k, v in datos.model_dump(exclude_unset=True).items():
         setattr(p, k, v)
+    if p.ventana_inicio >= p.ventana_fin:
+        db.rollback()
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "La ventana debe terminar después de empezar")
     db.commit()
     return p
 
@@ -90,36 +138,5 @@ def actualizar_pedido(pedido_id: int, datos: PedidoUpdate, db: Session = Depends
 @pedidos.delete("/{pedido_id}", status_code=204)
 def cancelar_pedido(pedido_id: int, db: Session = Depends(get_db), _=Depends(gestion)):
     _pedido(db, pedido_id).estado = "CANCELADO"
-    db.commit()
-    return Response(status_code=204)
-
-
-# ---------------- Preferencias de clientes ----------------
-preferencias = APIRouter(prefix="/preferencias", tags=["Preferencias de clientes"])
-
-
-@preferencias.get("", response_model=list[PreferenciaOut])
-def listar_preferencias(db: Session = Depends(get_db), _=Depends(get_current_user)):
-    return db.scalars(select(PreferenciaCliente).order_by(PreferenciaCliente.cliente)).all()
-
-
-@preferencias.put("/{cliente}", response_model=PreferenciaOut)
-def guardar_preferencia(cliente: str, datos: PreferenciaIn, db: Session = Depends(get_db), _=Depends(gestion)):
-    pref = db.scalar(select(PreferenciaCliente).where(PreferenciaCliente.cliente == cliente))
-    if pref is None:
-        pref = PreferenciaCliente(cliente=cliente)
-        db.add(pref)
-    for k, v in datos.model_dump().items():
-        setattr(pref, k, v)
-    db.commit()
-    return pref
-
-
-@preferencias.delete("/{cliente}", status_code=204)
-def borrar_preferencia(cliente: str, db: Session = Depends(get_db), _=Depends(gestion)):
-    pref = db.scalar(select(PreferenciaCliente).where(PreferenciaCliente.cliente == cliente))
-    if pref is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Sin preferencia registrada")
-    db.delete(pref)
     db.commit()
     return Response(status_code=204)

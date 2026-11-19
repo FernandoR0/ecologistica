@@ -1,0 +1,10 @@
+{
+  "navegador": "firefox",
+  "prueba": "web-vitals",
+  "entorno": "local",
+  "ttfb_ms": 14,
+  "fcp_ms": 214,
+  "lcp_ms": 252,
+  "load_ms": 274,
+  "bytes": 79288
+}

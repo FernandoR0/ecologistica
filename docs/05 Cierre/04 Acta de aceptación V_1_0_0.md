@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../README.md)
+
 # Acta de aceptación
 
 | Campo | Valor |
@@ -25,3 +27,5 @@ Por la presente, DistriRápido S.A.C. (representada por su gerente general) decl
 |---|---|---|---|
 | Cliente | Gerente general de DistriRápido S.A.C. (caso de la consigna) | | |
 | Product Owner | Fernando Rodrigo Chaupis Espinoza | | |
+
+[← Volver al README Principal](../../README.md)

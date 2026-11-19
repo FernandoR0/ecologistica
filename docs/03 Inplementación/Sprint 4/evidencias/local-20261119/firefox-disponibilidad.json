@@ -1,0 +1,23 @@
+{
+  "navegador": "firefox",
+  "prueba": "disponibilidad",
+  "entorno": "local",
+  "destinos": [
+    {
+      "destino": "Interfaz (/login)",
+      "url": "/login",
+      "total": 10,
+      "exitosas": 10,
+      "p50_ms": 10,
+      "p95_ms": 21
+    },
+    {
+      "destino": "API (/api/health)",
+      "url": "/api/health",
+      "total": 10,
+      "exitosas": 10,
+      "p50_ms": 11,
+      "p95_ms": 15
+    }
+  ]
+}

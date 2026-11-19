@@ -1,8 +1,14 @@
+[← Volver al README Principal](../../../README.md)
+
 # Evaluación de Calidad de Código - SonarQube
 
 **Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
 
 **Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza (Product Owner, Scrum Master y Developer; proyecto individual)
+
+**Fecha de Análisis:** 2026-11-14
+
+**Versión del Análisis:** V_1_0_0
 
 **Docente:** Daniel Gamarra Moreno
 
@@ -128,3 +134,6 @@ git push origin main     # el workflow "SonarQube Cloud" vuelve a analizar el pr
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
 | 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial con el análisis antes y después en SonarQube Cloud |
+| 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Ubicación oficial `Sprint 03`, plantilla de la consigna y enlace de retorno al README |
+
+[← Volver al README Principal](../../../README.md)

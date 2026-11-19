@@ -2,11 +2,11 @@
 
 from datetime import date
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user, solo_admin
+from app.api.deps import gestion, get_current_user
 from app.core import cache
 from app.db import get_db
 from app.models import Compensacion
@@ -14,6 +14,11 @@ from app.schemas import CompensacionIn, CompensacionOut
 from app.services import indicadores, reporte_pdf
 
 router = APIRouter(tags=["Indicadores y sostenibilidad"])
+
+
+def _validar_rango(desde: date | None, hasta: date | None) -> None:
+    if desde and hasta and desde > hasta:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Rango de fechas inválido")
 
 
 @router.get("/indicadores")
@@ -32,9 +37,17 @@ def sostenibilidad(desde: date | None = None, hasta: date | None = None, db: Ses
 def reporte(desde: date | None = None, hasta: date | None = None, db: Session = Depends(get_db),
             _=Depends(get_current_user)):
     """RF-006 · Reporte PDF descargable del periodo."""
+    _validar_rango(desde, hasta)
     nombre = f"reporte-sostenibilidad-{desde or 'inicio'}-{hasta or 'hoy'}.pdf"
     return Response(reporte_pdf.generar(db, desde, hasta), media_type="application/pdf",
                     headers={"Content-Disposition": f'attachment; filename="{nombre}"'})
+
+
+@router.get("/indicadores/costo-ciclo-vida")
+def costo_ciclo_vida(desde: date | None = None, hasta: date | None = None, db: Session = Depends(get_db),
+                     _=Depends(get_current_user)):
+    _validar_rango(desde, hasta)
+    return cache.obtener(("lcc", desde, hasta), lambda: indicadores.costo_ciclo_vida(db, desde, hasta))
 
 
 @router.get("/compensacion/plan")
@@ -49,8 +62,8 @@ def listar(db: Session = Depends(get_db), _=Depends(get_current_user)):
 
 
 @router.post("/compensacion", response_model=CompensacionOut, status_code=201)
-def registrar(datos: CompensacionIn, db: Session = Depends(get_db), _=Depends(solo_admin)):
-    c = Compensacion(**datos.model_dump())
+def registrar(datos: CompensacionIn, db: Session = Depends(get_db), user=Depends(gestion)):
+    c = Compensacion(**datos.model_dump(), usuario_id=user.id)
     db.add(c)
     db.commit()
     return c

@@ -1,0 +1,12 @@
+{
+  "navegador": "chromium",
+  "prueba": "tiempos-api",
+  "entorno": "local",
+  "endpoints": {
+    "GET /api/pedidos": 27,
+    "GET /api/vehiculos": 37,
+    "GET /api/conductores": 37,
+    "GET /api/clientes": 31,
+    "GET /api/indicadores": 27
+  }
+}
