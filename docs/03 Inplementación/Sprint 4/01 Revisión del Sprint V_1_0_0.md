@@ -26,6 +26,7 @@ PASSED, 0 violaciones WCAG 2.1 AA, Pull Request con CI en verde y documentación
 | US-008 | Descanso de 1 h cada 4 h (parte pendiente del Sprint 3) | Ruta de más de 4 h con 60 min de descanso y llegadas recalculadas | [fabf1ca](https://github.com/FernandoR0/ecologistica/commit/fabf1ca) | Done |
 | ENB-004 | Reducción del impacto ambiental del software (Inspección 04) | 8 optimizaciones con código antes y después; Lighthouse dentro de los 6 umbrales en escritorio; SWDM v4 | [2ab9ad9](https://github.com/FernandoR0/ecologistica/commit/2ab9ad9) · [edf5779](https://github.com/FernandoR0/ecologistica/commit/edf5779) · [aa231dc](https://github.com/FernandoR0/ecologistica/commit/aa231dc) | Done |
 | ENB-005 | Pruebas E2E y monitoreo con Playwright | 75/75 en Chromium, Firefox y WebKit; APIs < 500 ms; resiliencia ante caída de red, 503 y lentitud | [1bae7bc](https://github.com/FernandoR0/ecologistica/commit/1bae7bc) · [#20](https://github.com/FernandoR0/ecologistica/pull/20) | Done |
+| ENB-007 | Evaluación de usabilidad SUS | n = 5 (3 planificadores y 2 conductores) en producción; SUS global 84,5 (grado A+, umbral 68); 6 cuellos de botella con su mejora aplicada y probada el mismo día ([04 Usabilidad](<04 Usabilidad V_1_0_0.md>)) | [1c9d421](https://github.com/FernandoR0/ecologistica/commit/1c9d421) · [8c5561d](https://github.com/FernandoR0/ecologistica/commit/8c5561d) · [53131f2](https://github.com/FernandoR0/ecologistica/commit/53131f2) · [b6dd9fc](https://github.com/FernandoR0/ecologistica/commit/b6dd9fc) | Done |
 | ENB-006 | Despliegue continuo a producción | `ci.yml`, `tests.yml` y `deploy-production.yml` con credenciales en GitHub Secrets; web en [ecologistica.vercel.app](https://ecologistica.vercel.app) y API en Render con PostgreSQL 16; 36/36 pruebas `@public` contra producción | [1c87a56](https://github.com/FernandoR0/ecologistica/commit/1c87a56) · [#20](https://github.com/FernandoR0/ecologistica/pull/20) | Done |
 
 **Cambio de alcance aprobado en el sprint:** al contrastar el backlog con el enunciado oficial del caso se
@@ -49,6 +50,7 @@ Demostración a los stakeholders de las funcionalidades implementadas.
 | 6 | Modo conductor en celular: siguiente entrega y "Entregado" | Mismo entorno | Caso 14 |
 | 7 | Pipelines en GitHub Actions: CI, Tests (3 navegadores) y despliegue | GitHub Actions | [Actions del repositorio](https://github.com/FernandoR0/ecologistica/actions) |
 | 8 | Aplicación publicada: acceso, disponibilidad y tiempos de carga | Producción ([ecologistica.vercel.app](https://ecologistica.vercel.app)) | Secciones 5.4 y 5.5 del [análisis Playwright](<03 Analisis PlayWrigth V_1_0_0.md>) |
+| 9 | Prueba con 5 usuarios: planificadores en PC y celular, repartidores en el modo conductor, y las mejoras que surgieron de sus observaciones | Producción | [04 Usabilidad](<04 Usabilidad V_1_0_0.md>) |
 
 **Evidencia en producción (20/11/2026).** Capturas tomadas con Playwright en https://ecologistica.vercel.app con los
 usuarios de demostración de cada rol:
@@ -68,14 +70,21 @@ Otras capturas: [acceso](evidencias/demo-produccion-20261120/01-acceso.png) ·
 (20/11/2026); sus observaciones se registran en Jira como ítems del backlog. Las observaciones obtenidas durante el
 sprint al ejecutar la aplicación desplegada fueron cuatro hallazgos (mensajes técnicos ante caídas de red, contraste
 de la leyenda del mapa, servidor de pruebas en IPv6 y un selector ambiguo), corregidos y documentados en la sección 6
-del [análisis Playwright](<03 Analisis PlayWrigth V_1_0_0.md>). La validación con usuarios finales es la encuesta SUS
-(ver Pendientes).
+del [análisis Playwright](<03 Analisis PlayWrigth V_1_0_0.md>). La validación con usuarios finales fue la encuesta SUS
+del 20/11/2026: cinco participantes usaron la aplicación en producción (tres como planificadores en PC y celular y dos
+repartidores en el modo conductor) y el puntaje global fue 84,5 (A+). Sus observaciones se convirtieron en mejoras
+publicadas el mismo día: mapa con pin y buscador de direcciones en lugar de coordenadas, código de pedido automático,
+confirmación de entrega con avance y foto, límite de la flota y formato de hora visibles en los formularios
+([04 Usabilidad](<04 Usabilidad V_1_0_0.md>), sección 4.3). La revisión de punta a punta de los flujos, hecha al
+comparar con otras implementaciones del caso, agregó la cancelación de pedidos con re-optimización, la regeneración de
+rutas sin duplicar vehículos, la fecha de Huancayo en el servidor y el modo conductor sin conexión (RNF-06 del caso).
 
 ## Pendientes
 
 | Ítem | Estado | Justificación y tratamiento |
 |---|---|---|
-| ENB-007 Evaluación de usabilidad SUS | En curso | La encuesta ya está dentro de la aplicación (pantalla "Encuesta SUS"); los resultados se documentan en [04 Usabilidad](<04 Usabilidad V_1_0_0.md>) al completar la muestra de 5 o más participantes. |
+| Segunda aplicación del SUS al perfil Planificador | Pendiente | Las mejoras 5 y 6 de [04 Usabilidad](<04 Usabilidad V_1_0_0.md>) se publicaron después de la sesión de P4 y P5; su efecto se medirá con nuevos participantes antes del cierre (04/12/2026). |
+| Íconos SVG en lugar de emojis y aviso de espacio sin conexión | Deuda técnica | Mejoras propuestas en la evaluación de usabilidad (sección 4.4); se registran en el backlog de Jira. |
 | Tráfico en tiempo real (Waze for Cities / Google Maps) | Deuda técnica | Requiere convenio o pago; se usa un perfil horario de hora punta (RN-011). Se mantiene en el backlog para una versión futura. |
 | Límites distritales simplificados | Deuda técnica | Polígonos de OpenStreetMap simplificados para el mapa; suficientes para la visualización, no para cálculos catastrales. |
 | Arranque en frío del plan gratuito de la API | Deuda técnica | La primera petición tras inactividad tarda más; el monitoreo cada 6 horas y la verificación posterior al despliegue despiertan la API. |
@@ -86,6 +95,6 @@ del [análisis Playwright](<03 Analisis PlayWrigth V_1_0_0.md>). La validación 
 
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
-| 1.0.0 | 20/11/2026 | Fernando Rodrigo Chaupis Espinoza | Revisión del Sprint 4 con la demostración en producción y sus evidencias |
+| 1.0.0 | 20/11/2026 | Fernando Rodrigo Chaupis Espinoza | Revisión del Sprint 4 con la demostración en producción, sus evidencias y la validación con 5 usuarios (ENB-007) |
 
 [← Volver al README Principal](../../../README.md)
