@@ -141,7 +141,30 @@ describe('Layout', () => {
     const menu = await screen.findByRole('navigation', { name: 'Menú principal' });
     await screen.findByText(/Luis/);
     expect(menu).not.toHaveTextContent('Pedidos');
+    expect(menu).not.toHaveTextContent('Dashboard');
     expect(menu).toHaveTextContent('Mi ruta');
     expect(menu).toHaveTextContent('Encuesta SUS');
+  });
+
+  it('en celular el menú se abre con un botón y se cierra al elegir una opción', async () => {
+    renderConSesion(
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<p>Contenido</p>} />
+          <Route path="pedidos" element={<p>Pantalla de pedidos</p>} />
+        </Route>
+      </Routes>,
+      'PLANIFICADOR',
+    );
+    const menu = await screen.findByRole('navigation', { name: 'Menú principal' });
+    const boton = screen.getByRole('button', { name: '☰ Menú' });
+    expect(boton).toHaveAttribute('aria-expanded', 'false');
+    expect(boton).toHaveAttribute('aria-controls', 'enlaces-menu');
+    await userEvent.click(boton);
+    expect(menu).toHaveClass('abierto');
+    expect(screen.getByRole('button', { name: '✕ Cerrar' })).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.click(screen.getByRole('link', { name: 'Pedidos' }));
+    expect(await screen.findByText('Pantalla de pedidos')).toBeInTheDocument();
+    expect(menu).not.toHaveClass('abierto');
   });
 });

@@ -37,13 +37,15 @@ label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem;
 .lateral a { color: #e5f2ef; text-decoration: none; padding: 0.5rem 0.6rem; border-radius: 6px; }
 .lateral a.active, .lateral a:hover { background: #1f4d47; }
 .marca { font-weight: 700; font-size: 1.1rem; margin-bottom: 1rem; }
+.enlaces-menu { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; }
+.boton-menu { display: none; }
 .usuario { margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem; }
 .usuario button { color: #e5f2ef; border-color: #e5f2ef; }
 main { flex: 1; padding: 1.5rem; min-width: 0; }
 
 .fila-titulo { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
 .tarjeta { background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
-.tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+.tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 1rem; }
 .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem; align-items: end; }
 .form-grid h2 { grid-column: 1 / -1; margin: 0; }
 .acciones { display: flex; gap: 0.5rem; }
@@ -78,11 +80,23 @@ a.boton-grande.secundario { background: transparent; color: var(--primario-osc);
 .login { display: grid; place-items: center; min-height: 100vh; }
 .login form { width: min(380px, 92vw); display: flex; flex-direction: column; gap: 0.9rem; }
 
+/* Celular: barra superior compacta y menú desplegable */
 @media (max-width: 760px) {
   .app { flex-direction: column; }
-  .lateral { width: 100%; flex-direction: row; flex-wrap: wrap; }
-  .usuario { margin-top: 0; flex-direction: row; align-items: center; }
+  .lateral { width: 100%; padding: 0.6rem 1rem; position: sticky; top: 0; z-index: 1100; }
+  .barra-superior { display: flex; justify-content: space-between; align-items: center; }
+  .marca { margin-bottom: 0; }
+  .boton-menu { display: inline-block; font-size: 1rem; padding: 0.55rem 0.9rem; min-height: 44px;
+    background: transparent; color: #e5f2ef; border: 1px solid #e5f2ef; }
+  .enlaces-menu { display: none; padding-top: 0.6rem; }
+  .lateral.abierto .enlaces-menu { display: flex; }
+  .enlaces-menu a { padding: 0.8rem 0.6rem; font-size: 1.05rem; }
+  .usuario { margin-top: 0.6rem; flex-direction: row; align-items: center; justify-content: space-between;
+    border-top: 1px solid #1f4d47; padding-top: 0.6rem; }
   main { padding: 1rem; }
+  h1 { font-size: 1.3rem; }
+  .mapa { height: 360px; }
+  .acciones { flex-wrap: wrap; }
 }
 .paginacion { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.8rem; font-size: 0.9rem; }
 

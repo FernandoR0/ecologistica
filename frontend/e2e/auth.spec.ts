@@ -65,6 +65,29 @@ test.describe('Autenticación (RF-011)', () => {
     await expect(page.getByRole('alert')).toHaveText(/Cuenta bloqueada/);
   });
 
+  test('en celular el menú se despliega con un botón y no hay desplazamiento horizontal', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    const sinDesborde = () => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
+    await iniciarSesion(page, 'planificador');
+    const menu = page.getByRole('navigation', { name: 'Menú principal' });
+    await expect(menu.getByRole('link', { name: 'Clientes' })).toBeHidden();
+    await menu.getByRole('button', { name: '☰ Menú' }).click();
+    await expect(menu.getByRole('link', { name: 'Clientes' })).toBeVisible();
+    await menu.getByRole('link', { name: 'Clientes' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Clientes' })).toBeVisible();
+    await expect(menu.getByRole('link', { name: 'Clientes' })).toBeHidden();
+    expect(await sinDesborde()).toBe(true);
+
+    await menu.getByRole('button', { name: '☰ Menú' }).click();
+    await menu.getByRole('button', { name: 'Salir' }).click();
+    await iniciarSesion(page, 'conductor');
+    await expect(page.getByRole('heading', { name: 'Mi ruta de hoy' })).toBeVisible();
+    expect(await sinDesborde()).toBe(true);
+    await menu.getByRole('button', { name: '☰ Menú' }).click();
+    await expect(menu.getByRole('link', { name: 'Mi ruta' })).toBeVisible();
+    await expect(menu.getByRole('link', { name: 'Dashboard' })).toHaveCount(0);
+  });
+
   test('el auditor solo consulta: no puede generar rutas', async ({ page }) => {
     await iniciarSesion(page, 'auditor');
     await irA(page, 'Rutas', 'Rutas');
