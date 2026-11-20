@@ -34,8 +34,32 @@ describe('Encuesta SUS (ENB-007)', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('puntaje SUS 80');
     const cuerpo = JSON.parse(String(fetchFalso.mock.calls.find((c) => c[1]?.method === 'POST')?.[1]?.body));
     expect(cuerpo).toEqual({
-      codigo_participante: 'P1', perfil: 'Estudiante de ingeniería', respuestas: valores, tareas_completadas: 2, comentario: null,
+      codigo_participante: 'P1', perfil: 'Planificador: Estudiante de ingeniería', respuestas: valores, tareas_completadas: 2,
+      comentario: null,
     });
+  });
+
+  it('al conductor le muestra las tareas del modo conductor y registra su perfil', async () => {
+    const { fetchFalso } = renderConSesion(<Encuesta />, 'CONDUCTOR', {
+      '/sus/preguntas': { body: { preguntas: PREGUNTAS } },
+      'POST /sus': { status: 201, body: { puntaje: 75 } },
+    });
+    await screen.findByText('1. Pregunta 1');
+    expect(screen.getByRole('group', { name: 'Tareas del perfil Conductor' })).toBeInTheDocument();
+    expect(screen.getByLabelText(/T3\. Marcar esa entrega como "Entregado"/)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/T5\./)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Registrar un cliente/)).not.toBeInTheDocument();
+    for (const t of ['T1', 'T2', 'T3']) await userEvent.click(screen.getByLabelText(new RegExp(`${t}\\.`)));
+    await userEvent.type(screen.getByLabelText('Código de participante (P1, P2…)'), 'P4');
+    await userEvent.type(screen.getByLabelText(/Perfil/), 'Repartidor, celular');
+    for (let i = 0; i < 10; i += 1) {
+      const grupo = screen.getByRole('group', { name: `${i + 1}. Pregunta ${i + 1}` });
+      await userEvent.click(grupo.querySelector('input[value="4"]')!);
+    }
+    await userEvent.click(screen.getByRole('button', { name: 'Enviar respuestas' }));
+    expect(await screen.findByRole('status')).toHaveTextContent('puntaje SUS 75');
+    const cuerpo = JSON.parse(String(fetchFalso.mock.calls.find((c) => c[1]?.method === 'POST')?.[1]?.body));
+    expect(cuerpo).toMatchObject({ codigo_participante: 'P4', perfil: 'Conductor: Repartidor, celular', tareas_completadas: 3 });
   });
 
   it('señala la pregunta faltante y los errores de la API', async () => {

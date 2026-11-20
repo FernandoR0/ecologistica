@@ -1,22 +1,37 @@
 /** ENB-007 · Cuestionario SUS (System Usability Scale) dentro de la aplicación. */
 import { useEffect, useState, type FormEvent } from 'react';
 import { api, post } from '../api';
+import { useAuth } from '../auth';
 
-const TAREAS = [
-  'Iniciar sesión con la cuenta de evaluador.',
-  'Registrar un cliente con su horario preferido y punto de referencia.',
-  'Registrar un pedido para ese cliente.',
-  'Generar las rutas optimizadas y revisar el mapa.',
-  'Descargar el reporte PDF de sostenibilidad.',
-];
+/** Cada perfil hace las tareas de su rol (RNF-008 mide el modo conductor; las demás, la planificación). */
+const TAREAS = {
+  Planificador: [
+    'Iniciar sesión con la cuenta de evaluador.',
+    'Registrar un cliente con su horario preferido y punto de referencia.',
+    'Registrar un pedido para ese cliente.',
+    'Generar las rutas optimizadas y revisar el mapa.',
+    'Descargar el reporte PDF de sostenibilidad.',
+  ],
+  Conductor: [
+    'Iniciar sesión con la cuenta de conductor.',
+    'Encontrar la siguiente entrega: cliente, dirección, referencia y hora.',
+    'Marcar esa entrega como "Entregado".',
+    'Revisar cuántas entregas quedan pendientes en la ruta.',
+  ],
+} as const;
+type Cuenta = keyof typeof TAREAS;
 const ESCALA = ['Totalmente en desacuerdo', 'En desacuerdo', 'Neutral', 'De acuerdo', 'Totalmente de acuerdo'];
 
 export function Encuesta() {
+  const { usuario } = useAuth();
+  const cuenta: Cuenta = usuario?.rol === 'CONDUCTOR' ? 'Conductor' : 'Planificador';
+  const lista = TAREAS[cuenta];
+  const prefijo = `${cuenta}: `;
   const [preguntas, setPreguntas] = useState<string[]>([]);
   const [respuestas, setRespuestas] = useState<(number | null)[]>(Array(10).fill(null));
   const [codigo, setCodigo] = useState('');
   const [perfil, setPerfil] = useState('');
-  const [tareas, setTareas] = useState<boolean[]>(Array(TAREAS.length).fill(false));
+  const [tareas, setTareas] = useState<boolean[]>(Array(lista.length).fill(false));
   const [comentario, setComentario] = useState('');
   const [error, setError] = useState('');
   const [enviado, setEnviado] = useState<number | null>(null);
@@ -34,7 +49,7 @@ export function Encuesta() {
     }
     try {
       const r = await post<{ puntaje: number }>('/sus', {
-        codigo_participante: codigo.toUpperCase(), perfil, respuestas,
+        codigo_participante: codigo.toUpperCase(), perfil: prefijo + perfil.trim(), respuestas,
         tareas_completadas: tareas.filter(Boolean).length, comentario: comentario || null,
       });
       setEnviado(r.puntaje);
@@ -59,8 +74,8 @@ export function Encuesta() {
       <p className="muted">Antes de responder, realiza estas tareas en el sistema y marca las que completaste sin ayuda.</p>
       <form onSubmit={enviar} aria-label="Encuesta SUS">
         <fieldset className="tarjeta">
-          <legend>Tareas</legend>
-          {TAREAS.map((t, i) => (
+          <legend>Tareas del perfil {cuenta}</legend>
+          {lista.map((t, i) => (
             <label key={t} className="opcion">
               <input type="checkbox" checked={tareas[i]} onChange={(e) => setTareas(tareas.map((v, k) => (k === i ? e.target.checked : v)))} />
               T{i + 1}. {t}
@@ -72,7 +87,7 @@ export function Encuesta() {
             <input required pattern="[Pp][0-9]{1,3}" value={codigo} onChange={(e) => setCodigo(e.target.value)} />
           </label>
           <label>Perfil (ocupación y experiencia con apps similares)
-            <input required minLength={3} maxLength={60} value={perfil} onChange={(e) => setPerfil(e.target.value)} />
+            <input required minLength={3} maxLength={60 - prefijo.length} value={perfil} onChange={(e) => setPerfil(e.target.value)} />
           </label>
         </div>
         {preguntas.map((p, i) => (
