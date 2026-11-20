@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Clientes, Conductores, Pedidos, Vehiculos } from '../pages/Gestion';
@@ -169,5 +169,71 @@ describe('Clientes y pedidos (RF-009, RF-002)', () => {
     await waitFor(() => expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(true));
     const cuerpo = JSON.parse(String(fetchFalso.mock.calls.find((c) => c[1]?.method === 'POST')?.[1]?.body));
     expect(cuerpo).toEqual({ codigo: 'W-1', cliente_id: 3, peso_kg: 80, prioridad: 'EXPRESS', tipo_producto: 'PERECEDERO' });
+  });
+});
+
+describe('Ubicación del cliente en el mapa (cuello de botella SUS)', () => {
+  const abrirFormulario = async () => {
+    const r = renderConSesion(<Clientes />, 'PLANIFICADOR', {
+      '/clientes': { body: [], headers: { 'X-Total-Count': '0' } },
+      'POST /clientes': { status: 201, body: CLIENTE },
+    });
+    await userEvent.click(await screen.findByRole('button', { name: '+ Nuevo' }));
+    const form = screen.getByRole('form', { name: 'Formulario Clientes' });
+    await userEvent.type(within(form).getByLabelText('Nombre del cliente'), 'Bodega P1');
+    await userEvent.type(within(form).getByLabelText('Dirección'), 'Jr. Real 500');
+    await userEvent.selectOptions(within(form).getByLabelText('Distrito'), 'Huancayo');
+    return { ...r, form };
+  };
+  const cuerpoPost = (fetchFalso: ReturnType<typeof vi.fn>) =>
+    JSON.parse(String(fetchFalso.mock.calls.find((c) => c[1]?.method === 'POST')?.[1]?.body));
+
+  it('ya no pide latitud y longitud como campos obligatorios: muestra un mapa', async () => {
+    const { form } = await abrirFormulario();
+    expect(within(form).getByRole('group', { name: 'Ubicación del cliente en el mapa' })).toBeInTheDocument();
+    expect(within(form).getByRole('region', { name: 'Mapa para marcar la ubicación' })).toBeInTheDocument();
+    expect(within(form).getByRole('status')).toHaveTextContent('Aún no se ha marcado la ubicación.');
+    expect(within(form).getByLabelText('Latitud')).not.toBeRequired();
+  });
+
+  it('no guarda si no se marcó la ubicación y lo explica', async () => {
+    const { form, fetchFalso } = await abrirFormulario();
+    await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Marca en el mapa la ubicación antes de guardar.');
+    expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(false);
+  });
+
+  it('al tocar el mapa pone el pin y envía las coordenadas del punto', async () => {
+    const { form, fetchFalso } = await abrirFormulario();
+    const mapa = within(form).getByRole('region', { name: 'Mapa para marcar la ubicación' });
+    fireEvent.click(mapa, { clientX: 40, clientY: 30 });
+    expect(within(form).getByRole('status')).toHaveTextContent(/✔ Ubicación marcada \(-12\.\d+, -75\.\d+\)/);
+    expect(mapa.querySelector('.pin-ubicacion')).not.toBeNull();
+    await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(true));
+    const cuerpo = cuerpoPost(fetchFalso);
+    expect(cuerpo.lat).toBeCloseTo(-12.06, 1);
+    expect(cuerpo.lng).toBeCloseTo(-75.2, 1);
+    expect(cuerpo).not.toHaveProperty('ubicacion');
+  });
+
+  it('permite escribir las coordenadas como alternativa accesible por teclado', async () => {
+    const { form, fetchFalso } = await abrirFormulario();
+    await userEvent.click(within(form).getByText('Escribir las coordenadas (opcional)'));
+    await userEvent.type(within(form).getByLabelText('Latitud'), '-12.058');
+    await userEvent.type(within(form).getByLabelText('Longitud'), '-75.215');
+    expect(within(form).getByRole('status')).toHaveTextContent('✔ Ubicación marcada (-12.05800, -75.21500)');
+    await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(true));
+    expect(cuerpoPost(fetchFalso)).toMatchObject({ nombre: 'Bodega P1', distrito: 'Huancayo', lat: -12.058, lng: -75.215 });
+  });
+
+  it('al editar muestra el pin en la ubicación guardada', async () => {
+    renderConSesion(<Clientes />, 'PLANIFICADOR', {
+      '/clientes': (_i, url) => (url === '/clientes/3' ? { body: CLIENTE } : { body: [CLIENTE], headers: { 'X-Total-Count': '1' } }),
+    });
+    await userEvent.click(await screen.findByRole('button', { name: 'Editar' }));
+    const form = await screen.findByRole('form', { name: 'Formulario Clientes' });
+    expect(within(form).getByRole('status')).toHaveTextContent('✔ Ubicación marcada (-12.06900, -75.21000)');
   });
 });

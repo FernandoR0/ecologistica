@@ -107,8 +107,7 @@ export function Clientes() {
         { nombre: 'hora_desde', etiqueta: 'Recibe desde', tipo: 'time' },
         { nombre: 'hora_hasta', etiqueta: 'Recibe hasta', tipo: 'time' },
         { nombre: 'dias_atencion', etiqueta: 'Días de atención (LU,MA,MI,JU,VI,SA,DO)' },
-        { nombre: 'lat', etiqueta: 'Latitud', tipo: 'number', paso: 'any', requerido: true },
-        { nombre: 'lng', etiqueta: 'Longitud', tipo: 'number', paso: 'any', requerido: true },
+        { nombre: 'ubicacion', etiqueta: 'Ubicación del cliente en el mapa', tipo: 'ubicacion', requerido: true },
         { nombre: 'activo', etiqueta: 'Activo', tipo: 'checkbox' },
       ]}
       columnas={[

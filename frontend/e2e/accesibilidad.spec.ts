@@ -31,4 +31,14 @@ test.describe('Accesibilidad WCAG 2.1 AA (protege lo logrado en el Sprint 3)', (
       expect(await violaciones(page), menu).toEqual([]);
     }
   });
+
+  test('formulario de cliente con el mapa para marcar la ubicación sin violaciones', async ({ page }) => {
+    await iniciarSesion(page, 'planificador');
+    await irA(page, 'Clientes', 'Clientes');
+    await page.getByRole('button', { name: '+ Nuevo' }).click();
+    const mapa = page.getByRole('region', { name: 'Mapa para marcar la ubicación' });
+    await mapa.click({ position: { x: 150, y: 120 } });
+    await expect(page.locator('.pin-ubicacion')).toBeVisible();
+    expect(await violaciones(page)).toEqual([]);
+  });
 });

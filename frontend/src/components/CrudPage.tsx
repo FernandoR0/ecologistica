@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { api, apiPaginado, del, post, put } from '../api';
+import { SelectorUbicacion } from './SelectorUbicacion';
 
 const POR_PAGINA = 12;
 
 export interface Campo {
   nombre: string;
   etiqueta: string;
-  tipo?: 'text' | 'number' | 'time' | 'select' | 'checkbox';
+  /** 'ubicacion' muestra un mapa con pin que llena los campos `lat` y `lng` del registro. */
+  tipo?: 'text' | 'number' | 'time' | 'select' | 'checkbox' | 'ubicacion';
   /** Opciones de un select: texto simple o pares valor/etiqueta (por ejemplo, clientes). */
   opciones?: (string | { valor: string | number; etiqueta: string })[];
   /** El select guarda un número (por ejemplo, un ID). */
@@ -70,6 +72,19 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
     const datos: Record<string, unknown> = {};
     for (const c of campos) {
       if (editando && c.soloCrear) continue;
+      if (c.tipo === 'ubicacion') {
+        const vacio = (v: unknown) => v === '' || v === undefined || v === null;
+        if (vacio(form.lat) || vacio(form.lng)) {
+          if (c.requerido && !editando) {
+            setError('Marca en el mapa la ubicación antes de guardar.');
+            return;
+          }
+          continue;
+        }
+        datos.lat = Number(form.lat);
+        datos.lng = Number(form.lng);
+        continue;
+      }
       const v = form[c.nombre];
       if (v === '' || v === undefined || v === null) continue;
       datos[c.nombre] = c.tipo === 'number' || c.numerico ? Number(v) : v;
@@ -103,7 +118,29 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
 
       {formAbierto && (
         <form className="tarjeta form-grid" onSubmit={guardar} aria-label={`Formulario ${titulo}`}>
-          {campos.map((c) => (
+          {campos.map((c) => c.tipo === 'ubicacion' ? (
+            <div key={c.nombre} className="campo-ancho">
+              <SelectorUbicacion
+                etiqueta={c.etiqueta}
+                lat={form.lat}
+                lng={form.lng}
+                onCambiar={(lat, lng) => setForm((f) => ({ ...f, lat, lng }))}
+              />
+              <details className="coordenadas-manual">
+                <summary>Escribir las coordenadas (opcional)</summary>
+                <label>
+                  Latitud
+                  <input type="number" step="any" value={String(form.lat ?? '')}
+                    onChange={(e) => setForm({ ...form, lat: e.target.value })} />
+                </label>
+                <label>
+                  Longitud
+                  <input type="number" step="any" value={String(form.lng ?? '')}
+                    onChange={(e) => setForm({ ...form, lng: e.target.value })} />
+                </label>
+              </details>
+            </div>
+          ) : (
             <label key={c.nombre} title={c.ayuda}>
               {c.etiqueta}
               {c.tipo === 'select' ? (

@@ -51,8 +51,10 @@ test.describe('Gestión operativa (RF-001, RF-002, RF-008, RF-009)', () => {
     await fc.getByLabel('Punto de referencia').fill('Frente a la bodega El Ahorro');
     await fc.getByLabel('Recibe desde').fill('09:00');
     await fc.getByLabel('Recibe hasta').fill('12:00');
-    await fc.getByLabel('Latitud').fill('-12.058');
-    await fc.getByLabel('Longitud').fill('-75.215');
+    // La ubicación se marca tocando el mapa, sin escribir coordenadas
+    await expect(fc.getByRole('status')).toHaveText('Aún no se ha marcado la ubicación.');
+    await fc.getByRole('region', { name: 'Mapa para marcar la ubicación' }).click({ position: { x: 180, y: 140 } });
+    await expect(fc.getByRole('status')).toHaveText(/✔ Ubicación marcada \(-12\.\d{5}, -75\.\d{5}\)/);
     await fc.getByRole('button', { name: 'Guardar' }).click();
     await expect(fc).toHaveCount(0);
 

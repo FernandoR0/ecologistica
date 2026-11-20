@@ -58,6 +58,17 @@ th { background: #eef2ec; }
 .kpi strong { font-size: 1.5rem; color: var(--primario-osc); }
 
 .mapa { height: 460px; border-radius: 10px; border: 1px solid var(--borde); margin-bottom: 1rem; }
+.campo-ancho { grid-column: 1 / -1; }
+.selector-ubicacion { border: 1px solid var(--borde); border-radius: 10px; padding: 0.6rem 0.8rem; margin: 0; }
+.selector-ubicacion legend { font-weight: 600; padding: 0 0.3rem; }
+.selector-ubicacion p { margin: 0.3rem 0; }
+.mapa-selector { height: 320px; margin-bottom: 0.4rem; cursor: crosshair; }
+.ubicacion-ok { color: var(--primario-osc); font-weight: 600; }
+.pin-ubicacion span { display: block; width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+  background: var(--peligro); border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4); }
+.coordenadas-manual { margin-top: 0.4rem; }
+.coordenadas-manual summary { cursor: pointer; color: var(--primario); }
+.coordenadas-manual label { display: inline-block; width: min(220px, 48%); margin: 0.4rem 0.5rem 0 0; }
 .pin span { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: #fff; font-size: 12px; font-weight: 700; border: 2px solid #fff; }
 
 .login { display: grid; place-items: center; min-height: 100vh; }
