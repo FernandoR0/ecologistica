@@ -1,3 +1,5 @@
+[← Volver al README Principal](../../../../../README.md)
+
 ## Resultados de Playwright contra producción (https://ecologistica.vercel.app, 19/11/2026)
 
 | Navegador | Aprobadas | Total | Éxito |
@@ -20,3 +22,5 @@
 | firefox | API (/api/health) | 10/10 | 344 | 861 |
 | webkit | Interfaz (/login) | 10/10 | 155 | 175 |
 | webkit | API (/api/health) | 10/10 | 356 | 814 |
+
+[← Volver al README Principal](../../../../../README.md)
