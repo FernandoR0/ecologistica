@@ -29,7 +29,7 @@ PASSED, 0 violaciones WCAG 2.1 AA, Pull Request con CI en verde y documentación
 | US-008 | Descanso de 1 h cada 4 h (parte pendiente del Sprint 3) | Ruta de más de 4 h con 60 min de descanso y llegadas recalculadas | [fabf1ca](https://github.com/FernandoR0/ecologistica/commit/fabf1ca) | Done |
 | ENB-004 | Reducción del impacto ambiental del software (Inspección 04) | 8 optimizaciones con código antes y después; Lighthouse dentro de los 6 umbrales en escritorio; SWDM v4 | [2ab9ad9](https://github.com/FernandoR0/ecologistica/commit/2ab9ad9) · [edf5779](https://github.com/FernandoR0/ecologistica/commit/edf5779) · [aa231dc](https://github.com/FernandoR0/ecologistica/commit/aa231dc) | Done |
 | ENB-005 | Pruebas E2E y monitoreo con Playwright | 75/75 en Chromium, Firefox y WebKit; APIs < 500 ms; resiliencia ante caída de red, 503 y lentitud | [1bae7bc](https://github.com/FernandoR0/ecologistica/commit/1bae7bc) · [#20](https://github.com/FernandoR0/ecologistica/pull/20) | Done |
-| ENB-006 | Despliegue continuo a producción | `ci.yml`, `tests.yml` y `deploy-production.yml` con credenciales en GitHub Secrets | [1c87a56](https://github.com/FernandoR0/ecologistica/commit/1c87a56) · [#20](https://github.com/FernandoR0/ecologistica/pull/20) | Done |
+| ENB-006 | Despliegue continuo a producción | `ci.yml`, `tests.yml` y `deploy-production.yml` con credenciales en GitHub Secrets; web en [ecologistica.vercel.app](https://ecologistica.vercel.app) y API en Render con PostgreSQL 16; 36/36 pruebas `@public` contra producción | [1c87a56](https://github.com/FernandoR0/ecologistica/commit/1c87a56) · [#20](https://github.com/FernandoR0/ecologistica/pull/20) | Done |
 
 **Cambio de alcance aprobado en el sprint:** al contrastar el backlog con el enunciado oficial del caso se
 incorporaron los campos que faltaban (volumen, año y factor de emisión del vehículo; categoría de licencia,
@@ -50,6 +50,7 @@ Demostración a los stakeholders de las funcionalidades implementadas.
 | 5 | Dashboard, reporte PDF con costo del ciclo de vida y plan de compensación | Mismo entorno | Caso 13 |
 | 6 | Modo conductor en celular: siguiente entrega y "Entregado" | Mismo entorno | Caso 14 |
 | 7 | Pipelines en GitHub Actions: CI, Tests (3 navegadores) y despliegue | GitHub Actions | [Actions del repositorio](https://github.com/FernandoR0/ecologistica/actions) |
+| 8 | Aplicación publicada: acceso, disponibilidad y tiempos de carga | Producción ([ecologistica.vercel.app](https://ecologistica.vercel.app)) | Sección 5.5 del [análisis Playwright](<03 Analisis PlayWrigth V_1_0_0.md>) |
 
 Retroalimentación registrada: mantener la evidencia de cada criterio enlazada a su prueba automática y validar la
 usabilidad con usuarios reales (ver Pendientes).
@@ -70,5 +71,6 @@ usabilidad con usuarios reales (ver Pendientes).
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
 | 1.0.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Revisión del Sprint 4 |
+| 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | URL de producción y resultados de las pruebas contra el entorno desplegado |
 
 [← Volver al README Principal](../../../README.md)

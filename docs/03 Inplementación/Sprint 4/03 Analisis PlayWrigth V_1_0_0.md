@@ -17,6 +17,7 @@
 | Ejecución | Entorno | Resultado | Evidencia |
 |---|---|---|---|
 | Local, Windows 11, 19/11/2026 | Build de producción (`vite preview`) + API FastAPI real sobre una base aislada `e2e_test.db` | **75/75 aprobadas (100 %)**: 25 casos por navegador, 0 inestables | [resultados-playwright.json](evidencias/local-20261119/resultados-playwright.json) · [reporte HTML](evidencias/local-20261119/reporte-html.png) |
+| Producción, 19/11/2026 | [ecologistica.vercel.app](https://ecologistica.vercel.app) (Vercel) + API en Render con PostgreSQL 16, pruebas `@public` de solo lectura | **36/36 aprobadas (100 %)**: 12 casos por navegador | [resultados-playwright.json](evidencias/produccion-20261119/resultados-playwright.json) · [reporte HTML](evidencias/produccion-20261119/reporte-html.png) · [métricas](evidencias/produccion-20261119/resumen-metricas.md) |
 | GitHub Actions `tests.yml` | Ubuntu, PostgreSQL 16 como servicio, matriz de 3 navegadores | Se ejecuta en cada push y Pull Request a `main` y `develop` | [Workflow Tests](https://github.com/FernandoR0/ecologistica/actions/workflows/tests.yml) |
 
 ![Reporte HTML de Playwright: 75 pruebas aprobadas en 3 navegadores](evidencias/local-20261119/reporte-html.png)
@@ -250,6 +251,33 @@ registra el tiempo de arranque en el resumen del job y ejecuta las pruebas `@pub
 historial de esas ejecuciones en GitHub Actions es el registro de disponibilidad del entorno desplegado. El workflow
 `deploy-production.yml` repite las pruebas `@public` después de cada despliegue.
 
+### 5.5 Resultados contra producción (19/11/2026)
+
+Ejecución con `E2E_BASE_URL=https://ecologistica.vercel.app npm run e2e:prod` desde Windows 11 (Huancayo) hacia la web
+en Vercel y la API en Render (región Oregón). La API ya estaba despierta, así que los tiempos no incluyen el arranque en frío.
+
+| Navegador | Aprobadas | TTFB (ms) | FCP (ms) | LCP (ms) | Bytes transferidos |
+|---|:-:|---:|---:|---:|---:|
+| Chromium | 12/12 | 455 | 888 | 888 | 81 489 |
+| Firefox | 12/12 | 460 | 800 | 835 | 81 489 |
+| WebKit | 12/12 | 513 | 1014 | no soportado | 81 489 |
+
+| Navegador | Destino | Disponibilidad | p50 (ms) | p95 (ms) |
+|---|---|:-:|---:|---:|
+| Chromium | Interfaz (`/login`) | 10/10 | 139 | 173 |
+| Chromium | API (`/api/health`) | 10/10 | 359 | 751 |
+| Firefox | Interfaz (`/login`) | 10/10 | 141 | 189 |
+| Firefox | API (`/api/health`) | 10/10 | 344 | 861 |
+| WebKit | Interfaz (`/login`) | 10/10 | 155 | 175 |
+| WebKit | API (`/api/health`) | 10/10 | 356 | 814 |
+
+Comparado con la ejecución local, el TTFB sube de 5-14 ms a 455-513 ms y la mediana de `/api/health` pasa de
+11-14 ms a 344-359 ms. La diferencia se explica por la distancia hasta los servidores en Estados Unidos y el paso por el
+reenvío `/api` de Vercel. Aun así el LCP queda por debajo de 2,5 s, el umbral "bueno" de Core Web Vitals, y la
+disponibilidad fue de 100 % en los 60 sondeos.
+
+![Reporte HTML de Playwright contra producción: 36 pruebas aprobadas](evidencias/produccion-20261119/reporte-html.png)
+
 ## 6. Hallazgos y mejoras aplicadas
 
 | # | Hallazgo | Corrección |
@@ -267,7 +295,7 @@ npm ci --ignore-scripts && npx playwright install
 E2E_PYTHON=python npx playwright test          # suite completa en 3 navegadores
 npx playwright show-report                      # reporte HTML
 npm run e2e:metricas                            # tabla de métricas
-E2E_BASE_URL=https://<url-de-produccion> npm run e2e:prod   # solo lectura contra producción
+E2E_BASE_URL=https://ecologistica.vercel.app npm run e2e:prod   # solo lectura contra producción
 ```
 
 ---
@@ -277,5 +305,6 @@ E2E_BASE_URL=https://<url-de-produccion> npm run e2e:prod   # solo lectura contr
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
 | 1.0.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Informe de la suite E2E, rendimiento, disponibilidad y resiliencia |
+| 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Resultados de las pruebas `@public` contra el entorno desplegado (Vercel + Render) |
 
 [← Volver al README Principal](../../../README.md)

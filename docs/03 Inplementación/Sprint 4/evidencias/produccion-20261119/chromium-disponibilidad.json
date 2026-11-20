@@ -1,0 +1,23 @@
+{
+  "navegador": "chromium",
+  "prueba": "disponibilidad",
+  "entorno": "https://ecologistica.vercel.app",
+  "destinos": [
+    {
+      "destino": "Interfaz (/login)",
+      "url": "/login",
+      "total": 10,
+      "exitosas": 10,
+      "p50_ms": 139,
+      "p95_ms": 173
+    },
+    {
+      "destino": "API (/api/health)",
+      "url": "/api/health",
+      "total": 10,
+      "exitosas": 10,
+      "p50_ms": 359,
+      "p95_ms": 751
+    }
+  ]
+}
