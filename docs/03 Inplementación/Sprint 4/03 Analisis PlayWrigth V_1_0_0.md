@@ -10,7 +10,7 @@
 | Navegadores | Chromium, Firefox y WebKit (perfiles *Desktop Chrome*, *Desktop Firefox* y *Desktop Safari*) |
 | Historia técnica | ENB-005 - Pruebas E2E y monitoreo con Playwright |
 | Pull Request | [FernandoR0/ecologistica#20](https://github.com/FernandoR0/ecologistica/pull/20) |
-| Versión del documento | V_1_0_0 · 19/11/2026 |
+| Versión del documento | V_1_0_0 · 20/11/2026 |
 
 ## 1. Resumen de resultados
 
@@ -251,6 +251,17 @@ registra el tiempo de arranque en el resumen del job y ejecuta las pruebas `@pub
 historial de esas ejecuciones en GitHub Actions es el registro de disponibilidad del entorno desplegado. El workflow
 `deploy-production.yml` repite las pruebas `@public` después de cada despliegue.
 
+Ejecuciones automáticas contra producción desde la puesta en línea (hora de Perú, UTC−5):
+
+| Fecha y hora | Origen | `/api/health` | Pruebas `@public` (Chromium) | Ejecución |
+|---|---|:-:|:-:|---|
+| 19/11/2026 22:17 | Despliegue de `main` (PR #21) | 200 | 12/12 | [44666712280](https://github.com/FernandoR0/ecologistica/actions/runs/44666712280) |
+| 20/11/2026 00:52 | Monitoreo programado (cada 6 h) | 200 | 12/12 | [44683856228](https://github.com/FernandoR0/ecologistica/actions/runs/44683856228) |
+| 20/11/2026 07:09 | Despliegue de `main` (PR #22) | 200 | 12/12 | [44733409872](https://github.com/FernandoR0/ecologistica/actions/runs/44733409872) |
+
+Resultado: 3 de 3 verificaciones con la aplicación disponible (100 %) y 36 de 36 pruebas aprobadas. La meta de RNF-006
+(99,5 % entre las 5:00 y las 22:00) se seguirá midiendo con este historial hasta el cierre del proyecto.
+
 ### 5.5 Resultados contra producción (19/11/2026)
 
 Ejecución con `E2E_BASE_URL=https://ecologistica.vercel.app npm run e2e:prod` desde Windows 11 (Huancayo) hacia la web
@@ -275,6 +286,11 @@ Comparado con la ejecución local, el TTFB sube de 5-14 ms a 455-513 ms y la med
 11-14 ms a 344-359 ms. La diferencia se explica por la distancia hasta los servidores en Estados Unidos y el paso por el
 reenvío `/api` de Vercel. Aun así el LCP queda por debajo de 2,5 s, el umbral "bueno" de Core Web Vitals, y la
 disponibilidad fue de 100 % en los 60 sondeos.
+
+Frente al presupuesto de 500 ms para la API, la mediana en producción (344-359 ms) lo cumple, pero el p95 (751-861 ms)
+no: algunas peticiones de cada serie tardan más por la latencia de red hasta Oregón y el plan gratuito de Render. En
+local, donde no interviene la red, todas las APIs responden en menos de 60 ms (sección 4.2). La mejora propuesta para
+la operación real es desplegar la API en una región de Render más cercana a Huancayo (Virginia) y en un plan sin suspensión.
 
 ![Reporte HTML de Playwright contra producción: 36 pruebas aprobadas](evidencias/produccion-20261119/reporte-html.png)
 
@@ -304,7 +320,6 @@ E2E_BASE_URL=https://ecologistica.vercel.app npm run e2e:prod   # solo lectura c
 
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
-| 1.0.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Informe de la suite E2E, rendimiento, disponibilidad y resiliencia |
-| 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Resultados de las pruebas `@public` contra el entorno desplegado (Vercel + Render) |
+| 1.0.0 | 20/11/2026 | Fernando Rodrigo Chaupis Espinoza | Informe de la suite E2E, rendimiento, disponibilidad y resiliencia, con los resultados contra producción (Vercel + Render) y el registro de uptime |
 
 [← Volver al README Principal](../../../README.md)

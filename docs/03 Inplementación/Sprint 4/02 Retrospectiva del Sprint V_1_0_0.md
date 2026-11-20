@@ -20,7 +20,8 @@
 
 ## ¿Qué estamos haciendo bien?
 
-- Cada criterio Gherkin tiene una prueba automática: 61 de backend, 66 de frontend y 25 E2E por navegador.
+- Cada criterio Gherkin tiene una prueba automática: 67 de backend (cobertura 95 %), 66 de frontend (99,8 %) y 25 E2E
+  por navegador.
 - Integración por Pull Request con CI, Tests y SonarQube antes del merge.
 - Medir con datos reales (Web Vitals, tiempos de API, sondeos) en lugar de declarar el rendimiento.
 - Mensajes de error pensados para el usuario final (sin conexión, servicio no disponible).
@@ -51,7 +52,7 @@ El despliegue depende de cuentas externas (Render y Vercel) que debieron prepara
 | Acción | Responsable | Métrica de seguimiento | Fecha |
 |---|---|---|---|
 | Revisar enunciado, consigna y rúbrica al planificar el cierre | Fernando Chaupis | 0 requisitos descubiertos después de planificar | 21/11/2026 |
-| Completar la encuesta SUS con 5 o más participantes | Fernando Chaupis | n ≥ 5 respuestas registradas en la aplicación | 22/11/2026 |
+| Completar la encuesta SUS con 5 o más participantes | Fernando Chaupis | n ≥ 5 respuestas registradas en la aplicación | 20/11/2026 |
 | Mantener verdes los 3 workflows en `main` | Fernando Chaupis | 100 % de ejecuciones en verde por semana | Hasta el 04/12/2026 |
 | Revisar el monitoreo de producción cada 6 horas | Fernando Chaupis | Disponibilidad ≥ 99,5 % en el historial de `tests.yml` | Hasta el 04/12/2026 |
 | Documentar el avance diario en Jira | Fernando Chaupis | Tablero actualizado todos los días del periodo de cierre | Hasta el 04/12/2026 |

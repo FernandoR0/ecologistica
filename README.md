@@ -11,7 +11,10 @@ Proyecto Final de Asignatura - Taller de Proyectos 2, Universidad Continental, 2
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=FernandoR0_ecologistica&metric=alert_status)](https://sonarcloud.io/summary/overall?id=FernandoR0_ecologistica&branch=main)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=FernandoR0_ecologistica&metric=coverage)](https://sonarcloud.io/summary/overall?id=FernandoR0_ecologistica&branch=main)
 
-**Probar en línea:** [![Abrir en GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/FernandoR0/ecologistica?quickstart=1)
+**Aplicación en producción:** https://ecologistica.vercel.app · API y Swagger:
+https://ecologistica-api-r17u.onrender.com/docs
+
+**Probar sin instalar:** [![Abrir en GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/FernandoR0/ecologistica?quickstart=1)
 (se necesita una cuenta de GitHub; ver [Probar en GitHub Codespaces](#probar-en-github-codespaces))
 
 ## Tabla de contenido
@@ -28,7 +31,7 @@ Proyecto Final de Asignatura - Taller de Proyectos 2, Universidad Continental, 2
 10. [Despliegue](#despliegue) (incluye [GitHub Codespaces](#probar-en-github-codespaces))
 11. [Pruebas y calidad](#pruebas-y-calidad)
 12. [Video explicativo](#video-explicativo)
-13. [Documentación por fases](#documentación-por-fases) · [Fase 02: Planificación](#fase-02-planificación-del-proyecto) · [Sprint 4](#sprint-4-inspección-05) · [Fase 02: Planificación](#fase-02-planificación-del-proyecto) · [Sprint 4](#sprint-4-inspección-05)
+13. [Documentación por fases](#documentación-por-fases) · [Fase 01: Inicio](#fase-01-inicio-del-proyecto) · [Fase 02: Planificación](#fase-02-planificación-del-proyecto) · [Fase 03: Implementación](#fase-03-implementación) · [Sprint 4](#sprint-4-inspección-05)
 14. [Versionamiento](#versionamiento)
 15. [Licencia](#licencia)
 
@@ -38,8 +41,8 @@ Proyecto Final de Asignatura - Taller de Proyectos 2, Universidad Continental, 2
 |---|---|
 | Fernando Rodrigo Chaupis Espinoza | Product Owner, Scrum Master y Developer (proyecto individual) |
 
-Backlog y sprints: [issues](https://github.com/FernandoR0/ecologistica/issues?q=is%3Aissue) ·
-[hitos](https://github.com/FernandoR0/ecologistica/milestones?state=all)
+Backlog, sprints y release `v1.0.0-MVP` en Jira Software (proyecto **ECO**); evidencia en
+[02 Artefactos Jira](docs/02%20Planificaci%C3%B3n/02%20Artefactos%20Jira%20V_1_1_0.md).
 
 ## Problemática
 
@@ -51,11 +54,15 @@ la jornada de los conductores y no se mide la huella de carbono de la flota.
 
 El PMV (`v1.0.0`) permite a la empresa:
 
-1. Registrar su flota, conductores (con jornada y punto de partida), pedidos y preferencias de sus clientes.
+1. Registrar su flota, conductores (licencia, disponibilidad, jornada y punto de partida), clientes y pedidos.
 2. Generar con un clic las rutas óptimas de todos los vehículos con un motor **VRPTW + Green VRP** (Google OR-Tools con
-   **Búsqueda Tabú**), respetando capacidad, ventanas horarias, preferencias y jornada.
-3. Ver las rutas en el mapa y re-optimizarlas ante tráfico, bloqueos, clima, averías, pedidos nuevos o cancelaciones.
-4. Medir el ahorro de kilómetros, combustible y CO₂, descargar el reporte PDF y planificar la compensación de carbono.
+   **Búsqueda Tabú**), respetando peso y volumen, ventanas horarias, jornada con descanso de 1 h cada 4 h, la zona
+   restringida del Centro y las zonas de riesgo.
+3. Ver las rutas en el mapa con la congestión de cada tramo y re-optimizarlas ante tráfico, accidentes, bloqueos, clima,
+   averías, pedidos nuevos o cancelaciones.
+4. Medir el ahorro de kilómetros, combustible y CO₂, descargar el reporte PDF con el costo del ciclo de vida y
+   planificar la compensación de carbono.
+5. Dar al conductor un modo simplificado en el celular y validar la usabilidad con una encuesta SUS integrada.
 
 Resultado con los datos de demostración: **-49.7 % de kilómetros y -57 % de CO₂** frente a la ruta sin optimizar.
 Para 150 pedidos y 15 vehículos el plan se genera en **30 s** (meta ≤ 45 s).
@@ -67,15 +74,15 @@ Para 150 pedidos y 15 vehículos el plan se genera en **30 s** (meta ≤ 45 s).
 | RF-001 | Gestión de flota | Pantalla Flota · `api/routers/gestion.py` |
 | RF-002 | Gestión de pedidos (paginada) | Pantalla Pedidos |
 | RF-003 | Rutas optimizadas VRPTW + Green VRP con Búsqueda Tabú | Pantalla Rutas · `optimization/vrptw.py` |
-| RF-004 | Rutas en el mapa (Leaflet + OpenStreetMap) | Pantalla Rutas |
+| RF-004 | Rutas en el mapa (Leaflet + OpenStreetMap) con congestión por tramo, zonas y límites distritales | Pantalla Rutas |
 | RF-005 | Dashboard: km, ahorro, CO₂, combustible ahorrado, % de entregas a tiempo y árboles equivalentes | Pantalla Dashboard |
-| RF-006 | Reporte de sostenibilidad y **reporte PDF** descargable | Pantalla Sostenibilidad |
-| RF-007 | Re-optimización ante tráfico, bloqueo, clima, avería, pedido nuevo o cancelación | Pantalla Rutas |
-| RF-008 | Conductores con jornada máxima y punto de partida | Pantalla Conductores |
-| RF-009 | Preferencias del cliente: horario, días, punto de referencia y restricciones de acceso | Pantalla Preferencias |
+| RF-006 | Reporte de sostenibilidad y **reporte PDF** con costo del ciclo de vida | Pantalla Sostenibilidad |
+| RF-007 | Re-optimización ante tráfico, accidente, bloqueo, clima, avería, pedido nuevo o cancelación | Pantalla Rutas |
+| RF-008 | Conductores con licencia, disponibilidad, jornada máxima y punto de partida | Pantallas Conductores y Mi ruta |
+| RF-009 | Clientes: horario, días, punto de referencia y restricciones de acceso | Pantalla Clientes |
 | RF-010 | Plan de compensación de carbono | Pantalla Sostenibilidad |
-| RF-011 | Inicio de sesión con roles ADMIN, PLANIFICADOR y CONDUCTOR | Login |
-| RF-012 | Administración: usuarios, parámetros del motor y bitácora de auditoría | Pantalla Administración |
+| RF-011 | Inicio de sesión con roles ADMIN, PLANIFICADOR, CONDUCTOR y AUDITOR; bloqueo tras 3 intentos | Login |
+| RF-012 | Administración: usuarios, parámetros del motor, bitácora de auditoría (CSV) y resultados SUS | Pantalla Administración |
 
 ## Tecnologías
 
@@ -87,37 +94,40 @@ Para 150 pedidos y 15 vehículos el plan se genera en **30 s** (meta ≤ 45 s).
 | Base de datos | PostgreSQL 16 (SQLite en las pruebas) |
 | Seguridad | JWT, bcrypt, roles, bloqueo por intentos fallidos, bitácora de auditoría |
 | Calidad | pytest, Vitest, Playwright, Ruff, ESLint, SonarQube Cloud, Lighthouse CI, axe-core |
-| DevOps | Docker, Docker Compose, nginx, GitHub Actions |
+| DevOps | GitHub Actions (CI, Tests y Deploy), Vercel, Render, Docker y Docker Compose |
 
 ## Arquitectura
 
 ```text
-Navegador ──> Frontend React (nginx) ──REST/JSON + JWT──> API FastAPI ──> PostgreSQL
+Navegador ──> Frontend React (Vercel) ──REST/JSON + JWT sobre HTTPS──> API FastAPI (Render) ──> PostgreSQL 16 (Render)
                                                               │
                                                               ├──> Motor VRPTW + Green VRP (OR-Tools, Búsqueda Tabú)
                                                               └──> Reporte PDF (ReportLab)
 ```
 
 El motor (`backend/app/optimization`) no depende de la base de datos: recibe pedidos y vehículos y devuelve las rutas,
-así se prueba por separado. Detalle en el [Modelo C4](docs/01%20Inicio/12.%20Modelo%20C4%20V_1_0_0.md).
+así se prueba por separado. Detalle en el [Modelo C4](docs/01%20Inicio/12.%20Modelo%20C4%20V_1_1_0.md).
 
 ## Estructura del repositorio
 
 ```
+.github/workflows/    ci.yml, tests.yml, deploy-production.yml, sonarcloud.yml y green-audit.yml
 backend/
   app/api/            endpoints, roles, paginación y administración
   app/core/           configuración, seguridad y caché
   app/optimization/   motor VRPTW, distancias y emisiones
-  app/services/       planificación, re-optimización, indicadores y reporte PDF
+  app/services/       planificación, re-optimización, indicadores, reporte PDF y cálculo SUS
   app/models.py       tablas
   app/seed.py         datos de demostración
   scripts/            prueba de carga del motor
   tests/              pruebas unitarias y de integración (pytest)
 frontend/
   src/                pantallas, componentes, cliente de la API y pruebas (Vitest)
-  scripts/            servidor estático para medir el build
-e2e/                  pruebas de extremo a extremo (Playwright)
+  e2e/                pruebas de extremo a extremo (Playwright)
+  playwright.config.ts
+  vercel.json         despliegue del frontend
 docs/                 documentación del curso por fases
+render.yaml           despliegue de la API y la base de datos
 ```
 
 ## Instalación
@@ -156,6 +166,8 @@ Usuarios de demostración (creados por `python -m app.seed`):
 | ADMIN | admin@ecologistica.pe | Admin123* |
 | PLANIFICADOR | planificador@ecologistica.pe | Plan123* |
 | CONDUCTOR | conductor@ecologistica.pe | Cond123* |
+| AUDITOR | auditor@ecologistica.pe | Audi123* |
+| PLANIFICADOR (encuesta SUS) | evaluador@ecologistica.pe | Eval123* |
 
 ## Build
 
@@ -183,20 +195,36 @@ usuarios de demostración de la tabla de [Instalación](#instalación).
 Las cuentas personales de GitHub tienen 120 horas-núcleo gratis al mes. Al terminar conviene detener el Codespace en
 https://github.com/codespaces para no gastar horas.
 
-### Producción
+### Producción (despliegue continuo)
 
-En producción el frontend se sirve con `frontend/Dockerfile` (nginx sin privilegios en el puerto 8080, caché de un año
-para `/assets/` y archivos precomprimidos) y la API con `backend/Dockerfile` (usuario sin privilegios). Las variables
-de entorno están en `.env.example`; `JWT_SECRET` debe cambiarse antes de desplegar.
+| Componente | Servicio | Configuración |
+|---|---|---|
+| Frontend | Vercel ([ecologistica.vercel.app](https://ecologistica.vercel.app)) | `frontend/vercel.json`: build de Vite, reenvío de `/api` a la API y caché de un año para `/assets/` |
+| API | Render (Docker, región Oregón) | `render.yaml` y `backend/Dockerfile` (usuario sin privilegios); `JWT_SECRET` generado por Render |
+| Base de datos | PostgreSQL 16 gestionado en Render | Conexión inyectada en `DATABASE_URL` |
+
+Cada push a `main` (o tag `v*`) ejecuta `deploy-production.yml`:
+
+1. Repite el lint y las pruebas del backend.
+2. Dispara el despliegue de la API en Render con el Deploy Hook y espera a que `/api/health` responda.
+3. Compila y publica el frontend con la CLI de Vercel.
+4. Corre las pruebas Playwright `@public` (Chromium) contra la URL de producción y guarda el reporte como artifact.
+
+Credenciales en **GitHub Secrets**: `RENDER_DEPLOY_HOOK_URL`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` y
+`SONAR_TOKEN`. Variables del repositorio: `API_URL` y `PRODUCCION_URL`. Ningún secreto está en el código; las
+variables locales se toman de `.env.example`.
 
 ## Pruebas y calidad
 
 ```bash
-cd backend && pytest --cov=app                    # 39 pruebas, cobertura 93 %
-cd frontend && npm test -- --coverage             # 55 pruebas, cobertura 99.8 %
-cd backend && python -m scripts.prueba_carga 30 5 # 150 pedidos y 15 vehículos
-pytest e2e -v                                     # pruebas E2E con Playwright
+cd backend && pytest --cov=app                          # 67 pruebas, cobertura 95 %
+cd frontend && npm test -- --coverage                   # 66 pruebas, cobertura 99.8 %
+cd backend && python -m scripts.prueba_carga 30 5       # 150 pedidos y 15 vehículos
+cd frontend && E2E_PYTHON=python npx playwright test    # 25 pruebas E2E en Chromium, Firefox y WebKit
 ```
+
+Resultados del Sprint 4: [análisis Playwright](docs/03%20Inplementaci%C3%B3n/Sprint%204/03%20Analisis%20PlayWrigth%20V_1_0_0.md)
+(75/75 en local y 36/36 contra producción).
 
 | Indicador | Resultado |
 |---|---|
@@ -215,60 +243,61 @@ incidente, dashboard, reporte de sostenibilidad con PDF y administración.
 
 ## Documentación por fases
 
-Cada documento tiene un enlace de regreso a este README.
+Cada documento tiene un enlace de regreso a este README. Resumen de carpetas en el
+[Índice de documentación](docs/00%20%C3%8Dndice%20de%20documentaci%C3%B3n.md).
 
 ## Fase 01: Inicio del Proyecto
 
-- [01. Selección del enfoque del proyecto V_1_0_0](docs/01%20Inicio/01.%20Selecci%C3%B3n%20del%20enfoque%20del%20proyecto%20V_1_0_0.md)
-- [02. Acta de constitución V_1_0_0](docs/01%20Inicio/02.%20Acta%20de%20constituci%C3%B3n%20V_1_0_0.md)
-- [03. Declaración de la visión V_1_0_0](docs/01%20Inicio/03.%20Declaraci%C3%B3n%20de%20la%20visi%C3%B3n%20V_1_0_0.md)
-- [04. Registro de supuestos y restricciones V_1_0_0](docs/01%20Inicio/04.%20Registro%20de%20supuestos%20y%20restricciones%20V_1_0_0.md)
-- [05. Registro de interesados V_1_0_0](docs/01%20Inicio/05.%20Registro%20de%20interesados%20V_1_0_0.md)
-- [06. Requisitos funcionales V_1_0_0](docs/01%20Inicio/06.%20Requisitos%20funcionales%20V_1_0_0.md)
-- [07. Requisitos no funcionales V_1_0_0](docs/01%20Inicio/07.%20Requisitos%20no%20funcionales%20V_1_0_0.md)
-- [08. Usuarios V_1_0_0](docs/01%20Inicio/08.%20Usuarios%20V_1_0_0.md)
-- [09. Reglas de negocio V_1_0_0](docs/01%20Inicio/09.%20Reglas%20de%20negocio%20V_1_0_0.md)
-- [10. Stack tecnológico V_1_0_0](docs/01%20Inicio/10.%20Stack%20tecnol%C3%B3gico%20V_1_0_0.md)
-- [11. Base de datos V_1_0_0](docs/01%20Inicio/11.%20Base%20de%20datos%20V_1_0_0.md)
-- [12. Modelo C4 V_1_0_0](docs/01%20Inicio/12.%20Modelo%20C4%20V_1_0_0.md)
-- [13. Restricciones V_1_0_0](docs/01%20Inicio/13.%20Restricciones%20V_1_0_0.md)
+- [01. Selección del enfoque del proyecto V_1_1_0](docs/01%20Inicio/01.%20Selecci%C3%B3n%20del%20enfoque%20del%20proyecto%20V_1_1_0.md)
+- [02. Acta de constitución V_1_1_0](docs/01%20Inicio/02.%20Acta%20de%20constituci%C3%B3n%20V_1_1_0.md)
+- [03. Declaración de la visión V_1_1_0](docs/01%20Inicio/03.%20Declaraci%C3%B3n%20de%20la%20visi%C3%B3n%20V_1_1_0.md)
+- [04. Registro de supuestos y restricciones V_1_1_0](docs/01%20Inicio/04.%20Registro%20de%20supuestos%20y%20restricciones%20V_1_1_0.md)
+- [05. Registro de interesados V_1_1_0](docs/01%20Inicio/05.%20Registro%20de%20interesados%20V_1_1_0.md)
+- [06. Requisitos funcionales V_1_1_0](docs/01%20Inicio/06.%20Requisitos%20funcionales%20V_1_1_0.md)
+- [07. Requisitos no funcionales V_1_1_0](docs/01%20Inicio/07.%20Requisitos%20no%20funcionales%20V_1_1_0.md)
+- [08. Usuarios V_1_1_0](docs/01%20Inicio/08.%20Usuarios%20V_1_1_0.md)
+- [09. Reglas de negocio V_1_1_0](docs/01%20Inicio/09.%20Reglas%20de%20negocio%20V_1_1_0.md)
+- [10. Stack tecnológico V_1_1_0](docs/01%20Inicio/10.%20Stack%20tecnol%C3%B3gico%20V_1_1_0.md)
+- [11. Base de datos V_1_2_0](docs/01%20Inicio/11.%20Base%20de%20datos%20V_1_2_0.md)
+- [12. Modelo C4 V_1_1_0](docs/01%20Inicio/12.%20Modelo%20C4%20V_1_1_0.md)
+- [13. Restricciones V_1_1_0](docs/01%20Inicio/13.%20Restricciones%20V_1_1_0.md)
 
 ## Fase 02: Planificación del Proyecto
 
-- [01 Transformando a ágil V_1_0_0](docs/02%20Planificaci%C3%B3n/01%20Transformando%20a%20%C3%A1gil%20V_1_0_0.md)
-- [02 Artefactos Jira V_1_0_0](docs/02%20Planificaci%C3%B3n/02%20Artefactos%20Jira%20V_1_0_0.md)
-- [03 Registro de riesgos V_1_0_0](docs/02%20Planificaci%C3%B3n/03%20Registro%20de%20riesgos%20V_1_0_0.md)
-- [04 Presupuesto del proyecto V_1_0_0](docs/02%20Planificaci%C3%B3n/04%20Presupuesto%20del%20proyecto%20V_1_0_0.md)
-- [05 Cronograma de sprints V_1_0_0](docs/02%20Planificaci%C3%B3n/05%20Cronograma%20de%20sprints%20V_1_0_0.md)
+- [01 Transformando a ágil V_1_1_0](docs/02%20Planificaci%C3%B3n/01%20Transformando%20a%20%C3%A1gil%20V_1_1_0.md)
+- [02 Artefactos Jira V_1_1_0](docs/02%20Planificaci%C3%B3n/02%20Artefactos%20Jira%20V_1_1_0.md)
+- [03 Registro de riesgos V_1_1_0](docs/02%20Planificaci%C3%B3n/03%20Registro%20de%20riesgos%20V_1_1_0.md)
+- [04 Presupuesto del proyecto V_1_1_0](docs/02%20Planificaci%C3%B3n/04%20Presupuesto%20del%20proyecto%20V_1_1_0.md)
+- [05 Cronograma de sprints V_1_1_0](docs/02%20Planificaci%C3%B3n/05%20Cronograma%20de%20sprints%20V_1_1_0.md)
 
 ## Fase 03: Implementación
 
 ### Sprint 1
 
-- [01 Informe de estado del proyecto V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%201/01%20Informe%20de%20estado%20del%20proyecto%20V_1_0_0.md)
-- [02 Registro de Impedimentos V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%201/02%20Registro%20de%20Impedimentos%20V_1_0_0.md)
-- [03 Revisión del Sprint V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%201/03%20Revisi%C3%B3n%20del%20Sprint%20V_1_0_0.md)
-- [04 Retrospectiva del Sprint V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%201/04%20Retrospectiva%20del%20Sprint%20V_1_0_0.md)
+- [01 Informe de estado del proyecto V_1_2_0](docs/03%20Implementaci%C3%B3n/Sprint%201/01%20Informe%20de%20estado%20del%20proyecto%20V_1_2_0.md)
+- [02 Registro de Impedimentos V_1_2_0](docs/03%20Implementaci%C3%B3n/Sprint%201/02%20Registro%20de%20Impedimentos%20V_1_2_0.md)
+- [03 Revisión del Sprint V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%201/03%20Revisi%C3%B3n%20del%20Sprint%20V_1_1_0.md)
+- [04 Retrospectiva del Sprint V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%201/04%20Retrospectiva%20del%20Sprint%20V_1_1_0.md)
 
 ### Sprint 2
 
-- [01 Informe de estado del proyecto V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%202/01%20Informe%20de%20estado%20del%20proyecto%20V_1_0_0.md)
-- [02 Registro de Impedimentos V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%202/02%20Registro%20de%20Impedimentos%20V_1_0_0.md)
-- [03 Revisión del Sprint V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%202/03%20Revisi%C3%B3n%20del%20Sprint%20V_1_0_0.md)
-- [04 Retrospectiva del Sprint V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%202/04%20Retrospectiva%20del%20Sprint%20V_1_0_0.md)
+- [01 Informe de estado del proyecto V_1_2_0](docs/03%20Implementaci%C3%B3n/Sprint%202/01%20Informe%20de%20estado%20del%20proyecto%20V_1_2_0.md)
+- [02 Registro de Impedimentos V_1_2_0](docs/03%20Implementaci%C3%B3n/Sprint%202/02%20Registro%20de%20Impedimentos%20V_1_2_0.md)
+- [03 Revisión del Sprint V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%202/03%20Revisi%C3%B3n%20del%20Sprint%20V_1_1_0.md)
+- [04 Retrospectiva del Sprint V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%202/04%20Retrospectiva%20del%20Sprint%20V_1_1_0.md)
 
 ### Sprint 03
 
-- [01 Revisión del Sprint V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/01%20Revisi%C3%B3n%20del%20Sprint%20V_1_0_0.md)
-- [02 Retrospectiva del Sprint V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/02%20Retrospectiva%20del%20Sprint%20V_1_0_0.md)
-- [03 Calidad de código V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/03%20Calidad%20de%20c%C3%B3digo%20V_1_0_0.md)
-- [04 OWASP V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/04%20OWASP%20V_1_0_0.md)
-- [05 WCAG V_1_0_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/05%20WCAG%20V_1_0_0.md)
+- [01 Revisión del Sprint V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/01%20Revisi%C3%B3n%20del%20Sprint%20V_1_1_0.md)
+- [02 Retrospectiva del Sprint V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/02%20Retrospectiva%20del%20Sprint%20V_1_1_0.md)
+- [03 Calidad de código V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/03%20Calidad%20de%20c%C3%B3digo%20V_1_1_0.md)
+- [04 OWASP V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/04%20OWASP%20V_1_1_0.md)
+- [05 WCAG V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%2003/05%20WCAG%20V_1_1_0.md)
 
 ### Inspección 04 - Reducción del impacto ambiental
 
-- [01 Informe de reduccion del impacto ambiental V_1_0_0](docs/03%20Implementaci%C3%B3n/reduccion%20del%20impacto%20ambiental/01%20Informe%20de%20reduccion%20del%20impacto%20ambiental%20V_1_0_0.md)
-- [02 Estandares Ingeniería de software V_1_0_0](docs/03%20Implementaci%C3%B3n/reduccion%20del%20impacto%20ambiental/02%20Estandares%20Ingenier%C3%ADa%20de%20software%20V_1_0_0.md)
+- [01 Informe de reduccion del impacto ambiental V_1_2_0](docs/03%20Implementaci%C3%B3n/reduccion%20del%20impacto%20ambiental/01%20Informe%20de%20reduccion%20del%20impacto%20ambiental%20V_1_2_0.md)
+- [02 Estandares Ingeniería de software V_1_2_0](docs/03%20Implementaci%C3%B3n/reduccion%20del%20impacto%20ambiental/02%20Estandares%20Ingenier%C3%ADa%20de%20software%20V_1_2_0.md)
 
 ### Sprint 4 (Inspección 05)
 
@@ -283,21 +312,16 @@ Cada documento tiene un enlace de regreso a este README.
 
 ## Anexos
 
-- [Anexo A - Pruebas Backend V_1_0_0](docs/06%20Anexos/Anexo%20A%20-%20Pruebas%20Backend%20V_1_0_0.md)
-- [Anexo B - Pruebas Frontend V_1_0_0](docs/06%20Anexos/Anexo%20B%20-%20Pruebas%20Frontend%20V_1_0_0.md)
-- [Anexo C - Pruebas E2E V_1_0_0](docs/06%20Anexos/Anexo%20C%20-%20Pruebas%20E2E%20V_1_0_0.md)
-- [Anexo D - Usabilidad SUS V_1_0_0](docs/06%20Anexos/Anexo%20D%20-%20Usabilidad%20SUS%20V_1_0_0.md)
-- [Informe técnico integral V_1_0_0](docs/06%20Anexos/Informe%20t%C3%A9cnico%20integral%20V_1_0_0.md)
-- [Manual de usuario V_1_0_0](docs/06%20Anexos/Manual%20de%20usuario%20V_1_0_0.md)
-- [Registro de defectos V_1_0_0](docs/06%20Anexos/Registro%20de%20defectos%20V_1_0_0.md)
-- [Registro de incidentes V_1_0_0](docs/06%20Anexos/Registro%20de%20incidentes%20V_1_0_0.md)
+- [Manual de usuario V_1_1_0](docs/06%20Anexos/Manual%20de%20usuario%20V_1_1_0.md) (usuario y administrador)
+- Documentación de la API: Swagger en https://ecologistica-api-r17u.onrender.com/docs
 
 ## Versionamiento
 
 - Rama principal: `main`. Commits con [Conventional Commits](https://www.conventionalcommits.org/) (`feat`, `fix`,
   `perf`, `test`, `docs`, `ci`).
 - Versiones con **tags semánticos**: el PMV es **[`v1.0.0`](https://github.com/FernandoR0/ecologistica/releases/tag/v1.0.0)**.
-- Cada documento lleva su versión en el nombre (`V_1_0_0`) y un historial de control de cambios.
+- Cada documento lleva su versión vigente en el nombre (`V_1_0_0`, `V_1_1_0`…) y un historial de control de cambios;
+  al modificar un documento de una fase anterior se incrementa su versión.
 
 ## Licencia
 

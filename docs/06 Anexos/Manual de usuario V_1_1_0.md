@@ -1,0 +1,97 @@
+[← Volver al README Principal](../../README.md)
+
+# Manual de usuario y de administrador
+
+| Campo | Valor |
+|---|---|
+| Proyecto | EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C. |
+| Organización | DistriRápido S.A.C., Huancayo, Junín |
+| Curso | Taller de Proyectos 2, Universidad Continental |
+| Versión | 1.1.0 |
+| Fecha | 20/11/2026 |
+| Elaborado por | Fernando Rodrigo Chaupis Espinoza |
+
+---
+
+## 1. Ingreso
+
+1. Abrir https://ecologistica.vercel.app desde una computadora o un celular.
+2. Iniciar sesión con el correo y la contraseña entregados por el administrador.
+3. Tras 3 intentos fallidos la cuenta se bloquea 15 minutos; el intento queda registrado en la bitácora.
+
+Cada rol ve solo su menú:
+
+| Pantalla | ADMIN | PLANIFICADOR | CONDUCTOR | AUDITOR |
+|---|:-:|:-:|:-:|:-:|
+| Dashboard | ✔ | ✔ | | ✔ |
+| Rutas | ✔ | ✔ | | Solo lectura |
+| Mi ruta | | | ✔ | |
+| Pedidos, Flota, Conductores y Clientes | ✔ | ✔ | | |
+| Sostenibilidad | ✔ | ✔ | ✔ | ✔ |
+| Administración | ✔ | | | Solo lectura y exportación |
+| Encuesta SUS | ✔ | ✔ | ✔ | ✔ |
+
+## 2. Planificador
+
+1. **Flota:** registrar cada vehículo con placa, tipo (camioneta, furgón o moto), capacidad en kg y m³, combustible,
+   rendimiento, año de fabricación, valor de adquisición y seguros. El sistema calcula el factor de emisión y marca si
+   el vehículo está restringido en el Centro de Huancayo (diésel de más de 15 años).
+2. **Conductores:** registrar nombre, DNI, licencia y su categoría, experiencia, teléfono, horario disponible, jornada
+   máxima, vehículo asignado y, si no sale del depósito, su punto de partida.
+3. **Clientes:** registrar dirección, distrito, punto de referencia, restricciones de acceso, horario en que recibe
+   (entre 05:00 y 22:00) y días de atención.
+4. **Pedidos:** elegir el cliente e indicar peso, volumen, prioridad (express, estándar o económico) y tipo de producto.
+   Si se deja vacía la dirección, la ubicación o la ventana, el pedido toma las del cliente.
+5. **Rutas → Generar rutas optimizadas:** el motor (Búsqueda Tabú) asigna los pedidos a los vehículos y muestra en el
+   mapa cada ruta con sus tramos coloreados por congestión (verde, amarillo, rojo), las zonas restringidas y de riesgo,
+   los límites distritales y los descansos del conductor. Los pedidos que no caben se listan como "sin asignar".
+6. **Registrar incidente y re-optimizar:** elegir la ruta, el tipo (tráfico, accidente, bloqueo de vía, clima, avería,
+   pedido nuevo o cancelación), la hora y las paradas ya entregadas, y pulsar **Re-optimizar**.
+
+## 3. Conductor
+
+En **Mi ruta** ve la siguiente entrega con dirección, punto de referencia, hora estimada y alertas de tráfico, con
+texto e íconos grandes. Al pulsar **✔ Entregado** la parada se marca y se resalta la siguiente.
+
+## 4. Sostenibilidad
+
+- Indicadores del día: kilómetros, CO₂, combustible ahorrado (litros y soles), entregas dentro de su ventana, ahorro
+  frente a la ruta sin optimizar y árboles equivalentes, con la frase de ahorro del día (por ejemplo, "Has ahorrado S/ 8.22 en combustible hoy").
+- **Descargar reporte PDF:** emisiones por ruta, costo del ciclo de vida de la flota, créditos de carbono y meta de
+  cero neto para el rango de fechas elegido.
+- **Plan de compensación de carbono:** árboles necesarios y costo de bonos; el ADMIN registra las compensaciones
+  realizadas.
+
+## 5. Administrador
+
+En **Administración**:
+
+1. **Usuarios:** crear usuarios con su rol, activarlos o desactivarlos (el ADMIN no puede desactivarse a sí mismo).
+2. **Parámetros del motor de rutas:** velocidad urbana y de hora punta, factor vial, peso del CO₂, minutos de descarga,
+   tiempo máximo del motor, precio del diésel y costo de mantenimiento por km. Se aplican al siguiente plan.
+3. **Bitácora de auditoría:** consultar las operaciones y los intentos de acceso; **Exportar CSV** (también disponible
+   para el AUDITOR).
+4. **Resultados de la encuesta SUS:** puntaje de cada participante y promedio global.
+
+## 6. Encuesta SUS
+
+En **Encuesta SUS** el participante escribe su código (P1, P2…), su perfil, marca las tareas que completó y responde
+las 10 afirmaciones de 1 a 5. Cada código responde una sola vez.
+
+## 7. Preguntas frecuentes
+
+- *¿Por qué un pedido quedó "sin asignar"?* No cabe en ningún vehículo por peso o volumen, su ventana es imposible,
+  excede la jornada del conductor o está en el Centro y solo hay vehículos restringidos.
+- *¿Por qué la primera carga tarda unos segundos?* La API usa un plan gratuito que se suspende tras un tiempo sin uso
+  y despierta con la primera petición.
+
+---
+
+## Historial de control de cambios
+
+| Versión | Fecha | Autor | Descripción |
+|---|---|---|---|
+| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial del manual de usuario |
+| 1.1.0 | 20/11/2026 | Fernando Rodrigo Chaupis Espinoza | Manual de usuario y de administrador con las pantallas del Sprint 4: clientes, modo conductor, rol AUDITOR, encuesta SUS y URL de producción |
+
+[← Volver al README Principal](../../README.md)
