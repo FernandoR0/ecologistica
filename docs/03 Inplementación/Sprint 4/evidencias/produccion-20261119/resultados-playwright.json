@@ -1,0 +1,259 @@
+{
+  "fecha": "2026-11-20T02:57:29.090Z",
+  "total": 36,
+  "aprobadas": 36,
+  "casos": [
+    {
+      "archivo": "accesibilidad.spec.ts",
+      "caso": "pantalla de acceso sin violaciones @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 5581
+    },
+    {
+      "archivo": "accesibilidad.spec.ts",
+      "caso": "pantalla de acceso sin violaciones @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 5553
+    },
+    {
+      "archivo": "accesibilidad.spec.ts",
+      "caso": "pantalla de acceso sin violaciones @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 3702
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "muestra la pantalla de acceso @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 1435
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "rechaza credenciales inválidas sin navegar @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 2211
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "valida campos obligatorios y formato de correo sin enviar la petición @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 1672
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "muestra la pantalla de acceso @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 2071
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "rechaza credenciales inválidas sin navegar @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 2731
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "valida campos obligatorios y formato de correo sin enviar la petición @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 2208
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "muestra la pantalla de acceso @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 2255
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "rechaza credenciales inválidas sin navegar @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 3591
+    },
+    {
+      "archivo": "auth.spec.ts",
+      "caso": "valida campos obligatorios y formato de correo sin enviar la petición @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 4192
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "el health check de la API responde 200 @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 805
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "la interfaz y sus recursos estáticos no devuelven errores @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 1141
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "códigos HTTP del proxy /api: 401 sin token y 404 en ruta inexistente @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 1139
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "10 sondeos consecutivos de disponibilidad con latencia p50 y p95 @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 5523
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "pérdida de conexión: mensaje comprensible y botón habilitado @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 1777
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "backend 503: mensaje de indisponibilidad con su código @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 1325
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "API lenta: el botón muestra \"Ingresando…\" deshabilitado y luego el resultado @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 3276
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "el health check de la API responde 200 @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 720
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "la interfaz y sus recursos estáticos no devuelven errores @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 1705
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "códigos HTTP del proxy /api: 401 sin token y 404 en ruta inexistente @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 1113
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "10 sondeos consecutivos de disponibilidad con latencia p50 y p95 @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 5554
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "pérdida de conexión: mensaje comprensible y botón habilitado @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 2112
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "backend 503: mensaje de indisponibilidad con su código @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 1812
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "API lenta: el botón muestra \"Ingresando…\" deshabilitado y luego el resultado @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 3797
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "el health check de la API responde 200 @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 834
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "la interfaz y sus recursos estáticos no devuelven errores @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 2107
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "códigos HTTP del proxy /api: 401 sin token y 404 en ruta inexistente @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 1162
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "10 sondeos consecutivos de disponibilidad con latencia p50 y p95 @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 5610
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "pérdida de conexión: mensaje comprensible y botón habilitado @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 3080
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "backend 503: mensaje de indisponibilidad con su código @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 3065
+    },
+    {
+      "archivo": "disponibilidad.spec.ts",
+      "caso": "API lenta: el botón muestra \"Ingresando…\" deshabilitado y luego el resultado @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 5077
+    },
+    {
+      "archivo": "rendimiento.spec.ts",
+      "caso": "TTFB, FCP y LCP de la pantalla de acceso dentro del presupuesto @public",
+      "navegador": "chromium",
+      "estado": "expected",
+      "duracion_ms": 1757
+    },
+    {
+      "archivo": "rendimiento.spec.ts",
+      "caso": "TTFB, FCP y LCP de la pantalla de acceso dentro del presupuesto @public",
+      "navegador": "firefox",
+      "estado": "expected",
+      "duracion_ms": 2141
+    },
+    {
+      "archivo": "rendimiento.spec.ts",
+      "caso": "TTFB, FCP y LCP de la pantalla de acceso dentro del presupuesto @public",
+      "navegador": "webkit",
+      "estado": "expected",
+      "duracion_ms": 2839
+    }
+  ]
+}

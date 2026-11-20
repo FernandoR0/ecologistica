@@ -1,0 +1,10 @@
+{
+  "navegador": "webkit",
+  "prueba": "web-vitals",
+  "entorno": "https://ecologistica.vercel.app",
+  "ttfb_ms": 513,
+  "fcp_ms": 1014,
+  "lcp_ms": null,
+  "load_ms": 915,
+  "bytes": 81489
+}

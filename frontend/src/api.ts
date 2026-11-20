@@ -1,6 +1,7 @@
 /** Cliente HTTP mínimo para la API de EcoLogística. */
 
-export const API_URL: string = import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api';
+// En producción la web y la API comparten dominio: Vercel reenvía /api a Render (frontend/vercel.json)
+export const API_URL: string = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '/api' : 'http://localhost:8000/api');
 const CLAVE_TOKEN = 'eco_token';
 
 export class ApiError extends Error {
