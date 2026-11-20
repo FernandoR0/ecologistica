@@ -31,6 +31,8 @@ interface Props {
   columnas: { campo: string; etiqueta: string }[];
   puedeEditar: boolean;
   borrarTexto?: string;
+  /** Revisión antes de enviar: devuelve el mensaje que se muestra junto al formulario o null si todo está bien. */
+  validar?: (form: Record<string, unknown>) => string | null;
 }
 
 type Fila = Record<string, unknown> & { id: number };
@@ -49,7 +51,7 @@ export function proponerDesdeLugar(form: Record<string, unknown>, lugar: LugarEn
 }
 
 /** Página genérica de listado + formulario de alta/edición. */
-export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTexto = 'Desactivar' }: Props) {
+export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTexto = 'Desactivar', validar }: Props) {
   const [filas, setFilas] = useState<Fila[]>([]);
   const [pagina, setPagina] = useState(1);
   const [total, setTotal] = useState(0);
@@ -87,6 +89,11 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
 
   const guardar = async (e: FormEvent) => {
     e.preventDefault();
+    const problema = validar?.(form);
+    if (problema) {
+      setError(problema);
+      return;
+    }
     const datos: Record<string, unknown> = {};
     for (const c of campos) {
       if (c.automatico || (editando && c.soloCrear)) continue;
@@ -162,8 +169,16 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
     );
   };
 
+  // La ayuda se muestra debajo del campo (no solo al pasar el mouse) y se asocia con aria-describedby
   const campoSimple = (c: Campo) => (
-    <label key={c.nombre} title={c.ayuda}>
+    <div key={c.nombre} className="campo">
+      {etiquetaYControl(c)}
+      {c.ayuda && <small id={`ayuda-${c.nombre}`} className="ayuda">{c.ayuda}</small>}
+    </div>
+  );
+
+  const etiquetaYControl = (c: Campo) => (
+    <label title={c.ayuda}>
       {c.etiqueta}
       {c.tipo === 'select' ? (
         <select
@@ -192,6 +207,7 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
           value={String(form[c.nombre] ?? '')}
           required={c.requerido && !editando}
           disabled={!!editando && (c.soloCrear || c.automatico)}
+          aria-describedby={c.ayuda ? `ayuda-${c.nombre}` : undefined}
           onChange={(e) => setForm({ ...form, [c.nombre]: e.target.value })}
         />
       )}
@@ -204,16 +220,18 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
         <h1>{titulo}</h1>
         {puedeEditar && <button onClick={() => abrir(null)}>+ Nuevo</button>}
       </header>
-      {error && <p className="error" role="alert">{error}</p>}
+      {/* Con el formulario abierto el error se muestra junto al botón Guardar, donde la persona está mirando */}
+      {error && !formAbierto && <p className="error" role="alert">{error}</p>}
 
       {formAbierto && (
         <form className="tarjeta form-grid" onSubmit={guardar} aria-label={`Formulario ${titulo}`}>
           {campos
             .filter((c) => !c.automatico || editando)
             .map((c) => (c.tipo === 'ubicacion' ? campoUbicacion(c) : campoSimple(c)))}
+          {error && <p className="error campo-ancho" role="alert">{error}</p>}
           <div className="acciones">
             <button type="submit">Guardar</button>
-            <button type="button" className="secundario" onClick={() => setForm({})}>Cancelar</button>
+            <button type="button" className="secundario" onClick={() => { setForm({}); setError(''); }}>Cancelar</button>
           </div>
         </form>
       )}

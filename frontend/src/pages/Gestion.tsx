@@ -93,12 +93,35 @@ export function Conductores() {
   );
 }
 
+// Sugerencia de la prueba SUS: un participante escribió "de 12 a 6" pensando en el formato de 12 horas
+const AYUDA_HORA = 'Formato de 24 horas, entre 05:00 y 22:00. Ej.: 18:00 = 6 de la tarde.';
+const aMin = (h: unknown) => {
+  const [hh, mm] = String(h).split(':').map(Number);
+  return hh * 60 + mm;
+};
+const llena = (v: unknown) => v !== '' && v !== undefined && v !== null;
+
+/** Revisa un horario antes de enviarlo y explica el error en palabras simples. */
+export function revisarHorario(desde: unknown, hasta: unknown, que: string, rangoOperativo = true): string | null {
+  if (!llena(desde) || !llena(hasta)) return null;
+  const [d, h] = [aMin(desde), aMin(hasta)];
+  if (rangoOperativo && (d < 5 * 60 || h > 22 * 60)) {
+    return `${que} debe estar entre 05:00 y 22:00 (formato de 24 horas: 6 de la tarde se escribe 18:00).`;
+  }
+  if (h <= d) {
+    return `${que}: la hora de fin (${String(hasta)}) debe ser después de la de inicio (${String(desde)}). ` +
+      'Usa el formato de 24 horas: 6 de la tarde se escribe 18:00.';
+  }
+  return null;
+}
+
 export function Clientes() {
   return (
     <CrudPage
       titulo="Clientes"
       ruta="/clientes"
       puedeEditar={usePuedeEditar()}
+      validar={(f) => revisarHorario(f.hora_desde, f.hora_hasta, 'El horario de recepción')}
       campos={[
         { nombre: 'nombre', etiqueta: 'Nombre del cliente', requerido: true },
         { nombre: 'telefono', etiqueta: 'Teléfono' },
@@ -107,8 +130,8 @@ export function Clientes() {
         { nombre: 'ubicacion', etiqueta: 'Ubicación del cliente en el mapa', tipo: 'ubicacion', requerido: true },
         { nombre: 'punto_referencia', etiqueta: 'Punto de referencia', ayuda: 'Ejemplo: frente a la bodega El Ahorro' },
         { nombre: 'restricciones_acceso', etiqueta: 'Restricciones de acceso', ayuda: 'Ejemplo: calle angosta, solo camioneta' },
-        { nombre: 'hora_desde', etiqueta: 'Recibe desde', tipo: 'time' },
-        { nombre: 'hora_hasta', etiqueta: 'Recibe hasta', tipo: 'time' },
+        { nombre: 'hora_desde', etiqueta: 'Recibe desde', tipo: 'time', ayuda: AYUDA_HORA },
+        { nombre: 'hora_hasta', etiqueta: 'Recibe hasta', tipo: 'time', ayuda: 'Debe ser después de la hora de inicio.' },
         { nombre: 'dias_atencion', etiqueta: 'Días de atención (LU,MA,MI,JU,VI,SA,DO)' },
         { nombre: 'activo', etiqueta: 'Activo', tipo: 'checkbox' },
       ]}
@@ -132,12 +155,33 @@ export function Pedidos() {
       .then((cs) => setClientes(cs.map((c) => ({ valor: c.id, etiqueta: c.nombre }))))
       .catch(() => setClientes([]));
   }, []);
+  // Sugerencia de la prueba SUS: mostrar el límite de la flota y avisar en el formulario, no recién al generar rutas
+  const [flota, setFlota] = useState<{ kg: number; m3: number } | null>(null);
+  useEffect(() => {
+    api<Vehiculo[]>('/vehiculos?activo=true&limite=100')
+      .then((vs) => setFlota(vs.length
+        ? { kg: Math.max(...vs.map((v) => v.capacidad_kg)), m3: Math.max(...vs.map((v) => v.volumen_m3)) }
+        : null))
+      .catch(() => setFlota(null));
+  }, []);
+  const validar = (f: Record<string, unknown>) => {
+    if (flota && llena(f.peso_kg) && Number(f.peso_kg) > flota.kg) {
+      return `Ningún vehículo de la flota puede llevar ${f.peso_kg} kg: el de mayor capacidad carga ${flota.kg} kg. ` +
+        'Divide el pedido o registra un vehículo más grande en Flota.';
+    }
+    if (flota && llena(f.volumen_m3) && Number(f.volumen_m3) > flota.m3) {
+      return `Ningún vehículo de la flota puede llevar ${f.volumen_m3} m³: el de mayor volumen lleva ${flota.m3} m³. ` +
+        'Divide el pedido o registra un vehículo más grande en Flota.';
+    }
+    return revisarHorario(f.ventana_inicio, f.ventana_fin, 'La ventana de entrega', false);
+  };
   return (
     <CrudPage
       titulo="Pedidos"
       ruta="/pedidos"
       borrarTexto="Cancelar"
       puedeEditar={usePuedeEditar()}
+      validar={validar}
       campos={[
         { nombre: 'codigo', etiqueta: 'Código', automatico: true },
         { nombre: 'cliente_id', etiqueta: 'Cliente', tipo: 'select', opciones: clientes, numerico: true, requerido: true, soloCrear: true },
@@ -147,9 +191,15 @@ export function Pedidos() {
           nombre: 'ubicacion', etiqueta: 'Otra ubicación de entrega (opcional)', tipo: 'ubicacion',
           ayuda: 'Sin ubicación: se entrega en la del cliente.',
         },
-        { nombre: 'peso_kg', etiqueta: 'Peso (kg)', tipo: 'number', paso: '0.1', requerido: true },
-        { nombre: 'volumen_m3', etiqueta: 'Volumen (m³)', tipo: 'number', paso: '0.01' },
-        { nombre: 'ventana_inicio', etiqueta: 'Entregar desde (vacío = horario del cliente)', tipo: 'time' },
+        {
+          nombre: 'peso_kg', etiqueta: 'Peso (kg)', tipo: 'number', paso: '0.1', requerido: true,
+          ayuda: flota ? `Máximo ${flota.kg} kg (vehículo de mayor capacidad).` : undefined,
+        },
+        {
+          nombre: 'volumen_m3', etiqueta: 'Volumen (m³)', tipo: 'number', paso: '0.01',
+          ayuda: flota ? `Máximo ${flota.m3} m³ (vehículo de mayor volumen).` : undefined,
+        },
+        { nombre: 'ventana_inicio', etiqueta: 'Entregar desde (vacío = horario del cliente)', tipo: 'time', ayuda: AYUDA_HORA },
         { nombre: 'ventana_fin', etiqueta: 'Entregar hasta', tipo: 'time' },
         { nombre: 'prioridad', etiqueta: 'Prioridad', tipo: 'select', opciones: ['EXPRESS', 'ESTANDAR', 'ECONOMICO'] },
         { nombre: 'tipo_producto', etiqueta: 'Tipo de producto', tipo: 'select', opciones: ['PERECEDERO', 'NO_PERECEDERO'] },

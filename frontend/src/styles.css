@@ -125,6 +125,8 @@ main { flex: 1; padding: var(--esp-5) var(--esp-6); min-width: 0; max-width: 140
 .tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap: var(--esp-4); }
 .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--esp-4); align-items: end; }
 .form-grid h2 { grid-column: 1 / -1; margin: 0; }
+.campo { display: flex; flex-direction: column; gap: var(--esp-1); align-self: start; }
+.campo .ayuda { color: var(--muted); font-size: 0.8rem; line-height: 1.35; }
 .form-grid > .acciones { grid-column: 1 / -1; padding-top: var(--esp-2); border-top: 1px solid var(--borde); }
 .acciones { display: flex; gap: var(--esp-2); flex-wrap: wrap; }
 

@@ -127,6 +127,24 @@ def test_rutas_vigentes_y_de_dias_anteriores(client, admin, db):
     assert [r["id"] for r in client.get("/api/rutas?vigentes=true", headers=admin).json()] == [ruta["id"]]
 
 
+def test_pedido_que_no_cabe_en_la_flota_se_rechaza_al_registrarlo(client, admin):
+    cli = _crear_cliente(client, admin, "Bodega Grande")
+    # Sin flota registrada no hay límite contra el cual comparar
+    sin_flota = client.post("/api/pedidos", headers=admin, json={"cliente_id": cli["id"], "peso_kg": 3000})
+    assert sin_flota.status_code == 201
+    _crear_flota(client, admin, n=1)  # ABC-101: 800 kg y 8 m³
+    r = client.post("/api/pedidos", headers=admin, json={"cliente_id": cli["id"], "peso_kg": 2000})
+    assert r.status_code == 422 and "el de mayor capacidad carga 800 kg" in r.json()["detail"]
+    r = client.post("/api/pedidos", headers=admin, json={"cliente_id": cli["id"], "peso_kg": 10, "volumen_m3": 23})
+    assert r.status_code == 422 and "23 m³" in r.json()["detail"]
+    ok = client.post("/api/pedidos", headers=admin, json={"cliente_id": cli["id"], "peso_kg": 10, "volumen_m3": 2})
+    assert ok.status_code == 201
+    # También al editar
+    r = client.put(f"/api/pedidos/{ok.json()['id']}", headers=admin, json={"peso_kg": 5000})
+    assert r.status_code == 422
+    assert client.get(f"/api/pedidos/{ok.json()['id']}", headers=admin).json()["peso_kg"] == 10
+
+
 def test_hora_de_operacion_en_lima():
     from datetime import timedelta  # noqa: PLC0415
 

@@ -370,6 +370,77 @@ describe('Buscador de dirección o referencia (sugerencia de la prueba SUS)', ()
   });
 });
 
+describe('Avisos en el formulario (cuellos de botella de la prueba SUS)', () => {
+  it('explica el formato de 24 horas y rechaza "de 12 a 6" junto al botón Guardar', async () => {
+    const { fetchFalso } = renderConSesion(<Clientes />, 'PLANIFICADOR', {
+      '/clientes': { body: [], headers: { 'X-Total-Count': '0' } },
+    });
+    await userEvent.click(await screen.findByRole('button', { name: '+ Nuevo' }));
+    const form = screen.getByRole('form', { name: 'Formulario Clientes' });
+    await userEvent.type(within(form).getByLabelText('Nombre del cliente'), 'Bodega P5');
+    await userEvent.type(within(form).getByLabelText('Dirección'), 'Jr. Lima 200');
+    await userEvent.selectOptions(within(form).getByLabelText('Distrito'), 'Chilca');
+    const desde = within(form).getByLabelText('Recibe desde');
+    // La ayuda se ve debajo del campo y queda asociada para lectores de pantalla
+    expect(desde).toHaveAccessibleDescription('Formato de 24 horas, entre 05:00 y 22:00. Ej.: 18:00 = 6 de la tarde.');
+    fireEvent.change(desde, { target: { value: '12:00' } });
+    fireEvent.change(within(form).getByLabelText('Recibe hasta'), { target: { value: '06:00' } });
+    await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
+    const alerta = within(form).getByRole('alert');
+    expect(alerta).toHaveTextContent(
+      'El horario de recepción: la hora de fin (06:00) debe ser después de la de inicio (12:00). Usa el formato de 24 horas: 6 de la tarde se escribe 18:00.');
+    expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(false);
+    fireEvent.change(within(form).getByLabelText('Recibe hasta'), { target: { value: '23:00' } });
+    await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
+    expect(within(form).getByRole('alert')).toHaveTextContent('debe estar entre 05:00 y 22:00');
+    // Al cancelar el formulario el aviso desaparece
+    await userEvent.click(within(form).getByRole('button', { name: 'Cancelar' }));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('muestra el límite de la flota y no envía un pedido que no cabe en ningún vehículo', async () => {
+    const { fetchFalso } = renderConSesion(<Pedidos />, 'PLANIFICADOR', {
+      '/clientes': { body: [CLIENTE] },
+      '/vehiculos': { body: [VEHICULO, { ...VEHICULO, id: 2, capacidad_kg: 900, volumen_m3: 12 }] },
+      '/pedidos': { body: [], headers: { 'X-Total-Count': '0' } },
+      'POST /pedidos': { status: 201, body: {} },
+    });
+    await userEvent.click(await screen.findByRole('button', { name: '+ Nuevo' }));
+    const form = screen.getByRole('form', { name: 'Formulario Pedidos' });
+    expect(await within(form).findByText('Máximo 1500 kg (vehículo de mayor capacidad).')).toBeInTheDocument();
+    expect(within(form).getByText('Máximo 12 m³ (vehículo de mayor volumen).')).toBeInTheDocument();
+    await userEvent.selectOptions(within(form).getByLabelText('Cliente'), 'Restaurante Wanka');
+    await userEvent.type(within(form).getByLabelText('Peso (kg)'), '2000');
+    await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
+    expect(within(form).getByRole('alert')).toHaveTextContent(
+      'Ningún vehículo de la flota puede llevar 2000 kg: el de mayor capacidad carga 1500 kg.');
+    await userEvent.clear(within(form).getByLabelText('Peso (kg)'));
+    await userEvent.type(within(form).getByLabelText('Peso (kg)'), '20');
+    await userEvent.type(within(form).getByLabelText('Volumen (m³)'), '230');
+    await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
+    expect(within(form).getByRole('alert')).toHaveTextContent('Ningún vehículo de la flota puede llevar 230 m³');
+    fireEvent.change(within(form).getByLabelText('Volumen (m³)'), { target: { value: '2' } });
+    fireEvent.change(within(form).getByLabelText('Entregar desde (vacío = horario del cliente)'), { target: { value: '12:00' } });
+    fireEvent.change(within(form).getByLabelText('Entregar hasta'), { target: { value: '09:00' } });
+    await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
+    expect(within(form).getByRole('alert')).toHaveTextContent('La ventana de entrega: la hora de fin (09:00)');
+    expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(false);
+    fireEvent.change(within(form).getByLabelText('Entregar hasta'), { target: { value: '15:00' } });
+    await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(true));
+  });
+
+  it('sin flota registrada no limita el peso', async () => {
+    renderConSesion(<Pedidos />, 'PLANIFICADOR', {
+      '/clientes': { body: [CLIENTE] },
+      '/vehiculos': { body: [] },
+      '/pedidos': { body: [], headers: { 'X-Total-Count': '0' } },
+    });
+    await userEvent.click(await screen.findByRole('button', { name: '+ Nuevo' }));
+    expect(screen.queryByText(/^Máximo/)).not.toBeInTheDocument();
+  });
+});
+
 describe('Desactivar con trabajo pendiente', () => {
   it('muestra por qué no se puede desactivar', async () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);

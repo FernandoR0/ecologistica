@@ -94,18 +94,34 @@ test.describe('Gestión operativa (RF-001, RF-002, RF-008, RF-009)', () => {
     });
   });
 
-  test('rechaza una ventana que termina antes de empezar (422)', async ({ page }) => {
+  test('avisa en el formulario si la ventana termina antes de empezar o el pedido no cabe en la flota', async ({ page, request }) => {
     await irA(page, 'Pedidos', 'Pedidos');
     await page.getByRole('button', { name: '+ Nuevo' }).click();
     const fp = page.getByRole('form', { name: 'Formulario Pedidos' });
+    let enviados = 0;
+    page.on('request', (r) => { if (r.url().endsWith('/pedidos') && r.method() === 'POST') enviados += 1; });
     await fp.getByRole('combobox', { name: /^Cliente/ }).selectOption({ index: 1 });
+    // La ayuda muestra el límite de la flota y el formato de la hora
+    await expect(fp.getByText(/^Máximo [\d.]+ kg \(vehículo de mayor capacidad\)\.$/)).toBeVisible();
+    await expect(fp.getByText('Formato de 24 horas, entre 05:00 y 22:00. Ej.: 18:00 = 6 de la tarde.')).toBeVisible();
+    await fp.getByLabel('Peso (kg)').fill('99999');
+    await fp.getByRole('button', { name: 'Guardar' }).click();
+    await expect(fp.getByRole('alert')).toContainText('Ningún vehículo de la flota puede llevar 99999 kg');
     await fp.getByLabel('Peso (kg)').fill('10');
     await fp.getByLabel('Entregar desde (vacío = horario del cliente)').fill('12:00');
     await fp.getByLabel('Entregar hasta').fill('09:00');
-    const respuesta = page.waitForResponse((r) => r.url().endsWith('/pedidos') && r.request().method() === 'POST');
     await fp.getByRole('button', { name: 'Guardar' }).click();
-    expect((await respuesta).status()).toBe(422);
-    await expect(page.getByRole('alert')).toContainText('La ventana debe terminar después de empezar');
+    await expect(fp.getByRole('alert')).toContainText('la hora de fin (09:00) debe ser después de la de inicio (12:00)');
+    expect(enviados).toBe(0);
+    // La API también lo rechaza si se llama directamente (4900 kg: dentro del máximo general de 5000 kg, pero más que
+    // cualquier vehículo de la flota)
+    const h = await tokenApi(request, 'admin');
+    const cliente = (await (await request.get(`${API}/clientes?limite=1`, { headers: h })).json())[0];
+    const malo = await request.post(`${API}/pedidos`, {
+      headers: h, data: { cliente_id: cliente.id, peso_kg: 4900 },
+    });
+    expect(malo.status()).toBe(422);
+    expect((await malo.json()).detail).toContain('Ningún vehículo de la flota puede llevar 4900 kg');
   });
 
   test('rechaza una licencia que no corresponde al tipo de vehículo (RN-015)', async ({ page }, info) => {

@@ -3,7 +3,7 @@
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -124,6 +124,24 @@ def _pedido(db: Session, pedido_id: int) -> Pedido:
     return p
 
 
+def _validar_capacidad(db: Session, peso_kg: float, volumen_m3: float) -> None:
+    """Un pedido que no cabe en ningún vehículo activo se rechaza al registrarlo, no recién al generar rutas
+    (cuello de botella de la prueba de usabilidad SUS). Sin flota registrada no hay contra qué comparar."""
+    kg, m3 = db.execute(
+        select(func.max(Vehiculo.capacidad_kg), func.max(Vehiculo.volumen_m3)).where(Vehiculo.activo.is_(True))
+    ).one()
+    if kg is not None and peso_kg > kg:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            f"Ningún vehículo de la flota puede llevar {peso_kg:g} kg: el de mayor capacidad carga {kg:g} kg",
+        )
+    if m3 is not None and volumen_m3 > m3:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            f"Ningún vehículo de la flota puede llevar {volumen_m3:g} m³: el de mayor volumen lleva {m3:g} m³",
+        )
+
+
 def _codigo_libre(db: Session, pedido_id: int) -> str:
     """PED-0001, PED-0002…; si alguien ya usó ese código a mano, agrega un sufijo."""
     base = f"PED-{pedido_id:04d}"
@@ -169,6 +187,7 @@ def crear_pedido(datos: PedidoIn, db: Session = Depends(get_db), _=Depends(gesti
             valores[campo] = por_defecto
     if valores["ventana_inicio"] >= valores["ventana_fin"]:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "La ventana debe terminar después de empezar")
+    _validar_capacidad(db, valores["peso_kg"], valores["volumen_m3"])
     automatico = valores["codigo"] is None
     if automatico:
         # Código provisional único; se reemplaza por PED-<id> en cuanto la base asigna el id
@@ -197,6 +216,11 @@ def actualizar_pedido(pedido_id: int, datos: PedidoUpdate, db: Session = Depends
     if p.ventana_inicio >= p.ventana_fin:
         db.rollback()
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "La ventana debe terminar después de empezar")
+    try:
+        _validar_capacidad(db, p.peso_kg, p.volumen_m3)
+    except HTTPException:
+        db.rollback()
+        raise
     db.commit()
     return p
 
