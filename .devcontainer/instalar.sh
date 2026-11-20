@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 
 python -m pip install --only-binary :all: --require-hashes -r backend/requirements.lock
 
-if [ ! -f backend/.env ]; then
+if [[ ! -f backend/.env ]]; then
   {
     echo "DATABASE_URL=sqlite:///./ecologistica.db"
     echo "JWT_SECRET=$(openssl rand -hex 32)"

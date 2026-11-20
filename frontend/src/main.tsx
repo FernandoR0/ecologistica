@@ -23,10 +23,12 @@ const Administracion = lazy(() => import('./pages/Administracion').then((m) => (
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => undefined);
-    navigator.serviceWorker.ready.then((reg) => {
-      const urls = performance.getEntriesByType('resource').map((r) => r.name).filter((u) => u.includes('/assets/'));
-      reg.active?.postMessage({ tipo: 'guardar', urls });
-    });
+    navigator.serviceWorker.ready
+      .then((reg) => {
+        const urls = performance.getEntriesByType('resource').map((r) => r.name).filter((u) => u.includes('/assets/'));
+        reg.active?.postMessage({ tipo: 'guardar', urls });
+      })
+      .catch(() => undefined);
   });
 }
 

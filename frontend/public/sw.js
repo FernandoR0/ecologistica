@@ -19,8 +19,13 @@ self.addEventListener('activate', (event) => {
 
 // La primera visita descarga los archivos antes de que el service worker esté activo: la página le pasa la lista
 self.addEventListener('message', (event) => {
-  const urls = (event.data && event.data.tipo === 'guardar' && event.data.urls) || [];
-  const propias = urls.filter((u) => new URL(u, self.location.origin).pathname.startsWith('/assets/'));
+  // Solo se aceptan mensajes de páginas de este mismo sitio
+  if (event.origin !== self.location.origin) return;
+  const urls = (event.data && event.data.tipo === 'guardar' && Array.isArray(event.data.urls) && event.data.urls) || [];
+  const propias = urls.filter((u) => {
+    const destino = new URL(u, self.location.origin);
+    return destino.origin === self.location.origin && destino.pathname.startsWith('/assets/');
+  });
   event.waitUntil(caches.open(VERSION).then((c) => c.addAll(propias)).catch(() => undefined));
 });
 
@@ -35,7 +40,7 @@ self.addEventListener('fetch', (event) => {
       fetch(request)
         .then((r) => {
           const copia = r.clone();
-          caches.open(VERSION).then((c) => c.put('/index.html', copia));
+          caches.open(VERSION).then((c) => c.put('/index.html', copia)).catch(() => undefined);
           return r;
         })
         .catch(() => caches.match('/index.html')),
@@ -52,7 +57,7 @@ self.addEventListener('fetch', (event) => {
           fetch(request).then((r) => {
             if (r.ok) {
               const copia = r.clone();
-              caches.open(VERSION).then((c) => c.put(request, copia));
+              caches.open(VERSION).then((c) => c.put(request, copia)).catch(() => undefined);
             }
             return r;
           }),

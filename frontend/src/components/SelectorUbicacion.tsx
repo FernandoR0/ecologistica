@@ -16,7 +16,7 @@ interface Props {
   opcional?: boolean;
 }
 
-const numero = (v: unknown) => (v === '' || v === null || v === undefined ? NaN : Number(v));
+const numero = (v: unknown) => (v === '' || v === null || v === undefined ? Number.NaN : Number(v));
 const redondear = (v: number) => Number(v.toFixed(6));
 
 /**

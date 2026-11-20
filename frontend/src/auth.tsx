@@ -4,17 +4,29 @@ import { api, ApiError, post, tokenStore, type Rol, type Usuario } from './api';
 import { respaldo } from './offline';
 
 const CLAVE_USUARIO = 'eco_usuario';
+const ROLES: readonly Rol[] = ['ADMIN', 'PLANIFICADOR', 'CONDUCTOR', 'AUDITOR'];
+
+/** Solo se guardan y aceptan los cuatro campos esperados, con tipos y rol válidos (evita datos manipulados). */
+function limpiarUsuario(v: unknown): Usuario | null {
+  if (!v || typeof v !== 'object') return null;
+  const { id, correo, nombre, rol } = v as Record<string, unknown>;
+  if (typeof id !== 'number' || typeof correo !== 'string' || typeof nombre !== 'string') return null;
+  if (!ROLES.includes(rol as Rol)) return null;
+  return { id, correo, nombre, rol: rol as Rol };
+}
+
 const usuarioGuardado = (): Usuario | null => {
   try {
     const v = sessionStorage.getItem(CLAVE_USUARIO);
-    return v ? (JSON.parse(v) as Usuario) : null;
+    return v ? limpiarUsuario(JSON.parse(v)) : null;
   } catch {
     return null;
   }
 };
 const guardarUsuario = (u: Usuario | null) => {
   try {
-    if (u) sessionStorage.setItem(CLAVE_USUARIO, JSON.stringify(u));
+    const limpio = limpiarUsuario(u);
+    if (limpio) sessionStorage.setItem(CLAVE_USUARIO, JSON.stringify(limpio));
     else sessionStorage.removeItem(CLAVE_USUARIO);
   } catch {
     // almacenamiento bloqueado: solo se pierde el respaldo sin conexión
