@@ -207,7 +207,10 @@ class ClienteOut(ORM, ClienteIn):
 
 # ---------- Pedidos (RF-002) ----------
 class PedidoIn(BaseModel):
-    codigo: str = Field(min_length=3, max_length=20)
+    codigo: str | None = Field(
+        default=None, min_length=3, max_length=20,
+        description="Vacío = se genera automáticamente (PED-0001, PED-0002…)",
+    )
     cliente_id: int = Field(gt=0)
     direccion: str | None = Field(default=None, min_length=3, max_length=200, description="Vacío = la del cliente")
     punto_referencia: str | None = Field(default=None, max_length=200)

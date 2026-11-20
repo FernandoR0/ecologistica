@@ -160,7 +160,8 @@ describe('Clientes y pedidos (RF-009, RF-002)', () => {
       'POST /pedidos': { status: 201, body: {} },
     });
     await userEvent.click(await screen.findByRole('button', { name: '+ Nuevo' }));
-    await userEvent.type(screen.getByLabelText('Código'), 'W-1');
+    // El código lo genera el sistema: no se pide al crear
+    expect(screen.queryByLabelText('Código')).not.toBeInTheDocument();
     await userEvent.selectOptions(await screen.findByLabelText('Cliente'), 'Restaurante Wanka');
     await userEvent.type(screen.getByLabelText('Peso (kg)'), '80');
     await userEvent.selectOptions(screen.getByLabelText('Prioridad'), 'EXPRESS');
@@ -168,7 +169,24 @@ describe('Clientes y pedidos (RF-009, RF-002)', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Guardar' }));
     await waitFor(() => expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(true));
     const cuerpo = JSON.parse(String(fetchFalso.mock.calls.find((c) => c[1]?.method === 'POST')?.[1]?.body));
-    expect(cuerpo).toEqual({ codigo: 'W-1', cliente_id: 3, peso_kg: 80, prioridad: 'EXPRESS', tipo_producto: 'PERECEDERO' });
+    expect(cuerpo).toEqual({ cliente_id: 3, peso_kg: 80, prioridad: 'EXPRESS', tipo_producto: 'PERECEDERO' });
+  });
+
+  it('al editar un pedido muestra su código generado sin permitir cambiarlo', async () => {
+    const PEDIDO = { ...pedidos(7, 1)[0], codigo: 'PED-0007', cliente_id: 3 };
+    const { fetchFalso } = renderConSesion(<Pedidos />, 'PLANIFICADOR', {
+      '/clientes': { body: [CLIENTE] },
+      '/pedidos': (_i, url) => (url === '/pedidos/7' ? { body: PEDIDO } : { body: [PEDIDO], headers: { 'X-Total-Count': '1' } }),
+      'PUT /pedidos/7': { body: PEDIDO },
+    });
+    await userEvent.click(await screen.findByRole('button', { name: 'Editar' }));
+    const codigo = await screen.findByLabelText('Código');
+    expect(codigo).toHaveValue('PED-0007');
+    expect(codigo).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'PUT')).toBe(true));
+    const cuerpo = JSON.parse(String(fetchFalso.mock.calls.find((c) => c[1]?.method === 'PUT')?.[1]?.body));
+    expect(cuerpo).not.toHaveProperty('codigo');
   });
 });
 

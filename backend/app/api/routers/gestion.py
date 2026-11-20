@@ -1,5 +1,7 @@
 """RF-001 flota · RF-002 pedidos · RF-008 conductores · RF-009 clientes."""
 
+from uuid import uuid4
+
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -75,6 +77,16 @@ def _pedido(db: Session, pedido_id: int) -> Pedido:
     return p
 
 
+def _codigo_libre(db: Session, pedido_id: int) -> str:
+    """PED-0001, PED-0002…; si alguien ya usó ese código a mano, agrega un sufijo."""
+    base = f"PED-{pedido_id:04d}"
+    codigo, n = base, 1
+    while db.scalar(select(Pedido.id).where(Pedido.codigo == codigo, Pedido.id != pedido_id)) is not None:
+        n += 1
+        codigo = f"{base}-{n}"
+    return codigo
+
+
 @pedidos.get("", response_model=list[PedidoResumen])
 def listar_pedidos(
     response: Response,
@@ -110,9 +122,16 @@ def crear_pedido(datos: PedidoIn, db: Session = Depends(get_db), _=Depends(gesti
             valores[campo] = por_defecto
     if valores["ventana_inicio"] >= valores["ventana_fin"]:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "La ventana debe terminar después de empezar")
+    automatico = valores["codigo"] is None
+    if automatico:
+        # Código provisional único; se reemplaza por PED-<id> en cuanto la base asigna el id
+        valores["codigo"] = f"TMP-{uuid4().hex[:16]}"
     p = Pedido(**valores)
     db.add(p)
     try:
+        db.flush()
+        if automatico:
+            p.codigo = _codigo_libre(db, p.id)
         db.commit()
     except IntegrityError:
         db.rollback()

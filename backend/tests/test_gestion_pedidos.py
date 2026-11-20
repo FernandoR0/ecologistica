@@ -35,6 +35,21 @@ def test_pedido_de_cliente_inactivo_y_codigo_duplicado(client, admin):
     assert client.post("/api/pedidos", headers=admin, json={**datos, "codigo": "DUP-2"}).status_code == 422
 
 
+def test_codigo_de_pedido_automatico(client, admin):
+    cli = _crear_cliente(client, admin, "Bodega Auto")
+    a = client.post("/api/pedidos", headers=admin, json={"cliente_id": cli["id"], "peso_kg": 10})
+    b = client.post("/api/pedidos", headers=admin, json={"cliente_id": cli["id"], "peso_kg": 12})
+    assert a.status_code == b.status_code == 201
+    assert a.json()["codigo"] == f"PED-{a.json()['id']:04d}"
+    assert b.json()["codigo"] == f"PED-{b.json()['id']:04d}"
+    # Si alguien ya usó a mano el código que tocaba, se agrega un sufijo en lugar de fallar
+    siguiente = f"PED-{b.json()['id'] + 2:04d}"
+    assert client.post("/api/pedidos", headers=admin,
+                       json={"codigo": siguiente, "cliente_id": cli["id"], "peso_kg": 5}).status_code == 201
+    c = client.post("/api/pedidos", headers=admin, json={"cliente_id": cli["id"], "peso_kg": 7})
+    assert c.status_code == 201 and c.json()["codigo"] == f"{siguiente}-2"
+
+
 def test_cliente_hereda_horario_invalido(client, admin):
     cli = _crear_cliente(client, admin, "Bodega Tarde", hora_desde="15:00", hora_hasta="18:00")
     r = client.post("/api/pedidos", headers=admin, json={"codigo": "T-1", "cliente_id": cli["id"], "peso_kg": 10,

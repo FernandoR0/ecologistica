@@ -137,7 +137,7 @@ export function Pedidos() {
       borrarTexto="Cancelar"
       puedeEditar={usePuedeEditar()}
       campos={[
-        { nombre: 'codigo', etiqueta: 'Código', requerido: true, soloCrear: true },
+        { nombre: 'codigo', etiqueta: 'Código', automatico: true },
         { nombre: 'cliente_id', etiqueta: 'Cliente', tipo: 'select', opciones: clientes, numerico: true, requerido: true, soloCrear: true },
         { nombre: 'direccion', etiqueta: 'Dirección (vacío = la del cliente)' },
         { nombre: 'punto_referencia', etiqueta: 'Punto de referencia' },

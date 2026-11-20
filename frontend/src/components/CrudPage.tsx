@@ -16,6 +16,8 @@ export interface Campo {
   ayuda?: string;
   requerido?: boolean;
   soloCrear?: boolean;
+  /** Lo genera el sistema: no se pide al crear y al editar se muestra sin poder cambiarlo. */
+  automatico?: boolean;
   paso?: string;
 }
 
@@ -71,7 +73,7 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
     e.preventDefault();
     const datos: Record<string, unknown> = {};
     for (const c of campos) {
-      if (editando && c.soloCrear) continue;
+      if (c.automatico || (editando && c.soloCrear)) continue;
       if (c.tipo === 'ubicacion') {
         const vacio = (v: unknown) => v === '' || v === undefined || v === null;
         if (vacio(form.lat) || vacio(form.lng)) {
@@ -118,7 +120,7 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
 
       {formAbierto && (
         <form className="tarjeta form-grid" onSubmit={guardar} aria-label={`Formulario ${titulo}`}>
-          {campos.map((c) => c.tipo === 'ubicacion' ? (
+          {campos.filter((c) => !c.automatico || editando).map((c) => c.tipo === 'ubicacion' ? (
             <div key={c.nombre} className="campo-ancho">
               <SelectorUbicacion
                 etiqueta={c.etiqueta}
@@ -169,7 +171,7 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
                   step={c.paso}
                   value={String(form[c.nombre] ?? '')}
                   required={c.requerido && !editando}
-                  disabled={!!editando && c.soloCrear}
+                  disabled={!!editando && (c.soloCrear || c.automatico)}
                   onChange={(e) => setForm({ ...form, [c.nombre]: e.target.value })}
                 />
               )}

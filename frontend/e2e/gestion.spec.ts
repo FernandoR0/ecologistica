@@ -41,7 +41,6 @@ test.describe('Gestión operativa (RF-001, RF-002, RF-008, RF-009)', () => {
 
   test('registra un cliente y un pedido que hereda su horario y punto de referencia', async ({ page, request }, info) => {
     const nombre = unico('Bodega E2E', info);
-    const codigo = unico('PED', info);
     await irA(page, 'Clientes', 'Clientes');
     await page.getByRole('button', { name: '+ Nuevo' }).click();
     const fc = page.getByRole('form', { name: 'Formulario Clientes' });
@@ -61,31 +60,32 @@ test.describe('Gestión operativa (RF-001, RF-002, RF-008, RF-009)', () => {
     await irA(page, 'Pedidos', 'Pedidos');
     await page.getByRole('button', { name: '+ Nuevo' }).click();
     const fp = page.getByRole('form', { name: 'Formulario Pedidos' });
-    await fp.getByLabel('Código').fill(codigo);
+    // El código del pedido lo genera el sistema
+    await expect(fp.getByLabel('Código')).toHaveCount(0);
     await fp.getByRole('combobox', { name: /^Cliente/ }).selectOption({ label: nombre });
     await fp.getByLabel('Peso (kg)').fill('80');
     await fp.getByLabel('Volumen (m³)').fill('0.4');
     await fp.getByLabel('Prioridad').selectOption('EXPRESS');
     await fp.getByLabel('Tipo de producto').selectOption('PERECEDERO');
+    const creado = page.waitForResponse((r) => r.url().endsWith('/pedidos') && r.request().method() === 'POST');
     await fp.getByRole('button', { name: 'Guardar' }).click();
+    const pedido = await (await creado).json();
+    expect(pedido.codigo).toBe(`PED-${String(pedido.id).padStart(4, '0')}`);
     await expect(fp).toHaveCount(0);
-    await expect(page.getByRole('cell', { name: codigo })).toBeVisible();
+    await expect(page.getByRole('cell', { name: pedido.codigo, exact: true })).toBeVisible();
 
     const h = await tokenApi(request, 'admin');
-    const pedidos = await (await request.get(`${API}/pedidos?limite=100`, { headers: h })).json();
-    const resumen = pedidos.find((p: { codigo: string }) => p.codigo === codigo);
-    const completo = await (await request.get(`${API}/pedidos/${resumen.id}`, { headers: h })).json();
+    const completo = await (await request.get(`${API}/pedidos/${pedido.id}`, { headers: h })).json();
     expect(completo).toMatchObject({
       ventana_inicio: '09:00', ventana_fin: '12:00', punto_referencia: 'Frente a la bodega El Ahorro', estado: 'PENDIENTE',
       prioridad: 'EXPRESS', tipo_producto: 'PERECEDERO',
     });
   });
 
-  test('rechaza una ventana que termina antes de empezar (422)', async ({ page }, info) => {
+  test('rechaza una ventana que termina antes de empezar (422)', async ({ page }) => {
     await irA(page, 'Pedidos', 'Pedidos');
     await page.getByRole('button', { name: '+ Nuevo' }).click();
     const fp = page.getByRole('form', { name: 'Formulario Pedidos' });
-    await fp.getByLabel('Código').fill(unico('MAL', info));
     await fp.getByRole('combobox', { name: /^Cliente/ }).selectOption({ index: 1 });
     await fp.getByLabel('Peso (kg)').fill('10');
     await fp.getByLabel('Entregar desde (vacío = horario del cliente)').fill('12:00');
