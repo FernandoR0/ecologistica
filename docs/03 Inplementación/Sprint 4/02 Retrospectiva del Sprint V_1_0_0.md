@@ -25,7 +25,7 @@
 
 ## ¿Qué estamos haciendo bien?
 
-- Cada criterio Gherkin tiene una prueba automática: 76 de backend (cobertura 95 %), 104 de frontend (99 %) y 28 E2E
+- Cada criterio Gherkin tiene una prueba automática: 76 de backend (cobertura 95 %), 105 de frontend (99 %) y 28 E2E
   por navegador.
 - Integración por Pull Request con CI, Tests y SonarQube antes del merge.
 - Medir con datos reales (Web Vitals, tiempos de API, sondeos) en lugar de declarar el rendimiento.

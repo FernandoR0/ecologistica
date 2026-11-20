@@ -3,35 +3,27 @@ import { Navigate } from 'react-router-dom';
 import { api, ApiError, post, tokenStore, type Rol, type Usuario } from './api';
 import { respaldo } from './offline';
 
-const CLAVE_USUARIO = 'eco_usuario';
 const ROLES: readonly Rol[] = ['ADMIN', 'PLANIFICADOR', 'CONDUCTOR', 'AUDITOR'];
 
-/** Solo se guardan y aceptan los cuatro campos esperados, con tipos y rol válidos (evita datos manipulados). */
-function limpiarUsuario(v: unknown): Usuario | null {
-  if (!v || typeof v !== 'object') return null;
-  const { id, correo, nombre, rol } = v as Record<string, unknown>;
-  if (typeof id !== 'number' || typeof correo !== 'string' || typeof nombre !== 'string') return null;
-  if (!ROLES.includes(rol as Rol)) return null;
-  return { id, correo, nombre, rol: rol as Rol };
-}
-
-const usuarioGuardado = (): Usuario | null => {
+/**
+ * Sin señal (RNF-006) el usuario se toma del token de sesión que ya tiene el navegador (id, correo y rol), en lugar de
+ * guardar otra copia de sus datos. Solo se usa para mostrar las pantallas: la API sigue validando el token en cada
+ * petición. Si el token está vencido o no tiene la forma esperada, no hay sesión.
+ */
+export function usuarioDelToken(token: string | null, ahora = Date.now()): Usuario | null {
   try {
-    const v = sessionStorage.getItem(CLAVE_USUARIO);
-    return v ? limpiarUsuario(JSON.parse(v)) : null;
+    const carga = token?.split('.')[1];
+    if (!carga) return null;
+    const datos = JSON.parse(atob(carga.replace(/-/g, '+').replace(/_/g, '/'))) as Record<string, unknown>;
+    const id = Number(datos.sub);
+    const { correo, rol, exp } = datos;
+    if (!Number.isInteger(id) || typeof correo !== 'string' || !ROLES.includes(rol as Rol)) return null;
+    if (typeof exp === 'number' && exp * 1000 < ahora) return null;
+    return { id, correo, nombre: correo, rol: rol as Rol };
   } catch {
     return null;
   }
-};
-const guardarUsuario = (u: Usuario | null) => {
-  try {
-    const limpio = limpiarUsuario(u);
-    if (limpio) sessionStorage.setItem(CLAVE_USUARIO, JSON.stringify(limpio));
-    else sessionStorage.removeItem(CLAVE_USUARIO);
-  } catch {
-    // almacenamiento bloqueado: solo se pierde el respaldo sin conexión
-  }
-};
+}
 
 interface AuthCtx {
   usuario: Usuario | null;
@@ -49,14 +41,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!tokenStore.get()) return;
     api<Usuario>('/auth/me')
-      .then((u) => {
-        setUsuario(u);
-        guardarUsuario(u);
-      })
+      .then(setUsuario)
       .catch((e) => {
-        // Sin señal (RNF-006) se mantiene la sesión con el usuario ya verificado; otro error cierra la sesión
-        const guardado = usuarioGuardado();
-        if (e instanceof ApiError && e.status === 0 && guardado) setUsuario(guardado);
+        // Sin señal (RNF-006) se mantiene la sesión con los datos del token vigente; otro error cierra la sesión
+        const delToken = usuarioDelToken(tokenStore.get());
+        if (e instanceof ApiError && e.status === 0 && delToken) setUsuario(delToken);
         else tokenStore.clear();
       })
       .finally(() => setCargando(false));
@@ -65,12 +54,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (correo: string, password: string) => {
     const r = await post<{ access_token: string; usuario: Usuario }>('/auth/login', { correo, password });
     tokenStore.set(r.access_token);
-    guardarUsuario(r.usuario);
     setUsuario(r.usuario);
   };
   const logout = () => {
     tokenStore.clear();
-    guardarUsuario(null);
     // Ley 29733: la ruta guardada (nombres y direcciones de clientes) no queda en el celular al salir
     respaldo.limpiar();
     setUsuario(null);

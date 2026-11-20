@@ -2,10 +2,14 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { AuthProvider, Protegida, useAuth } from '../auth';
+import { AuthProvider, Protegida, useAuth, usuarioDelToken } from '../auth';
 import { Layout } from '../components/Layout';
 import { Login } from '../pages/Login';
 import { renderConSesion, simularApi, USUARIOS } from './utils';
+
+/** Token con la forma de un JWT (cabecera.carga.firma); la firma no se verifica en el navegador. */
+const tokenFalso = (carga: Record<string, unknown>) =>
+  `e30.${btoa(JSON.stringify(carga)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}.firma`;
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -45,16 +49,30 @@ describe('sesión y rutas protegidas', () => {
     await waitFor(() => expect(sessionStorage.getItem('eco_token')).toBeNull());
   });
 
-  it('sin señal mantiene la sesión ya verificada (RNF-006)', async () => {
-    sessionStorage.setItem('eco_token', 'vigente');
-    sessionStorage.setItem('eco_usuario', JSON.stringify(USUARIOS.CONDUCTOR));
+  it('sin señal mantiene la sesión con los datos del token vigente (RNF-006)', async () => {
+    const vigente = tokenFalso({ sub: '3', correo: 'cond@ecologistica.pe', rol: 'CONDUCTOR', exp: Date.now() / 1000 + 3600 });
+    sessionStorage.setItem('eco_token', vigente);
     simularApi({ '/auth/me': () => { throw new TypeError('Failed to fetch'); } });
-    render(<AuthProvider><MemoryRouter><Protegida><p>Privado</p></Protegida></MemoryRouter></AuthProvider>);
+    render(<AuthProvider><MemoryRouter><Protegida roles={['CONDUCTOR']}><p>Privado</p></Protegida></MemoryRouter></AuthProvider>);
     expect(await screen.findByText('Privado')).toBeInTheDocument();
-    expect(sessionStorage.getItem('eco_token')).toBe('vigente');
+    expect(sessionStorage.getItem('eco_token')).toBe(vigente);
   });
 
-  it('sin señal y sin usuario verificado antes, pide iniciar sesión', async () => {
+  it('lee el usuario del token y rechaza tokens vencidos, mal formados o con un rol desconocido', () => {
+    const ahora = Date.UTC(2026, 10, 20);
+    const datos = { sub: '3', correo: 'cond@ecologistica.pe', rol: 'CONDUCTOR', exp: ahora / 1000 + 60 };
+    expect(usuarioDelToken(tokenFalso(datos), ahora)).toEqual({
+      id: 3, correo: 'cond@ecologistica.pe', nombre: 'cond@ecologistica.pe', rol: 'CONDUCTOR',
+    });
+    expect(usuarioDelToken(tokenFalso({ ...datos, exp: ahora / 1000 - 60 }), ahora)).toBeNull();
+    expect(usuarioDelToken(tokenFalso({ ...datos, rol: 'SUPERUSUARIO' }), ahora)).toBeNull();
+    expect(usuarioDelToken(tokenFalso({ ...datos, sub: 'x' }), ahora)).toBeNull();
+    expect(usuarioDelToken('sin-puntos', ahora)).toBeNull();
+    expect(usuarioDelToken('a.@@@.c', ahora)).toBeNull();
+    expect(usuarioDelToken(null, ahora)).toBeNull();
+  });
+
+  it('sin señal y sin un token válido, pide iniciar sesión', async () => {
     sessionStorage.setItem('eco_token', 'vigente');
     simularApi({ '/auth/me': () => { throw new TypeError('Failed to fetch'); } });
     render(<AuthProvider><MemoryRouter><Protegida><p>Privado</p></Protegida></MemoryRouter></AuthProvider>);
@@ -123,7 +141,6 @@ describe('Layout', () => {
     localStorage.setItem('eco_entregas_pendientes', '[]');
     await userEvent.click(screen.getByRole('button', { name: 'Salir' }));
     expect(sessionStorage.getItem('eco_token')).toBeNull();
-    expect(sessionStorage.getItem('eco_usuario')).toBeNull();
     // Ley 29733: al salir no quedan datos de clientes guardados en el dispositivo
     expect(localStorage.getItem('eco_mi_ruta')).toBeNull();
     expect(localStorage.getItem('eco_entregas_pendientes')).toBeNull();

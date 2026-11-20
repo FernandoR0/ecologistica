@@ -220,7 +220,7 @@ variables locales se toman de `.env.example`.
 
 ```bash
 cd backend && pytest --cov=app                          # 76 pruebas, cobertura 95 %
-cd frontend && npm test -- --coverage                   # 104 pruebas, cobertura 99 %
+cd frontend && npm test -- --coverage                   # 105 pruebas, cobertura 99 %
 cd backend && python -m scripts.prueba_carga 30 5       # 150 pedidos y 15 vehículos
 cd frontend && E2E_PYTHON=python npx playwright test    # 28 pruebas E2E por navegador en Chromium, Firefox y WebKit
 ```
