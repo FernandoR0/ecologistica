@@ -8,93 +8,132 @@
 
 **Docente:** Daniel Gamarra Moreno
 
-**Fecha:** 13/11/2026
+**Fecha:** 19/11/2026
 
-**Versión:** 1.0.0
+**Versión:** 1.1.0
 
 ---
 
 ## Configuración Previa Aplicada
 
-Al ser un proyecto individual, el backlog se gestiona en **GitHub Issues** del mismo repositorio, con la misma
-estructura que un proyecto Scrum en Jira:
-
-| Concepto en Jira | Equivalente usado |
+| Elemento | Configuración en Jira Software |
 |---|---|
-| Épica | Etiqueta del issue y sección del documento `01 Transformando a ágil` |
-| Historia / Enabler | Issue con etiqueta `historia` o `enabler` y etiqueta del RF |
-| Sprint | Hito (milestone) `Sprint 1` a `Sprint 5` con su fecha de fin |
-| Tablero Scrum | Issues abiertos (por hacer) y cerrados (hechos) de cada hito |
-| Release | Versión del repositorio (`v1.0.0`) |
+| Sitio | `continental-team-tttzet5e.atlassian.net` |
+| Proyecto | **EcoLogística**, clave **ECO**, plantilla Scrum gestionada por la empresa |
+| Tablero | *ECO board* (Scrum) con columnas **To Do → In Progress → In Review / QA → Done** |
+| Estimación | Story Points (serie de Fibonacci) en historias y enablers; estimación original en horas en las subtareas |
+| Tipos de incidencia | Epic, Historia (US), Tarea (ENB, enablers técnicos), Subtarea y Error (bug) |
+| Componentes | Backend, Frontend, Motor de rutas, DevOps y Calidad |
+| Etiquetas | Requisito de origen (`RF-0xx`, `RNF-0xx`), `historia`, `enabler` y `bug` |
+| Versión | `v1.0.0-MVP` (02/09/2026 - 19/11/2026) |
+
+**Resumen del contenido del proyecto:**
+
+| Tipo | Cantidad | Detalle |
+|---|:-:|---|
+| Épicas | 4 | EP-01 a EP-04, una por grupo de requisitos del documento [01 Transformando a ágil](<01 Transformando a ágil V_1_0_0.md>) |
+| Historias de usuario | 15 | US-001 a US-015 |
+| Enablers | 7 | ENB-001 a ENB-007 |
+| Subtareas | 70 | Entre 2 h y 8 h cada una (ninguna supera 8 h); 331 h estimadas en total |
+| Errores (bugs) | 5 | Defectos reales corregidos en el Sprint 4, enlazados a la historia afectada |
+| Story Points | 102 | 22 + 21 + 23 + 36 por sprint |
+
+---
 
 ## Evidencia 1: Roadmap del Proyecto
 
-| Sprint | Fechas | Objetivo | Historias |
-|---|---|---|---|
-| 1 | 02/09/2026 - 15/09/2026 | Base del sistema: autenticación con roles y gestión de flota, conductores y pedidos. | US-001, US-002, US-003, US-004 |
-| 2 | 16/09/2026 - 29/09/2026 | Generar rutas optimizadas con el motor VRPTW + Green VRP y verlas en el mapa. | US-005, US-006 |
-| 3 | 16/10/2026 - 29/10/2026 | Rutas realistas: jornada del conductor, preferencias del cliente y re-optimización ante incidentes. | US-007, US-008, US-009 |
-| 4 | 30/10/2026 - 12/11/2026 | Medir el impacto: dashboard, reporte de sostenibilidad y plan de compensación de carbono. | US-010, US-011, US-012 |
-| 5 | 13/11/2026 - 26/11/2026 | Calidad y despliegue: CI/CD, pruebas E2E, prueba de carga, SUS y auditoría Green IT. | ENB-001, ENB-002 |
+Cronograma de Jira con las 4 épicas, los 4 sprints y la publicación `v1.0.0-MVP`.
 
-Hitos en GitHub: https://github.com/FernandoR0/ecologistica/milestones?state=all
+| Épica | Nombre | Inicio | Fin | Estado |
+|---|---|---|---|---|
+| EP-01 | Gestión operativa e identidad | 02/09/2026 | 15/09/2026 | Finalizada |
+| EP-02 | Motor de rutas y operación en campo | 16/09/2026 | 19/11/2026 | Finalizada |
+| EP-03 | Sostenibilidad e indicadores | 30/10/2026 | 19/11/2026 | Finalizada |
+| EP-04 | Administración, calidad y despliegue | 02/09/2026 | 19/11/2026 | En curso (falta ENB-007) |
+
+![Roadmap en Jira: épicas, sprints y publicación v1.0.0-MVP](evidencias/evidencia-1-roadmap.png)
 
 ## Evidencia 2: Backlog Priorizado
 
-| Prioridad | Issue | ID | Título | Épica | SP | Sprint | Estado |
-|:-:|:-:|---|---|---|:-:|---|---|
-| 1 | [#1](https://github.com/FernandoR0/ecologistica/issues/1) | US-001 | Iniciar sesión con mi correo y contraseña y ver solo lo que mi rol permite | EP-01 | 5 | Sprint 1 | Cerrado |
-| 2 | [#2](https://github.com/FernandoR0/ecologistica/issues/2) | US-002 | Registrar y actualizar los vehículos de la flota | EP-01 | 3 | Sprint 1 | Cerrado |
-| 3 | [#3](https://github.com/FernandoR0/ecologistica/issues/3) | US-003 | Registrar conductores y asignarles un vehículo | EP-01 | 3 | Sprint 1 | Cerrado |
-| 4 | [#4](https://github.com/FernandoR0/ecologistica/issues/4) | US-004 | Registrar pedidos con ubicación, peso y ventana horaria | EP-01 | 5 | Sprint 1 | Cerrado |
-| 5 | [#5](https://github.com/FernandoR0/ecologistica/issues/5) | US-005 | Generar rutas optimizadas con un clic | EP-02 | 13 | Sprint 2 | Cerrado |
-| 6 | [#6](https://github.com/FernandoR0/ecologistica/issues/6) | US-006 | Ver las rutas en un mapa con las paradas numeradas | EP-02 | 5 | Sprint 2 | Cerrado |
-| 7 | [#7](https://github.com/FernandoR0/ecologistica/issues/7) | US-007 | Que mi ruta no supere mi jornada máxima | EP-02 | 5 | Sprint 3 | Cerrado |
-| 8 | [#8](https://github.com/FernandoR0/ecologistica/issues/8) | US-008 | Registrar el horario en que cada cliente prefiere recibir | EP-02 | 5 | Sprint 3 | Cerrado |
-| 9 | [#9](https://github.com/FernandoR0/ecologistica/issues/9) | US-009 | Re-optimizar una ruta cuando ocurre un incidente | EP-02 | 8 | Sprint 3 | Cerrado |
-| 10 | [#10](https://github.com/FernandoR0/ecologistica/issues/10) | US-010 | Ver un dashboard con los indicadores de la operación | EP-03 | 5 | Sprint 4 | Cerrado |
-| 11 | [#11](https://github.com/FernandoR0/ecologistica/issues/11) | US-011 | Ver el reporte de CO₂ emitido, evitado y compensado | EP-03 | 5 | Sprint 4 | Cerrado |
-| 12 | [#12](https://github.com/FernandoR0/ecologistica/issues/12) | US-012 | Ver un plan para compensar el CO₂ y registrar lo compensado | EP-03 | 3 | Sprint 4 | Cerrado |
-| 13 | [#13](https://github.com/FernandoR0/ecologistica/issues/13) | ENB-001 | CI/CD, Docker y auditoría Green IT | EP-04 | 5 | Sprint 5 | Cerrado |
-| 14 | [#14](https://github.com/FernandoR0/ecologistica/issues/14) | ENB-002 | Pruebas E2E, prueba de carga y usabilidad SUS | EP-04 | 5 | Sprint 5 | Abierto |
-| 15 | [#15](https://github.com/FernandoR0/ecologistica/issues/15) | US-013 | Descargar un reporte PDF del periodo | EP-03 | 5 | Sprint 5 | Cerrado |
-| 16 | [#16](https://github.com/FernandoR0/ecologistica/issues/16) | US-014 | Agregar un pedido nuevo o cancelar uno en una ruta en curso | EP-02 | 5 | Sprint 5 | Cerrado |
-| 17 | [#17](https://github.com/FernandoR0/ecologistica/issues/17) | US-015 | Registrar el punto de partida del conductor y los datos de acceso del cliente | EP-01 | 3 | Sprint 5 | Cerrado |
-| 18 | [#18](https://github.com/FernandoR0/ecologistica/issues/18) | US-016 | Ajustar los parámetros del motor, gestionar usuarios y revisar la auditoría | EP-04 | 8 | Sprint 5 | Cerrado |
-| 19 | [#19](https://github.com/FernandoR0/ecologistica/issues/19) | US-017 | Ver combustible ahorrado, cumplimiento de ventanas y equivalentes ambientales | EP-03 | 3 | Sprint 5 | Cerrado |
+Backlog ordenado por prioridad con Story Points (Fibonacci), componentes, épica y versión.
 
-Backlog en GitHub: https://github.com/FernandoR0/ecologistica/issues?q=is%3Aissue
+| Clave | ID | Título | Épica | SP | Componentes | Sprint |
+|---|---|---|---|:-:|---|:-:|
+| ECO-5 | US-001 | Iniciar sesión según mi rol | EP-01 | 5 | Backend, Frontend | 1 |
+| ECO-10 | US-002 | Gestionar la flota de vehículos | EP-01 | 3 | Backend, Frontend | 1 |
+| ECO-14 | US-003 | Gestionar conductores | EP-01 | 3 | Backend, Frontend | 1 |
+| ECO-18 | US-004 | Registrar clientes y sus preferencias | EP-01 | 3 | Backend, Frontend | 1 |
+| ECO-22 | US-005 | Registrar pedidos | EP-01 | 5 | Backend, Frontend | 1 |
+| ECO-26 | ENB-001 | Integración continua | EP-04 | 3 | DevOps | 1 |
+| ECO-29 | US-006 | Generar rutas optimizadas | EP-02 | 13 | Backend, Motor de rutas | 2 |
+| ECO-36 | US-007 | Ver las rutas en el mapa | EP-02 | 5 | Frontend | 2 |
+| ECO-40 | ENB-002 | Prueba de rendimiento del motor | EP-02 | 3 | Calidad, Motor de rutas | 2 |
+| ECO-43 | US-008 | Respetar jornada y descansos del conductor | EP-02 | 5 | Motor de rutas | 3 → 4 |
+| ECO-47 | US-009 | Re-optimizar ante incidentes | EP-02 | 8 | Backend, Frontend, Motor de rutas | 3 |
+| ECO-52 | US-010 | Aplicar restricciones locales de circulación | EP-02 | 5 | Motor de rutas | 3 → 4 |
+| ECO-57 | ENB-003 | Auditoría de calidad, seguridad y accesibilidad | EP-04 | 5 | Calidad | 3 |
+| ECO-61 | US-011 | Consultar el dashboard de sostenibilidad | EP-03 | 5 | Backend, Frontend | 4 |
+| ECO-65 | US-012 | Descargar el reporte de sostenibilidad | EP-03 | 5 | Backend | 4 |
+| ECO-69 | US-013 | Planificar la compensación de carbono | EP-03 | 3 | Backend, Frontend | 4 |
+| ECO-72 | US-014 | Consultar mi ruta en modo conductor | EP-04 | 3 | Backend, Frontend | 4 |
+| ECO-76 | US-015 | Administrar usuarios, parámetros y auditoría | EP-04 | 5 | Backend, Frontend | 4 |
+| ECO-80 | ENB-004 | Reducción del impacto ambiental del software | EP-04 | 5 | Calidad, Frontend | 4 |
+| ECO-84 | ENB-005 | Pruebas E2E y monitoreo con Playwright | EP-04 | 5 | Calidad | 4 |
+| ECO-89 | ENB-006 | Despliegue continuo a producción | EP-04 | 3 | DevOps | 4 |
+| ECO-93 | ENB-007 | Evaluación de usabilidad SUS | EP-04 | 2 | Calidad | 4 |
+
+US-008 y US-010 se planificaron en el Sprint 3, quedaron incompletas al cierre y pasaron al Sprint 4, tal como se
+registró en la [Revisión del Sprint 3](<../03 Implementación/Sprint 03/01 Revisión del Sprint V_1_0_0.md>).
+
+**Errores (bugs) registrados en el Sprint 4:**
+
+| Clave | Error | Componente | Relacionado con |
+|---|---|---|---|
+| ECO-97 | Pedidos del Centro asignados a vehículos no permitidos | Motor de rutas | US-010 |
+| ECO-98 | Congestión del tramo mal calculada por redondeo de minutos | Motor de rutas | US-008 |
+| ECO-99 | El dashboard consultaba indicadores antes de cargar la sesión | Frontend | US-011 |
+| ECO-100 | Leyenda del mapa sin contraste suficiente (WCAG 1.4.3) | Frontend | US-007 |
+| ECO-101 | La caída de red mostraba "Failed to fetch" al usuario | Frontend | ENB-005 |
+
+![Backlog en Jira con Story Points, componentes, épica y versión (1 de 2)](evidencias/evidencia-2-backlog-1.png)
+
+![Backlog en Jira con Story Points, componentes, épica y versión (2 de 2)](evidencias/evidencia-2-backlog-2.png)
+
+**Subtareas de 8 h o menos** (estimación original en horas) y detalle de una historia con sus subtareas:
+
+![Subtareas con estimación original en horas](evidencias/evidencia-2-subtareas.png)
+
+![Historia US-006 con sus 6 subtareas, Story Points, componentes y versión](evidencias/evidencia-2-historia-us-006.png)
 
 ## Evidencia 3: Sprint Planning y Sprint Goal
 
-| Sprint | Sprint Goal | SP comprometidos |
-|:-:|---|:-:|
-| 1 | Base del sistema: autenticación con roles y gestión de flota, conductores y pedidos. | 16 |
-| 2 | Generar rutas optimizadas con el motor VRPTW + Green VRP y verlas en el mapa. | 18 |
-| 3 | Rutas realistas: jornada del conductor, preferencias del cliente y re-optimización ante incidentes. | 18 |
-| 4 | Medir el impacto: dashboard, reporte de sostenibilidad y plan de compensación de carbono. | 13 |
-| 5 | Calidad y despliegue: CI/CD, pruebas E2E, prueba de carga, SUS y auditoría Green IT. | 34 |
+| Sprint | Fechas | Sprint Goal | Ítems | SP |
+|---|---|---|---|:-:|
+| ECO Sprint 1 | 02/09/2026 - 15/09/2026 | Base operativa: acceso por roles y registro de flota, conductores, clientes y pedidos con CI activo. | US-001 a US-005, ENB-001 | 22 |
+| ECO Sprint 2 | 16/09/2026 - 29/09/2026 | Generar rutas optimizadas con Búsqueda Tabú y verlas en el mapa cumpliendo 45 s. | US-006, US-007, ENB-002 | 21 |
+| ECO Sprint 3 | 16/10/2026 - 29/10/2026 | Rutas realistas y seguras: jornada y descansos, re-optimización, restricciones locales y auditoría de calidad. | US-008, US-009, US-010, ENB-003 | 23 |
+| ECO Sprint 4 | 30/10/2026 - 19/11/2026 | Medir el impacto, liberar en producción y validar con usuarios: indicadores, reportes, modo conductor, Green IT, E2E, SUS y CD. | US-011 a US-015, ENB-004 a ENB-007 (+ US-008 y US-010) | 36 |
+
+Los sprints 1, 2 y 3 están cerrados y el Sprint 4 está activo. La captura muestra la planificación del Sprint 4 con su
+objetivo, los Story Points de cada ítem y los errores corregidos.
+
+![Sprint 4 en el backlog de Jira con su Sprint Goal](evidencias/evidencia-3-sprint-4-planning.png)
 
 ## Evidencia 4: Tablero Scrum Activo
 
-Estado actual: 18 issues cerrados (hechos) y 1 abierto (ENB-002: falta la encuesta SUS).
+Tablero del Sprint 4 con las columnas **To Do**, **In Progress**, **In Review / QA** y **Done**. Todo el trabajo del
+sprint está en Done salvo ENB-007: la encuesta SUS ya está dentro de la aplicación (subtarea terminada), la aplicación a
+los 5 participantes está en curso y la documentación de resultados está por hacer.
+
+![Tablero Scrum del Sprint 4](evidencias/evidencia-4-tablero.png)
 
 ## Evidencia 5: Gestión de Versiones / Release
 
-| Versión | Contenido |
-|---|---|
-| v1.0.0 (PMV) | RF-001 a RF-012, motor VRPTW + Green VRP con Búsqueda Tabú, Inspección 04, SonarQube, pruebas E2E y de carga. Tag y release: https://github.com/FernandoR0/ecologistica/releases/tag/v1.0.0 |
+| Versión | Inicio | Publicación | Contenido |
+|---|---|---|---|
+| v1.0.0-MVP | 02/09/2026 | 19/11/2026 | RF-001 a RF-012, motor VRPTW + Green VRP con Búsqueda Tabú, reducción del impacto ambiental, pruebas Playwright y despliegue continuo en Vercel + Render (https://ecologistica.vercel.app). 26 de 27 ítems terminados; queda ENB-007. |
 
-### Capturas
-
-| Evidencia | Captura |
-|---|---|
-| 1. Roadmap (hitos por sprint) | ![Hitos cerrados](<evidencias/evidencia-1-roadmap-hitos-cerrados.png>) ![Hito abierto](<evidencias/evidencia-1-roadmap-hito-abierto.png>) |
-| 2. Backlog priorizado | ![Backlog](<evidencias/evidencia-2-backlog-issues.png>) |
-| 3. Sprint Planning (historias de cada sprint) | ![Sprint 1](<evidencias/evidencia-3-sprint-1.png>) ![Sprint 2](<evidencias/evidencia-3-sprint-2.png>) ![Sprint 3](<evidencias/evidencia-3-sprint-3.png>) ![Sprint 4](<evidencias/evidencia-3-sprint-4.png>) ![Sprint 5](<evidencias/evidencia-3-sprint-5.png>) |
-| 4. Tablero (hecho / por hacer) | ![Cerrados](<evidencias/evidencia-4-tablero-cerrados.png>) ![Abiertos](<evidencias/evidencia-4-tablero-abiertos.png>) |
-| Detalle de una historia | ![US-005](<evidencias/evidencia-issue-us-005.png>) |
-| 5. Versiones (commits y GitHub Actions) | ![Commits](<evidencias/evidencia-5-commits.png>) ![Actions](<evidencias/evidencia-5-actions.png>) |
+![Publicación v1.0.0-MVP en Jira](evidencias/evidencia-5-release.png)
 
 ---
 
@@ -102,6 +141,7 @@ Estado actual: 18 issues cerrados (hechos) y 1 abierto (ENB-002: falta la encues
 
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
-| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial |
+| 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial con el backlog en GitHub Issues |
+| 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Proyecto Scrum en Jira Software con épicas, backlog con Story Points y componentes, subtareas, errores, 4 sprints, tablero con columna In Review / QA y release v1.0.0-MVP |
 
 [← Volver al README Principal](../../README.md)
