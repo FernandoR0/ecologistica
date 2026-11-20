@@ -11,7 +11,7 @@
 | Sprint | Sprint 4 - Indicadores, calidad, despliegue y validación con usuarios (30/10/2026 - 19/11/2026) |
 | Sprint Goal | Medir el impacto, liberar en producción y validar con usuarios: indicadores, reportes, modo conductor, Green IT, E2E, SUS y despliegue continuo |
 | Incremento revisado | Aplicación 1.1.0, rama `feature/enunciado-oficial` integrada por [FernandoR0/ecologistica#20](https://github.com/FernandoR0/ecologistica/pull/20) |
-| Versión del documento | V_1_0_0 · 19/11/2026 |
+| Versión del documento | V_1_0_0 · 20/11/2026 |
 
 ## Historias de Usuario completadas en este Sprint
 
@@ -34,8 +34,9 @@ PASSED, 0 violaciones WCAG 2.1 AA, Pull Request con CI en verde y documentación
 **Cambio de alcance aprobado en el sprint:** al contrastar el backlog con el enunciado oficial del caso se
 incorporaron los campos que faltaban (volumen, año y factor de emisión del vehículo; categoría de licencia,
 experiencia y disponibilidad del conductor; prioridad express/estándar/económico y tipo de producto del pedido), el
-módulo de clientes como entidad propia, el rol AUDITOR y el bloqueo a los 3 intentos. Los documentos de inicio y
-planificación afectados se versionaron.
+módulo de clientes como entidad propia, el rol AUDITOR y el bloqueo a los 3 intentos. Los 13 documentos de inicio y
+los de planificación afectados pasaron a la versión 1.1.0 (la base de datos a 1.2.0) con su historial de cambios; el
+detalle está en el [índice de documentación](<../../00 Índice de documentación.md>).
 
 ## Demostración del trabajo completado
 
@@ -50,10 +51,28 @@ Demostración a los stakeholders de las funcionalidades implementadas.
 | 5 | Dashboard, reporte PDF con costo del ciclo de vida y plan de compensación | Mismo entorno | Caso 13 |
 | 6 | Modo conductor en celular: siguiente entrega y "Entregado" | Mismo entorno | Caso 14 |
 | 7 | Pipelines en GitHub Actions: CI, Tests (3 navegadores) y despliegue | GitHub Actions | [Actions del repositorio](https://github.com/FernandoR0/ecologistica/actions) |
-| 8 | Aplicación publicada: acceso, disponibilidad y tiempos de carga | Producción ([ecologistica.vercel.app](https://ecologistica.vercel.app)) | Sección 5.5 del [análisis Playwright](<03 Analisis PlayWrigth V_1_0_0.md>) |
+| 8 | Aplicación publicada: acceso, disponibilidad y tiempos de carga | Producción ([ecologistica.vercel.app](https://ecologistica.vercel.app)) | Secciones 5.4 y 5.5 del [análisis Playwright](<03 Analisis PlayWrigth V_1_0_0.md>) |
 
-Retroalimentación registrada: mantener la evidencia de cada criterio enlazada a su prueba automática y validar la
-usabilidad con usuarios reales (ver Pendientes).
+**Evidencia en producción (20/11/2026).** Capturas tomadas con Playwright en https://ecologistica.vercel.app con los
+usuarios de demostración de cada rol:
+
+| Dashboard con la frase de ahorro (planificador) | Clientes con horario, referencia y restricciones |
+|---|---|
+| ![Dashboard en producción](evidencias/demo-produccion-20261120/02-dashboard.png) | ![Clientes en producción](evidencias/demo-produccion-20261120/03-clientes.png) |
+| **Rutas: mapa con congestión por tramo, zonas y descanso de 60 min** | **Reporte de sostenibilidad, costo del ciclo de vida y compensación** |
+| ![Rutas en producción](evidencias/demo-produccion-20261120/05-rutas-mapa.png) | ![Sostenibilidad en producción](evidencias/demo-produccion-20261120/06-sostenibilidad.png) |
+| **Administración con el rol AUDITOR (solo consulta y CSV)** | **Modo conductor en celular** |
+| ![Administración del auditor](evidencias/demo-produccion-20261120/07-administracion-auditor.png) | ![Modo conductor](evidencias/demo-produccion-20261120/08-modo-conductor.png) |
+
+Otras capturas: [acceso](evidencias/demo-produccion-20261120/01-acceso.png) ·
+[pedidos](evidencias/demo-produccion-20261120/04-pedidos.png).
+
+**Retroalimentación.** La demostración formal ante el docente, en el rol de cliente, es la Inspección 05
+(20/11/2026); sus observaciones se registran en Jira como ítems del backlog. Las observaciones obtenidas durante el
+sprint al ejecutar la aplicación desplegada fueron cuatro hallazgos (mensajes técnicos ante caídas de red, contraste
+de la leyenda del mapa, servidor de pruebas en IPv6 y un selector ambiguo), corregidos y documentados en la sección 6
+del [análisis Playwright](<03 Analisis PlayWrigth V_1_0_0.md>). La validación con usuarios finales es la encuesta SUS
+(ver Pendientes).
 
 ## Pendientes
 
@@ -70,7 +89,6 @@ usabilidad con usuarios reales (ver Pendientes).
 
 | Versión | Fecha | Autor | Descripción |
 |---|---|---|---|
-| 1.0.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Revisión del Sprint 4 |
-| 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | URL de producción y resultados de las pruebas contra el entorno desplegado |
+| 1.0.0 | 20/11/2026 | Fernando Rodrigo Chaupis Espinoza | Revisión del Sprint 4 con la demostración en producción y sus evidencias |
 
 [← Volver al README Principal](../../../README.md)
