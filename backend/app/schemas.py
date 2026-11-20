@@ -355,6 +355,7 @@ class ResultadoPlanOut(BaseModel):
     ahorro_km: float
     ahorro_co2_kg: float
     tiempo_calculo_ms: int
+    rutas_reemplazadas: int = Field(default=0, description="Rutas que aún no salían y se volvieron a planificar")
 
 
 TipoIncidente = Literal[

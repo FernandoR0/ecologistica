@@ -1,8 +1,12 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import * as geo from '../geocodificar';
 import { Clientes, Conductores, Pedidos, Vehiculos } from '../pages/Gestion';
 import { renderConSesion, VEHICULO } from './utils';
+
+// El buscador real consulta OpenStreetMap: en las pruebas se simula
+vi.mock('../geocodificar', () => ({ buscarLugar: vi.fn() }));
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -217,7 +221,8 @@ describe('Ubicación del cliente en el mapa (cuello de botella SUS)', () => {
   it('no guarda si no se marcó la ubicación y lo explica', async () => {
     const { form, fetchFalso } = await abrirFormulario();
     await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Marca en el mapa la ubicación antes de guardar.');
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Busca la dirección o marca en el mapa la ubicación antes de guardar.');
     expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(false);
   });
 
@@ -253,5 +258,128 @@ describe('Ubicación del cliente en el mapa (cuello de botella SUS)', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Editar' }));
     const form = await screen.findByRole('form', { name: 'Formulario Clientes' });
     expect(within(form).getByRole('status')).toHaveTextContent('✔ Ubicación marcada (-12.06900, -75.21000)');
+  });
+});
+
+describe('Buscador de dirección o referencia (sugerencia de la prueba SUS)', () => {
+  beforeEach(() => vi.mocked(geo.buscarLugar).mockReset());
+  const LUGAR = {
+    nombre: 'Jirón Real 500, Huancayo, Junín', lat: -12.0682, lng: -75.2105, direccion: 'Jirón Real 500',
+    zonas: ['Huancayo', 'Junín'],
+  };
+  const nuevoCliente = async () => {
+    const r = renderConSesion(<Clientes />, 'PLANIFICADOR', {
+      '/clientes': { body: [], headers: { 'X-Total-Count': '0' } },
+      'POST /clientes': { status: 201, body: CLIENTE },
+    });
+    await userEvent.click(await screen.findByRole('button', { name: '+ Nuevo' }));
+    return { ...r, form: screen.getByRole('form', { name: 'Formulario Clientes' }) };
+  };
+
+  it('busca la dirección, pone el pin y propone la dirección y el distrito', async () => {
+    const buscar = vi.mocked(geo.buscarLugar).mockResolvedValue([LUGAR, { ...LUGAR, nombre: 'Otro Jirón Real', lat: -12.07 }]);
+    const { form, fetchFalso } = await nuevoCliente();
+    await userEvent.type(within(form).getByLabelText('Nombre del cliente'), 'Bodega P4');
+    await userEvent.type(within(form).getByLabelText('Buscar dirección o lugar de referencia'), 'Jr. Real 500');
+    await userEvent.click(within(form).getByRole('button', { name: '🔍 Buscar' }));
+    expect(buscar).toHaveBeenCalledWith('Jr. Real 500');
+    const resultados = await within(form).findByRole('list', { name: 'Resultados de la búsqueda' });
+    expect(within(resultados).getAllByRole('button')).toHaveLength(2);
+    await userEvent.click(within(resultados).getByRole('button', { name: '📍 Jirón Real 500, Huancayo, Junín' }));
+    expect(within(form).queryByRole('list', { name: 'Resultados de la búsqueda' })).not.toBeInTheDocument();
+    expect(within(form).getByRole('status')).toHaveTextContent('✔ Ubicación marcada (-12.06820, -75.21050)');
+    expect(within(form).getByLabelText('Dirección')).toHaveValue('Jirón Real 500');
+    expect(within(form).getByLabelText('Distrito')).toHaveValue('Huancayo');
+    await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(true));
+    const cuerpo = JSON.parse(String(fetchFalso.mock.calls.find((c) => c[1]?.method === 'POST')?.[1]?.body));
+    expect(cuerpo).toMatchObject({ nombre: 'Bodega P4', direccion: 'Jirón Real 500', distrito: 'Huancayo', lat: -12.0682, lng: -75.2105 });
+  });
+
+  it('no reemplaza la dirección ni el distrito que el usuario ya escribió', async () => {
+    vi.mocked(geo.buscarLugar).mockResolvedValue([{ ...LUGAR, zonas: ['El Tambo'] }]);
+    const { form } = await nuevoCliente();
+    await userEvent.type(within(form).getByLabelText('Dirección'), 'Mz. C Lote 5');
+    await userEvent.selectOptions(within(form).getByLabelText('Distrito'), 'Chilca');
+    await userEvent.type(within(form).getByLabelText('Buscar dirección o lugar de referencia'), 'Parque{Enter}');
+    await userEvent.click(await within(form).findByRole('button', { name: /📍/ }));
+    expect(within(form).getByLabelText('Dirección')).toHaveValue('Mz. C Lote 5');
+    expect(within(form).getByLabelText('Distrito')).toHaveValue('Chilca');
+  });
+
+  it('Enter busca sin enviar el formulario y explica cuando no hay resultados o falla', async () => {
+    const buscar = vi.mocked(geo.buscarLugar).mockResolvedValueOnce([]).mockRejectedValueOnce(
+      new Error('No se pudo buscar la dirección. Revisa tu conexión o marca el lugar tocando el mapa.'));
+    const { form, fetchFalso } = await nuevoCliente();
+    const campo = within(form).getByLabelText('Buscar dirección o lugar de referencia');
+    await userEvent.type(campo, 'ab{Enter}');
+    expect(await within(form).findByRole('alert')).toHaveTextContent('Escribe al menos 3 letras');
+    expect(buscar).not.toHaveBeenCalled();
+    await userEvent.type(campo, 'cdef{Enter}');
+    expect(await within(form).findByText(/No encontramos ese lugar en Huancayo/)).toBeInTheDocument();
+    await userEvent.type(campo, '{Enter}');
+    expect(await within(form).findByRole('alert')).toHaveTextContent('No se pudo buscar la dirección');
+    expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(false);
+  });
+
+  it('el pedido puede tener otra ubicación de entrega opcional y quitarla', async () => {
+    vi.mocked(geo.buscarLugar).mockResolvedValue([LUGAR]);
+    const { fetchFalso } = renderConSesion(<Pedidos />, 'PLANIFICADOR', {
+      '/clientes': { body: [CLIENTE] },
+      '/pedidos': { body: [], headers: { 'X-Total-Count': '0' } },
+      'POST /pedidos': { status: 201, body: {} },
+    });
+    await userEvent.click(await screen.findByRole('button', { name: '+ Nuevo' }));
+    const form = screen.getByRole('form', { name: 'Formulario Pedidos' });
+    expect(within(form).getByRole('group', { name: 'Otra ubicación de entrega (opcional)' })).toBeInTheDocument();
+    expect(within(form).getByRole('status')).toHaveTextContent('Sin ubicación: se entrega en la del cliente.');
+    await userEvent.type(within(form).getByLabelText('Buscar dirección o lugar de referencia'), 'Jr. Real{Enter}');
+    await userEvent.click(await within(form).findByRole('button', { name: /📍/ }));
+    expect(within(form).getByLabelText(/^Dirección/)).toHaveValue('Jirón Real 500');
+    await userEvent.click(within(form).getByRole('button', { name: 'Quitar ubicación' }));
+    expect(within(form).getByRole('status')).toHaveTextContent('Sin ubicación: se entrega en la del cliente.');
+    await userEvent.selectOptions(await within(form).findByLabelText('Cliente'), 'Restaurante Wanka');
+    await userEvent.type(within(form).getByLabelText('Peso (kg)'), '10');
+    await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(true));
+    const cuerpo = JSON.parse(String(fetchFalso.mock.calls.find((c) => c[1]?.method === 'POST')?.[1]?.body));
+    expect(cuerpo).not.toHaveProperty('lat');
+    expect(cuerpo).toMatchObject({ cliente_id: 3, peso_kg: 10, direccion: 'Jirón Real 500' });
+  });
+
+  it('el punto de partida del conductor se marca en el mapa y se guarda en sus campos', async () => {
+    const { fetchFalso } = renderConSesion(<Conductores />, 'PLANIFICADOR', {
+      '/vehiculos': { body: [VEHICULO] },
+      '/conductores': { body: [], headers: { 'X-Total-Count': '0' } },
+      'POST /conductores': { status: 201, body: {} },
+    });
+    await userEvent.click(await screen.findByRole('button', { name: '+ Nuevo' }));
+    const form = screen.getByRole('form', { name: 'Formulario Conductores' });
+    expect(within(form).getByRole('status')).toHaveTextContent('Sin punto de partida: sale del depósito.');
+    await userEvent.type(within(form).getByLabelText('Nombre'), 'Ana Pérez');
+    await userEvent.type(within(form).getByLabelText('DNI'), '70000001');
+    await userEvent.type(within(form).getByLabelText('N.º de licencia'), 'Q70000001');
+    await userEvent.selectOptions(within(form).getByLabelText('Categoría de licencia'), 'A-IIb');
+    fireEvent.click(within(form).getByRole('region', { name: 'Mapa para marcar la ubicación' }), { clientX: 30, clientY: 20 });
+    await userEvent.click(within(form).getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'POST')).toBe(true));
+    const cuerpo = JSON.parse(String(fetchFalso.mock.calls.find((c) => c[1]?.method === 'POST')?.[1]?.body));
+    expect(cuerpo.partida_lat).toBeCloseTo(-12.06, 1);
+    expect(cuerpo.partida_lng).toBeCloseTo(-75.2, 1);
+    expect(cuerpo).not.toHaveProperty('lat');
+  });
+});
+
+describe('Desactivar con trabajo pendiente', () => {
+  it('muestra por qué no se puede desactivar', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    renderConSesion(<Vehiculos />, 'ADMIN', {
+      '/vehiculos': { body: [VEHICULO], headers: { 'X-Total-Count': '1' } },
+      'DELETE /vehiculos/1': {
+        status: 409, body: { detail: 'El vehículo ABC-101 tiene entregas pendientes en la ruta #7. Registre una avería.' },
+      },
+    });
+    await userEvent.click(await screen.findByRole('button', { name: 'Desactivar' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('tiene entregas pendientes en la ruta #7');
   });
 });

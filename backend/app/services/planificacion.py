@@ -31,6 +31,7 @@ class Resultado:
     rutas: list[Ruta] = field(default_factory=list)
     no_asignados: list[int] = field(default_factory=list)
     tiempo_calculo_ms: int = 0
+    rutas_reemplazadas: int = 0
 
 
 def obtener_configuracion(db: Session) -> Configuracion:
@@ -187,23 +188,63 @@ def _resolver(db: Session, inst: vrptw.Instancia, fecha: date, pedidos: list[Ped
     return Resultado(estado=plan.estado, rutas=rutas, no_asignados=plan.no_asignados, tiempo_calculo_ms=ms)
 
 
+def _liberar_rutas_sin_iniciar(db: Session, fecha: date) -> int:
+    """Las rutas planificadas que aún no empiezan (sin entregas) se vuelven a planificar junto con los pedidos
+    nuevos: así un vehículo no recibe dos rutas a la misma hora. Sus pedidos vuelven a PENDIENTE."""
+    rutas = db.scalars(select(Ruta).where(Ruta.estado == "PLANIFICADA", Ruta.fecha <= fecha)).all()
+    liberadas = 0
+    for ruta in rutas:
+        if any(p.estado == "ENTREGADA" for p in ruta.paradas):
+            continue
+        for parada in ruta.paradas:
+            if parada.pedido.estado == "PLANIFICADO":
+                parada.pedido.estado = "PENDIENTE"
+        ruta.estado = "REOPTIMIZADA"
+        liberadas += 1
+    db.flush()
+    return liberadas
+
+
+def _vehiculos_en_reparto(db: Session, fecha: date) -> set[int]:
+    """Vehículos con una ruta en curso: no reciben otra hasta terminarla."""
+    return set(db.scalars(select(Ruta.vehiculo_id).where(Ruta.estado == "EN_CURSO", Ruta.fecha <= fecha)))
+
+
 def planificar(
     db: Session, fecha: date, pedido_ids: list[int] | None = None, limite_segundos: int | None = None
 ) -> Resultado:
+    # Plan del día completo: se rehacen las rutas que aún no salieron. Con `pedido_ids` solo se agregan esos pedidos
+    # y los vehículos que ya tienen ruta vigente quedan fuera.
+    if pedido_ids:
+        liberadas = 0
+        ocupados = set(db.scalars(
+            select(Ruta.vehiculo_id).where(Ruta.estado.in_(("PLANIFICADA", "EN_CURSO")), Ruta.fecha <= fecha)
+        ))
+    else:
+        liberadas = _liberar_rutas_sin_iniciar(db, fecha)
+        ocupados = _vehiculos_en_reparto(db, fecha)
+
     q = select(Pedido).where(Pedido.estado == "PENDIENTE")
     if pedido_ids:
         q = q.where(Pedido.id.in_(pedido_ids))
     pedidos = list(db.scalars(q.order_by(Pedido.id)).unique())
     if not pedidos:
+        db.rollback()
         raise PlanificacionError("No hay pedidos pendientes para planificar")
 
-    flota = _flota_disponible(db, fecha)
-    if not flota:
-        raise PlanificacionError("No hay vehículos habilitados con conductor asignado")
+    flota = _flota_disponible(db, fecha, excluir=ocupados)
+    recursos = _recursos(flota, fecha)
+    if not recursos:
+        db.rollback()
+        raise PlanificacionError(
+            "No hay vehículos libres con conductor asignado: los demás están en reparto o fuera de su horario"
+        )
 
-    inst = _instancia(db, pedidos, fecha, _recursos(flota, fecha))
+    inst = _instancia(db, pedidos, fecha, recursos)
     limite = limite_segundos or obtener_configuracion(db).limite_segundos
-    return _resolver(db, inst, fecha, pedidos, limite)
+    res = _resolver(db, inst, fecha, pedidos, limite)
+    res.rutas_reemplazadas = liberadas
+    return res
 
 
 def reoptimizar(  # noqa: PLR0913 - parámetros del incidente

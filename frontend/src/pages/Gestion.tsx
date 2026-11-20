@@ -72,8 +72,10 @@ export function Conductores() {
         { nombre: 'disponible_hasta', etiqueta: 'Disponible hasta', tipo: 'time' },
         { nombre: 'jornada_max_min', etiqueta: 'Jornada máxima (min)', tipo: 'number' },
         { nombre: 'vehiculo_id', etiqueta: 'Vehículo asignado', tipo: 'select', opciones: vehiculos, numerico: true },
-        { nombre: 'partida_lat', etiqueta: 'Punto de partida: latitud (vacío = depósito)', tipo: 'number', paso: 'any' },
-        { nombre: 'partida_lng', etiqueta: 'Punto de partida: longitud', tipo: 'number', paso: 'any' },
+        {
+          nombre: 'partida', etiqueta: 'Punto de partida del conductor (opcional)', tipo: 'ubicacion',
+          claves: ['partida_lat', 'partida_lng'], ayuda: 'Sin punto de partida: sale del depósito.',
+        },
         { nombre: 'activo', etiqueta: 'Activo', tipo: 'checkbox' },
       ]}
       columnas={[
@@ -102,12 +104,12 @@ export function Clientes() {
         { nombre: 'telefono', etiqueta: 'Teléfono' },
         { nombre: 'direccion', etiqueta: 'Dirección', requerido: true },
         { nombre: 'distrito', etiqueta: 'Distrito', tipo: 'select', opciones: DISTRITOS, requerido: true },
+        { nombre: 'ubicacion', etiqueta: 'Ubicación del cliente en el mapa', tipo: 'ubicacion', requerido: true },
         { nombre: 'punto_referencia', etiqueta: 'Punto de referencia', ayuda: 'Ejemplo: frente a la bodega El Ahorro' },
         { nombre: 'restricciones_acceso', etiqueta: 'Restricciones de acceso', ayuda: 'Ejemplo: calle angosta, solo camioneta' },
         { nombre: 'hora_desde', etiqueta: 'Recibe desde', tipo: 'time' },
         { nombre: 'hora_hasta', etiqueta: 'Recibe hasta', tipo: 'time' },
         { nombre: 'dias_atencion', etiqueta: 'Días de atención (LU,MA,MI,JU,VI,SA,DO)' },
-        { nombre: 'ubicacion', etiqueta: 'Ubicación del cliente en el mapa', tipo: 'ubicacion', requerido: true },
         { nombre: 'activo', etiqueta: 'Activo', tipo: 'checkbox' },
       ]}
       columnas={[
@@ -141,8 +143,10 @@ export function Pedidos() {
         { nombre: 'cliente_id', etiqueta: 'Cliente', tipo: 'select', opciones: clientes, numerico: true, requerido: true, soloCrear: true },
         { nombre: 'direccion', etiqueta: 'Dirección (vacío = la del cliente)' },
         { nombre: 'punto_referencia', etiqueta: 'Punto de referencia' },
-        { nombre: 'lat', etiqueta: 'Latitud (vacío = la del cliente)', tipo: 'number', paso: 'any' },
-        { nombre: 'lng', etiqueta: 'Longitud', tipo: 'number', paso: 'any' },
+        {
+          nombre: 'ubicacion', etiqueta: 'Otra ubicación de entrega (opcional)', tipo: 'ubicacion',
+          ayuda: 'Sin ubicación: se entrega en la del cliente.',
+        },
         { nombre: 'peso_kg', etiqueta: 'Peso (kg)', tipo: 'number', paso: '0.1', requerido: true },
         { nombre: 'volumen_m3', etiqueta: 'Volumen (m³)', tipo: 'number', paso: '0.01' },
         { nombre: 'ventana_inicio', etiqueta: 'Entregar desde (vacío = horario del cliente)', tipo: 'time' },

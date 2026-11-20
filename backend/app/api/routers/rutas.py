@@ -5,11 +5,12 @@ import binascii
 from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import select
+from sqlalchemy import and_, or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.api.deps import gestion, get_current_user
 from app.api.paginacion import Pagina, paginar, params_pagina
+from app.core.tiempo import hoy
 from app.db import get_db
 from app.models import Conductor, Entrega, Incidente, Parada, Ruta, Usuario
 from app.schemas import (
@@ -40,13 +41,14 @@ def _respuesta(res: planificacion.Resultado) -> ResultadoPlanOut:
         ahorro_km=round(sum(r.distancia_base_km for r in res.rutas) - km, 3),
         ahorro_co2_kg=round(sum(r.co2_base_kg for r in res.rutas) - co2, 3),
         tiempo_calculo_ms=res.tiempo_calculo_ms,
+        rutas_reemplazadas=res.rutas_reemplazadas,
     )
 
 
 @router.post("/optimizar", response_model=ResultadoPlanOut)
 def optimizar(datos: OptimizarIn, db: Session = Depends(get_db), _=Depends(gestion)):
     try:
-        res = planificacion.planificar(db, datos.fecha or date.today(), datos.pedido_ids, datos.limite_segundos)
+        res = planificacion.planificar(db, datos.fecha or hoy(), datos.pedido_ids, datos.limite_segundos)
     except planificacion.PlanificacionError as e:
         raise HTTPException(status.HTTP_409_CONFLICT, str(e)) from None
     return _respuesta(res)
@@ -67,6 +69,7 @@ def listar(
     response: Response,
     fecha: date | None = None,
     estado: str | None = Query(None, description="Uno o varios separados por coma: PLANIFICADA,EN_CURSO"),
+    vigentes: bool = Query(False, description="Solo las rutas de hoy (hora de Lima) y las que siguen en curso"),
     p: Pagina = Depends(params_pagina),
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
@@ -76,7 +79,17 @@ def listar(
         q = q.where(Ruta.fecha == fecha)
     if estado:
         q = q.where(Ruta.estado.in_([e.strip().upper() for e in estado.split(",")]))
+    if vigentes:
+        q = q.where(_vigente())
     return paginar(db, _con_relaciones(q), p, response)
+
+
+def _vigente():
+    """Ruta de hoy sin terminar, o una ruta en curso de un día anterior que el conductor todavía no cierra."""
+    return or_(
+        and_(Ruta.fecha >= hoy(), Ruta.estado.in_(("PLANIFICADA", "EN_CURSO"))),
+        Ruta.estado == "EN_CURSO",
+    )
 
 
 @router.get("/mias", response_model=list[RutaOut])
@@ -87,7 +100,7 @@ def mis_rutas(db: Session = Depends(get_db), user: Usuario = Depends(get_current
         return []
     return db.scalars(
         _con_relaciones(
-            select(Ruta).where(Ruta.conductor_id == conductor.id, Ruta.estado.in_(("PLANIFICADA", "EN_CURSO")))
+            select(Ruta).where(Ruta.conductor_id == conductor.id, _vigente()).order_by(Ruta.fecha, Ruta.id)
         )
     ).all()
 

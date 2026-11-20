@@ -159,21 +159,23 @@ describe('RF-005 y RF-006', () => {
 });
 
 describe('RF-007 y RF-008 en la pantalla Rutas', () => {
-  it('re-optimiza por un pedido nuevo enviando su ID', async () => {
+  it('re-optimiza por un pedido nuevo elegido de la lista', async () => {
     const { fetchFalso } = renderConSesion(<Rutas />, 'PLANIFICADOR', {
       '/rutas': { body: [{ ...RUTA, partida_lat: -12.056, partida_lng: -75.216 }] },
+      '/pedidos': { body: [{ id: 21, codigo: 'PED-0021', cliente_nombre: 'Bodega Nueva', peso_kg: 40, estado: 'PENDIENTE' }] },
       'POST /rutas/7/reoptimizar': { body: { estado: 'FACTIBLE', rutas: [], no_asignados: [], distancia_total_km: 0,
         co2_total_kg: 0, ahorro_km: 0, ahorro_co2_kg: 0, tiempo_calculo_ms: 5 } },
     });
     await screen.findByText('Ruta #7 · ABC-101 (DIESEL)');
     await userEvent.selectOptions(screen.getByLabelText('Ruta'), '7');
     await userEvent.selectOptions(screen.getByLabelText('Tipo'), 'PEDIDO_NUEVO');
-    await userEvent.type(screen.getByLabelText('ID del pedido nuevo'), '21');
+    await screen.findByRole('option', { name: 'PED-0021 · Bodega Nueva (40 kg)' });
+    await userEvent.selectOptions(screen.getByLabelText('Pedido nuevo que se agrega'), '21');
     await userEvent.click(screen.getByRole('button', { name: 'Re-optimizar' }));
     await waitFor(() => expect(fetchFalso.mock.calls.some((c) => String(c[0]).includes('/reoptimizar'))).toBe(true));
     const cuerpo = JSON.parse(String(fetchFalso.mock.calls.find((c) => String(c[0]).includes('/reoptimizar'))?.[1]?.body));
     expect(cuerpo).toMatchObject({ tipo: 'PEDIDO_NUEVO', pedido_id: 21 });
     await userEvent.selectOptions(screen.getByLabelText('Tipo'), 'CANCELACION');
-    expect(screen.getByLabelText('ID del pedido a cancelar')).toBeInTheDocument();
+    expect(screen.getByLabelText('Pedido que se cancela')).toBeInTheDocument();
   });
 });

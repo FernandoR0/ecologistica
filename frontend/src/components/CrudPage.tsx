@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { api, apiPaginado, del, post, put } from '../api';
+import type { LugarEncontrado } from '../geocodificar';
 import { SelectorUbicacion } from './SelectorUbicacion';
 
 const POR_PAGINA = 12;
@@ -7,7 +8,7 @@ const POR_PAGINA = 12;
 export interface Campo {
   nombre: string;
   etiqueta: string;
-  /** 'ubicacion' muestra un mapa con pin que llena los campos `lat` y `lng` del registro. */
+  /** 'ubicacion' muestra el buscador y el mapa con pin, y llena los campos de `claves` (por defecto lat y lng). */
   tipo?: 'text' | 'number' | 'time' | 'select' | 'checkbox' | 'ubicacion';
   /** Opciones de un select: texto simple o pares valor/etiqueta (por ejemplo, clientes). */
   opciones?: (string | { valor: string | number; etiqueta: string })[];
@@ -19,6 +20,8 @@ export interface Campo {
   /** Lo genera el sistema: no se pide al crear y al editar se muestra sin poder cambiarlo. */
   automatico?: boolean;
   paso?: string;
+  /** Campos de latitud y longitud que llena una ubicación. */
+  claves?: [string, string];
 }
 
 interface Props {
@@ -31,6 +34,19 @@ interface Props {
 }
 
 type Fila = Record<string, unknown> & { id: number };
+const vacio = (v: unknown) => v === '' || v === undefined || v === null;
+
+/** Al elegir un lugar en el buscador se proponen la dirección y el distrito si todavía están vacíos. */
+export function proponerDesdeLugar(form: Record<string, unknown>, lugar: LugarEncontrado, campos: Campo[]) {
+  const nuevo = { ...form };
+  if (campos.some((c) => c.nombre === 'direccion') && vacio(form.direccion)) nuevo.direccion = lugar.direccion;
+  const distrito = campos.find((c) => c.nombre === 'distrito' && c.tipo === 'select');
+  if (distrito && vacio(form.distrito)) {
+    const opcion = distrito.opciones?.find((o) => typeof o === 'string' && lugar.zonas.some((z) => z.includes(o)));
+    if (opcion) nuevo.distrito = opcion;
+  }
+  return nuevo;
+}
 
 /** Página genérica de listado + formulario de alta/edición. */
 export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTexto = 'Desactivar' }: Props) {
@@ -75,20 +91,20 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
     for (const c of campos) {
       if (c.automatico || (editando && c.soloCrear)) continue;
       if (c.tipo === 'ubicacion') {
-        const vacio = (v: unknown) => v === '' || v === undefined || v === null;
-        if (vacio(form.lat) || vacio(form.lng)) {
+        const [kLat, kLng] = c.claves ?? ['lat', 'lng'];
+        if (vacio(form[kLat]) || vacio(form[kLng])) {
           if (c.requerido && !editando) {
-            setError('Marca en el mapa la ubicación antes de guardar.');
+            setError('Busca la dirección o marca en el mapa la ubicación antes de guardar.');
             return;
           }
           continue;
         }
-        datos.lat = Number(form.lat);
-        datos.lng = Number(form.lng);
+        datos[kLat] = Number(form[kLat]);
+        datos[kLng] = Number(form[kLng]);
         continue;
       }
       const v = form[c.nombre];
-      if (v === '' || v === undefined || v === null) continue;
+      if (vacio(v)) continue;
       datos[c.nombre] = c.tipo === 'number' || c.numerico ? Number(v) : v;
     }
     try {
@@ -96,6 +112,7 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
       else await post(ruta, datos);
       setForm({});
       setEditando(null);
+      setError('');
       cargar();
     } catch (err) {
       setError((err as Error).message);
@@ -104,11 +121,82 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
 
   const borrar = async (id: number) => {
     if (!confirm(`¿${borrarTexto} el registro ${id}?`)) return;
-    await del(`${ruta}/${id}`).catch((e) => setError(e.message));
+    try {
+      await del(`${ruta}/${id}`);
+      setError('');
+    } catch (e) {
+      setError((e as Error).message);
+    }
     cargar();
   };
 
   const formAbierto = Object.keys(form).length > 0;
+
+  const campoUbicacion = (c: Campo) => {
+    const [kLat, kLng] = c.claves ?? ['lat', 'lng'];
+    return (
+      <div key={c.nombre} className="campo-ancho">
+        <SelectorUbicacion
+          etiqueta={c.etiqueta}
+          lat={form[kLat]}
+          lng={form[kLng]}
+          opcional={!c.requerido}
+          sinUbicacion={c.ayuda}
+          onCambiar={(lat, lng) => setForm((f) => ({ ...f, [kLat]: lat, [kLng]: lng }))}
+          onLugar={(lugar) => setForm((f) => proponerDesdeLugar(f, lugar, campos))}
+        />
+        <details className="coordenadas-manual">
+          <summary>Escribir las coordenadas (opcional)</summary>
+          <label>
+            Latitud
+            <input type="number" step="any" value={String(form[kLat] ?? '')}
+              onChange={(e) => setForm({ ...form, [kLat]: e.target.value })} />
+          </label>
+          <label>
+            Longitud
+            <input type="number" step="any" value={String(form[kLng] ?? '')}
+              onChange={(e) => setForm({ ...form, [kLng]: e.target.value })} />
+          </label>
+        </details>
+      </div>
+    );
+  };
+
+  const campoSimple = (c: Campo) => (
+    <label key={c.nombre} title={c.ayuda}>
+      {c.etiqueta}
+      {c.tipo === 'select' ? (
+        <select
+          value={String(form[c.nombre] ?? '')}
+          required={c.requerido}
+          disabled={!!editando && c.soloCrear}
+          onChange={(e) => setForm({ ...form, [c.nombre]: e.target.value })}
+        >
+          <option value="">—</option>
+          {c.opciones?.map((o) =>
+            typeof o === 'string'
+              ? <option key={o}>{o}</option>
+              : <option key={o.valor} value={o.valor}>{o.etiqueta}</option>,
+          )}
+        </select>
+      ) : c.tipo === 'checkbox' ? (
+        <input
+          type="checkbox"
+          checked={!!form[c.nombre]}
+          onChange={(e) => setForm({ ...form, [c.nombre]: e.target.checked })}
+        />
+      ) : (
+        <input
+          type={c.tipo ?? 'text'}
+          step={c.paso}
+          value={String(form[c.nombre] ?? '')}
+          required={c.requerido && !editando}
+          disabled={!!editando && (c.soloCrear || c.automatico)}
+          onChange={(e) => setForm({ ...form, [c.nombre]: e.target.value })}
+        />
+      )}
+    </label>
+  );
 
   return (
     <section>
@@ -120,63 +208,9 @@ export function CrudPage({ titulo, ruta, campos, columnas, puedeEditar, borrarTe
 
       {formAbierto && (
         <form className="tarjeta form-grid" onSubmit={guardar} aria-label={`Formulario ${titulo}`}>
-          {campos.filter((c) => !c.automatico || editando).map((c) => c.tipo === 'ubicacion' ? (
-            <div key={c.nombre} className="campo-ancho">
-              <SelectorUbicacion
-                etiqueta={c.etiqueta}
-                lat={form.lat}
-                lng={form.lng}
-                onCambiar={(lat, lng) => setForm((f) => ({ ...f, lat, lng }))}
-              />
-              <details className="coordenadas-manual">
-                <summary>Escribir las coordenadas (opcional)</summary>
-                <label>
-                  Latitud
-                  <input type="number" step="any" value={String(form.lat ?? '')}
-                    onChange={(e) => setForm({ ...form, lat: e.target.value })} />
-                </label>
-                <label>
-                  Longitud
-                  <input type="number" step="any" value={String(form.lng ?? '')}
-                    onChange={(e) => setForm({ ...form, lng: e.target.value })} />
-                </label>
-              </details>
-            </div>
-          ) : (
-            <label key={c.nombre} title={c.ayuda}>
-              {c.etiqueta}
-              {c.tipo === 'select' ? (
-                <select
-                  value={String(form[c.nombre] ?? '')}
-                  required={c.requerido}
-                  disabled={!!editando && c.soloCrear}
-                  onChange={(e) => setForm({ ...form, [c.nombre]: e.target.value })}
-                >
-                  <option value="">—</option>
-                  {c.opciones?.map((o) =>
-                    typeof o === 'string'
-                      ? <option key={o}>{o}</option>
-                      : <option key={o.valor} value={o.valor}>{o.etiqueta}</option>,
-                  )}
-                </select>
-              ) : c.tipo === 'checkbox' ? (
-                <input
-                  type="checkbox"
-                  checked={!!form[c.nombre]}
-                  onChange={(e) => setForm({ ...form, [c.nombre]: e.target.checked })}
-                />
-              ) : (
-                <input
-                  type={c.tipo ?? 'text'}
-                  step={c.paso}
-                  value={String(form[c.nombre] ?? '')}
-                  required={c.requerido && !editando}
-                  disabled={!!editando && (c.soloCrear || c.automatico)}
-                  onChange={(e) => setForm({ ...form, [c.nombre]: e.target.value })}
-                />
-              )}
-            </label>
-          ))}
+          {campos
+            .filter((c) => !c.automatico || editando)
+            .map((c) => (c.tipo === 'ubicacion' ? campoUbicacion(c) : campoSimple(c)))}
           <div className="acciones">
             <button type="submit">Guardar</button>
             <button type="button" className="secundario" onClick={() => setForm({})}>Cancelar</button>

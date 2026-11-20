@@ -17,7 +17,9 @@ def crud_router(  # noqa: PLR0913 - configuración declarativa del router
     *, model: type[Base], entrada: type[BaseModel], cambio: type[BaseModel], salida: type[BaseModel],
     prefix: str, tag: str, validar: Callable[[Session, Base], None] | None = None,
     duplicado: str = "Registro duplicado o referencia inválida",
+    antes_de_desactivar: Callable[[Session, Base], None] | None = None,
 ) -> APIRouter:
+    """`antes_de_desactivar` lanza HTTPException si el registro tiene trabajo pendiente (rutas o pedidos)."""
     router = APIRouter(prefix=prefix, tags=[tag])
 
     def _obtener(db: Session, item_id: int):
@@ -67,7 +69,10 @@ def crud_router(  # noqa: PLR0913 - configuración declarativa del router
     @router.put("/{item_id}", response_model=salida)
     def actualizar(item_id: int, datos: cambio, db: Session = Depends(get_db), _=Depends(gestion)):  # type: ignore[valid-type]
         obj = _obtener(db, item_id)
-        for k, v in datos.model_dump(exclude_unset=True).items():
+        cambios = datos.model_dump(exclude_unset=True)
+        if antes_de_desactivar and cambios.get("activo") is False and obj.activo:
+            antes_de_desactivar(db, obj)
+        for k, v in cambios.items():
             setattr(obj, k, v)
         _guardar(db, obj)
         return obj
@@ -75,6 +80,8 @@ def crud_router(  # noqa: PLR0913 - configuración declarativa del router
     @router.delete("/{item_id}", status_code=204)
     def desactivar(item_id: int, db: Session = Depends(get_db), _=Depends(gestion)):
         obj = _obtener(db, item_id)
+        if antes_de_desactivar and obj.activo:
+            antes_de_desactivar(db, obj)
         obj.activo = False
         db.commit()
         return Response(status_code=204)

@@ -36,9 +36,14 @@ test.describe('Accesibilidad WCAG 2.1 AA (protege lo logrado en el Sprint 3)', (
     await iniciarSesion(page, 'planificador');
     await irA(page, 'Clientes', 'Clientes');
     await page.getByRole('button', { name: '+ Nuevo' }).click();
+    await page.route('**/nominatim.openstreetmap.org/search**', (ruta) => ruta.fulfill({ json: [] }));
     const mapa = page.getByRole('region', { name: 'Mapa para marcar la ubicación' });
     await mapa.click({ position: { x: 150, y: 120 } });
     await expect(page.locator('.pin-ubicacion')).toBeVisible();
+    // El buscador sin resultados también debe ser accesible
+    await page.getByLabel('Buscar dirección o lugar de referencia').fill('Lugar inexistente');
+    await page.getByRole('button', { name: '🔍 Buscar' }).click();
+    await expect(page.getByText(/No encontramos ese lugar en Huancayo/)).toBeVisible();
     expect(await violaciones(page)).toEqual([]);
   });
 });

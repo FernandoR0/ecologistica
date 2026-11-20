@@ -21,6 +21,14 @@ USUARIOS = [("admin@test.pe", "ADMIN"), ("plan@test.pe", "PLANIFICADOR"), ("cond
 _HASH = hash_password("Secreta123")
 
 
+@pytest.fixture(autouse=True)
+def dia_de_operacion(monkeypatch):
+    """Las pruebas planifican el lunes 16/11/2026: las rutas "de hoy" son las de ese día."""
+    from datetime import date  # noqa: PLC0415
+
+    monkeypatch.setattr("app.api.routers.rutas.hoy", lambda: date(2026, 11, 16))
+
+
 @pytest.fixture
 def db():
     engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)

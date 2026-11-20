@@ -1,6 +1,6 @@
 """RF-006 · Reporte PDF de impacto ambiental y económico de un periodo."""
 
-from datetime import date, datetime
+from datetime import date
 from io import BytesIO
 
 from reportlab.lib import colors
@@ -10,6 +10,7 @@ from reportlab.lib.units import cm
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 from sqlalchemy.orm import Session
 
+from app.core.tiempo import ahora
 from app.services import indicadores
 
 VERDE = colors.HexColor("#0f766e")
@@ -44,7 +45,7 @@ def generar(db: Session, desde: date | None = None, hasta: date | None = None) -
     partes = [
         Paragraph("EcoLogística · DistriRápido S.A.C.", est["Title"]),
         Paragraph(f"Reporte de impacto ambiental y económico · Periodo: {periodo}", est["Heading3"]),
-        Paragraph(f"Generado el {datetime.now():%d/%m/%Y %H:%M}", est["Normal"]),
+        Paragraph(f"Generado el {ahora():%d/%m/%Y %H:%M} (hora de Huancayo)", est["Normal"]),
         Spacer(1, 12),
         Paragraph("1. Resumen de la operación", est["Heading2"]),
         _tabla([

@@ -40,7 +40,7 @@ def _crear_pedidos(client, h, n=6, cliente_id=None, **extra):
     ids = []
     for i in range(n):
         r = client.post("/api/pedidos", headers=h, json={
-            "codigo": f"PED-{i}", "cliente_id": cid, "lat": -12.06 - i * 0.004, "lng": -75.21 + i * 0.002,
+            "cliente_id": cid, "lat": -12.06 - i * 0.004, "lng": -75.21 + i * 0.002,
             "peso_kg": 100, "volumen_m3": 0.5, "ventana_inicio": "09:00", "ventana_fin": "17:00", **extra})
         assert r.status_code == 201, r.text
         ids.append(r.json()["id"])
@@ -135,8 +135,14 @@ def test_flujo_optimizar_reoptimizar_indicadores(client, admin):
     assert parada["congestion"] in ("VERDE", "AMARILLO", "ROJO") and parada["tiempo_tramo_min"] >= 0
     assert all(p["estado"] == "PLANIFICADO" for p in client.get("/api/pedidos", headers=admin).json())
 
-    # Sin pedidos pendientes → 409
-    assert client.post("/api/rutas/optimizar", headers=admin, json={"fecha": HOY}).status_code == 409
+    # Volver a generar rehace las rutas que aún no salieron: no duplica vehículos ni pedidos
+    otra = _optimizar(client, admin)
+    assert otra["rutas_reemplazadas"] == len(plan["rutas"])
+    assert sorted(p["pedido"]["id"] for ruta in otra["rutas"] for p in ruta["paradas"]) == ids
+    assert len({r["vehiculo"]["id"] for r in otra["rutas"]}) == len(otra["rutas"])
+    vigentes = client.get("/api/rutas?estado=PLANIFICADA,EN_CURSO", headers=admin).json()
+    assert sorted(r["id"] for r in vigentes) == sorted(r["id"] for r in otra["rutas"])
+    plan = otra
 
     ruta = max(plan["rutas"], key=lambda x: len(x["paradas"]))
     primera = ruta["paradas"][0]["pedido"]["id"]

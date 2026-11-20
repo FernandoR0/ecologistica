@@ -144,4 +144,6 @@ export interface Zona { id: number; nombre: string; tipo: 'RESTRINGIDA' | 'RIESG
 export interface ResultadoPlan {
   estado: string; rutas: Ruta[]; no_asignados: number[]; distancia_total_km: number; co2_total_kg: number;
   ahorro_km: number; ahorro_co2_kg: number; tiempo_calculo_ms: number;
+  /** Rutas que aún no salían y se volvieron a planificar junto con los pedidos nuevos. */
+  rutas_reemplazadas?: number;
 }

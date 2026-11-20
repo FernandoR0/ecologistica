@@ -45,15 +45,27 @@ test.describe('Gestión operativa (RF-001, RF-002, RF-008, RF-009)', () => {
     await page.getByRole('button', { name: '+ Nuevo' }).click();
     const fc = page.getByRole('form', { name: 'Formulario Clientes' });
     await fc.getByLabel('Nombre del cliente').fill(nombre);
-    await fc.getByLabel('Dirección').fill('Mz. C, Lote 5, Pje. Los Álamos');
+    await fc.getByLabel('Dirección', { exact: true }).fill('Mz. C, Lote 5, Pje. Los Álamos');
     await fc.getByLabel('Distrito').selectOption('El Tambo');
     await fc.getByLabel('Punto de referencia').fill('Frente a la bodega El Ahorro');
     await fc.getByLabel('Recibe desde').fill('09:00');
     await fc.getByLabel('Recibe hasta').fill('12:00');
-    // La ubicación se marca tocando el mapa, sin escribir coordenadas
+    // La ubicación se busca por dirección o referencia (OpenStreetMap simulado) y se ajusta tocando el mapa
+    await page.route('**/nominatim.openstreetmap.org/search**', (ruta) => ruta.fulfill({
+      json: [{
+        display_name: 'Pasaje Los Álamos, El Tambo, Huancayo, Junín', lat: '-12.0581', lon: '-75.2152',
+        address: { road: 'Pasaje Los Álamos', suburb: 'El Tambo', city: 'Huancayo' },
+      }],
+    }));
     await expect(fc.getByRole('status')).toHaveText('Aún no se ha marcado la ubicación.');
+    await fc.getByLabel('Buscar dirección o lugar de referencia').fill('Pasaje Los Álamos');
+    await fc.getByLabel('Buscar dirección o lugar de referencia').press('Enter');
+    await fc.getByRole('button', { name: '📍 Pasaje Los Álamos, El Tambo, Huancayo, Junín' }).click();
+    await expect(fc.getByRole('status')).toHaveText('✔ Ubicación marcada (-12.05810, -75.21520)');
     await fc.getByRole('region', { name: 'Mapa para marcar la ubicación' }).click({ position: { x: 180, y: 140 } });
     await expect(fc.getByRole('status')).toHaveText(/✔ Ubicación marcada \(-12\.\d{5}, -75\.\d{5}\)/);
+    // La dirección escrita por el usuario no se reemplaza
+    await expect(fc.getByLabel('Dirección', { exact: true })).toHaveValue('Mz. C, Lote 5, Pje. Los Álamos');
     await fc.getByRole('button', { name: 'Guardar' }).click();
     await expect(fc).toHaveCount(0);
 

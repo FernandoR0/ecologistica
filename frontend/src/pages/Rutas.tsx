@@ -1,6 +1,6 @@
 /** RF-003 generar rutas · RF-004 mapa · RF-007 re-optimizar ante incidentes. */
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { api, imagenProtegida, post, type ResultadoPlan, type Ruta, type Zona } from '../api';
+import { api, imagenProtegida, post, type Pedido, type ResultadoPlan, type Ruta, type Zona } from '../api';
 import { useAuth } from '../auth';
 import { MapaRutas } from '../components/MapaRutas';
 
@@ -15,6 +15,7 @@ const TIPOS = {
 };
 const CON_PEDIDO = ['PEDIDO_NUEVO', 'CANCELACION'];
 const CONGESTION = { VERDE: 'fluida', AMARILLO: 'moderada', ROJO: 'alta' };
+const horaActual = () => new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false });
 
 export function Rutas() {
   const { usuario } = useAuth();
@@ -37,12 +38,24 @@ export function Rutas() {
     }
   };
   const [incidente, setIncidente] = useState({
-    ruta: 0, tipo: 'TRAFICO', hora_actual: '10:00', demora_min: 30, completados: '', pedido: '', descripcion: '',
+    ruta: 0, tipo: 'TRAFICO', hora_actual: horaActual(), demora_min: 30, pedido: '', descripcion: '',
   });
+  const [pendientes, setPendientes] = useState<Pedido[]>([]);
 
   const cargar = useCallback(() => {
-    api<Ruta[]>('/rutas?estado=PLANIFICADA,EN_CURSO&limite=100').then(setRutas).catch((e) => setError(e.message));
+    api<Ruta[]>('/rutas?vigentes=true&limite=100').then(setRutas).catch((e) => setError(e.message));
   }, []);
+
+  // Para "Pedido nuevo" se elige entre los pedidos que todavía no tienen ruta
+  useEffect(() => {
+    if (incidente.tipo !== 'PEDIDO_NUEVO') return;
+    api<Pedido[]>('/pedidos?estado=PENDIENTE&limite=100').then(setPendientes).catch(() => setPendientes([]));
+  }, [incidente.tipo]);
+  const rutaElegida = rutas.find((r) => r.id === incidente.ruta);
+  const opcionesPedido = incidente.tipo === 'CANCELACION'
+    ? (rutaElegida?.paradas ?? []).filter((p) => p.estado !== 'ENTREGADA')
+      .map((p) => ({ id: p.pedido.id, texto: `${p.pedido.codigo} · ${p.pedido.cliente_nombre} (${p.hora_llegada})` }))
+    : pendientes.map((p) => ({ id: p.id, texto: `${p.codigo} · ${p.cliente_nombre} (${p.peso_kg} kg)` }));
   useEffect(cargar, [cargar]);
   useEffect(() => {
     api<Zona[]>('/zonas').then(setZonas).catch(() => setZonas([]));
@@ -66,14 +79,15 @@ export function Rutas() {
     setCalculando(true);
     setError('');
     try {
-      const completados = incidente.completados.split(',').map((s) => Number(s.trim())).filter(Boolean);
+      // Las entregas ya realizadas las marca el conductor en "Mi ruta": no hay que escribirlas aquí
       setResultado(
         await post<ResultadoPlan>(`/rutas/${incidente.ruta}/reoptimizar`, {
           tipo: incidente.tipo, hora_actual: incidente.hora_actual, demora_min: Number(incidente.demora_min),
-          paradas_completadas: completados, descripcion: incidente.descripcion || null,
+          paradas_completadas: [], descripcion: incidente.descripcion || null,
           ...(CON_PEDIDO.includes(incidente.tipo) ? { pedido_id: Number(incidente.pedido) } : {}),
         }),
       );
+      setIncidente((i) => ({ ...i, ruta: 0, pedido: '', descripcion: '' }));
       cargar();
     } catch (err) {
       setError((err as Error).message);
@@ -98,6 +112,12 @@ export function Rutas() {
           <b>{resultado.estado}</b> · {resultado.rutas.length} rutas · {resultado.distancia_total_km.toFixed(1)} km ·{' '}
           {resultado.co2_total_kg.toFixed(2)} kg CO₂ · ahorro {resultado.ahorro_km.toFixed(1)} km /{' '}
           {resultado.ahorro_co2_kg.toFixed(2)} kg CO₂ · {resultado.tiempo_calculo_ms} ms
+          {!!resultado.rutas_reemplazadas && (
+            <p className="muted">
+              Se volvieron a planificar {resultado.rutas_reemplazadas} ruta(s) que aún no salían, junto con los pedidos
+              nuevos. Las rutas en reparto no se modificaron.
+            </p>
+          )}
           {resultado.no_asignados.length > 0 && (
             <p className="error">
               {resultado.no_asignados.length} pedido(s) sin asignar por capacidad, ventana, jornada o zona restringida:{' '}
@@ -153,25 +173,32 @@ export function Rutas() {
         <form className="tarjeta form-grid" onSubmit={reoptimizar} aria-label="Registrar incidente">
           <h2>Registrar incidente y re-optimizar</h2>
           <label>Ruta
-            <select required value={incidente.ruta} onChange={(e) => setIncidente({ ...incidente, ruta: Number(e.target.value) })}>
+            <select required value={incidente.ruta}
+              onChange={(e) => setIncidente({ ...incidente, ruta: Number(e.target.value), pedido: '' })}>
               <option value={0}>—</option>
               {rutas.map((r) => <option key={r.id} value={r.id}>#{r.id} {r.vehiculo.placa}</option>)}
             </select>
           </label>
           <label>Tipo
-            <select value={incidente.tipo} onChange={(e) => setIncidente({ ...incidente, tipo: e.target.value })}>
+            <select value={incidente.tipo} onChange={(e) => setIncidente({ ...incidente, tipo: e.target.value, pedido: '' })}>
               {Object.entries(TIPOS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
             </select>
           </label>
           <label>Hora actual<input type="time" value={incidente.hora_actual} onChange={(e) => setIncidente({ ...incidente, hora_actual: e.target.value })} /></label>
           <label>Demora (min)<input type="number" min={0} value={incidente.demora_min} onChange={(e) => setIncidente({ ...incidente, demora_min: Number(e.target.value) })} /></label>
-          <label>Pedidos ya entregados (IDs, separados por coma)<input value={incidente.completados} onChange={(e) => setIncidente({ ...incidente, completados: e.target.value })} /></label>
           <label>Descripción<input maxLength={250} value={incidente.descripcion} onChange={(e) => setIncidente({ ...incidente, descripcion: e.target.value })} /></label>
           {CON_PEDIDO.includes(incidente.tipo) && (
-            <label>ID del pedido{incidente.tipo === 'PEDIDO_NUEVO' ? ' nuevo' : ' a cancelar'}
-              <input type="number" min={1} required value={incidente.pedido} onChange={(e) => setIncidente({ ...incidente, pedido: e.target.value })} />
+            <label>{incidente.tipo === 'PEDIDO_NUEVO' ? 'Pedido nuevo que se agrega' : 'Pedido que se cancela'}
+              <select required value={incidente.pedido} onChange={(e) => setIncidente({ ...incidente, pedido: e.target.value })}>
+                <option value="">{opcionesPedido.length ? '—' : 'No hay pedidos para elegir'}</option>
+                {opcionesPedido.map((o) => <option key={o.id} value={o.id}>{o.texto}</option>)}
+              </select>
             </label>
           )}
+          <p className="muted campo-ancho">
+            Las entregas ya realizadas se toman de las que el conductor marcó en "Mi ruta"; solo se recalculan las
+            pendientes.
+          </p>
           <div className="acciones"><button type="submit" disabled={calculando || !incidente.ruta}>Re-optimizar</button></div>
         </form>
       )}

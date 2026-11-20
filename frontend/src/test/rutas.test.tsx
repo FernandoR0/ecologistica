@@ -70,9 +70,8 @@ describe('pantalla Rutas', () => {
     expect(await screen.findByText('Ruta #7 · ABC-101 (DIESEL)')).toBeInTheDocument();
     expect(screen.getByText(/Bodega Doña Rosa/)).toHaveTextContent('congestión alta');
     expect(screen.getByText(/Minimarket El Sol/)).toHaveTextContent('fuera de ventana');
-    expect(String(fetchFalso.mock.calls.find((c) => String(c[0]).includes('/rutas'))?.[0])).toContain(
-      'estado=PLANIFICADA,EN_CURSO',
-    );
+    // Solo las rutas de hoy y las que siguen en curso
+    expect(String(fetchFalso.mock.calls.find((c) => String(c[0]).includes('/rutas'))?.[0])).toContain('vigentes=true');
     expect(screen.getByRole('region', { name: 'Mapa de rutas' })).toBeInTheDocument();
     expect(screen.getByLabelText('Leyenda del mapa')).toHaveTextContent('alta (hora punta)');
   });
@@ -89,6 +88,18 @@ describe('pantalla Rutas', () => {
     expect(resumen).toHaveTextContent('ahorro 7.6 km');
     expect(resumen).toHaveTextContent('1 pedido(s) sin asignar');
     expect(resumen).toHaveTextContent('#15');
+    expect(resumen).not.toHaveTextContent('Se volvieron a planificar');
+  });
+
+  it('avisa cuando se rehacen las rutas que aún no salían', async () => {
+    renderConSesion(<Rutas />, 'PLANIFICADOR', {
+      '/rutas': { body: [] },
+      '/zonas': { body: [] },
+      'POST /rutas/optimizar': { body: { ...PLAN, rutas_reemplazadas: 2 } },
+    });
+    await userEvent.click(await screen.findByRole('button', { name: 'Generar rutas optimizadas' }));
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Se volvieron a planificar 2 ruta(s) que aún no salían, junto con los pedidos nuevos. Las rutas en reparto no se modificaron.');
   });
 
   it('muestra el error cuando no hay pedidos', async () => {
@@ -110,31 +121,59 @@ describe('pantalla Rutas', () => {
     await screen.findByText('Ruta #7 · ABC-101 (DIESEL)');
     await userEvent.selectOptions(screen.getByLabelText('Ruta'), '7');
     await userEvent.selectOptions(screen.getByLabelText('Tipo'), 'ACCIDENTE');
-    await userEvent.type(screen.getByLabelText('Pedidos ya entregados (IDs, separados por coma)'), '11, 12');
+    // Ya no se escriben IDs de pedidos entregados: los marca el conductor
+    expect(screen.queryByLabelText(/Pedidos ya entregados/)).not.toBeInTheDocument();
+    expect((screen.getByLabelText('Hora actual') as HTMLInputElement).value).toMatch(/^\d\d:\d\d$/);
+    fireEvent.change(screen.getByLabelText('Hora actual'), { target: { value: '10:00' } });
     await userEvent.type(screen.getByLabelText('Descripción'), 'Choque en Av. Ferrocarril');
     await userEvent.click(screen.getByRole('button', { name: 'Re-optimizar' }));
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('FACTIBLE'));
     const llamada = fetchFalso.mock.calls.find((c) => String(c[0]).includes('/reoptimizar'));
     expect(JSON.parse(String(llamada?.[1]?.body))).toEqual({
-      tipo: 'ACCIDENTE', hora_actual: '10:00', demora_min: 30, paradas_completadas: [11, 12],
+      tipo: 'ACCIDENTE', hora_actual: '10:00', demora_min: 30, paradas_completadas: [],
       descripcion: 'Choque en Av. Ferrocarril',
     });
   });
 
-  it('pide el ID del pedido nuevo o cancelado', async () => {
+  it('elige el pedido nuevo de una lista de pendientes', async () => {
     const { fetchFalso } = renderConSesion(<Rutas />, 'PLANIFICADOR', {
       '/rutas': { body: [RUTA] },
       '/zonas': { body: [] },
+      '/pedidos': { body: [{ id: 21, codigo: 'PED-0021', cliente_nombre: 'Bodega San Carlos', peso_kg: 30, estado: 'PENDIENTE' }] },
       'POST /rutas/7/reoptimizar': { body: PLAN },
     });
     await screen.findByText('Ruta #7 · ABC-101 (DIESEL)');
     await userEvent.selectOptions(screen.getByLabelText('Ruta'), '7');
     await userEvent.selectOptions(screen.getByLabelText('Tipo'), 'PEDIDO_NUEVO');
-    await userEvent.type(screen.getByLabelText('ID del pedido nuevo'), '21');
+    const lista = await screen.findByLabelText('Pedido nuevo que se agrega');
+    await screen.findByRole('option', { name: 'PED-0021 · Bodega San Carlos (30 kg)' });
+    expect(fetchFalso.mock.calls.some((c) => String(c[0]).includes('/pedidos?estado=PENDIENTE'))).toBe(true);
+    await userEvent.selectOptions(lista, '21');
     await userEvent.click(screen.getByRole('button', { name: 'Re-optimizar' }));
     await waitFor(() => expect(fetchFalso.mock.calls.some((c) => String(c[0]).includes('/reoptimizar'))).toBe(true));
     const cuerpo = JSON.parse(String(fetchFalso.mock.calls.find((c) => String(c[0]).includes('/reoptimizar'))?.[1]?.body));
     expect(cuerpo.pedido_id).toBe(21);
+  });
+
+  it('para cancelar ofrece solo los pedidos pendientes de la ruta elegida', async () => {
+    const enCurso = { ...RUTA, paradas: [{ ...RUTA.paradas[0], estado: 'ENTREGADA' }, RUTA.paradas[1]] };
+    const { fetchFalso } = renderConSesion(<Rutas />, 'PLANIFICADOR', {
+      '/rutas': { body: [enCurso] },
+      '/zonas': { body: [] },
+      'POST /rutas/7/reoptimizar': { body: PLAN },
+    });
+    await screen.findByText('Ruta #7 · ABC-101 (DIESEL)');
+    await userEvent.selectOptions(screen.getByLabelText('Tipo'), 'CANCELACION');
+    expect(screen.getByRole('option', { name: 'No hay pedidos para elegir' })).toBeInTheDocument();
+    await userEvent.selectOptions(screen.getByLabelText('Ruta'), '7');
+    const lista = screen.getByLabelText('Pedido que se cancela');
+    expect(screen.queryByRole('option', { name: /Bodega Doña Rosa/ })).not.toBeInTheDocument();
+    await userEvent.selectOptions(lista, '12');
+    expect(screen.getByRole('option', { name: 'PED-0012 · Minimarket El Sol (09:05)' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Re-optimizar' }));
+    await waitFor(() => expect(fetchFalso.mock.calls.some((c) => String(c[0]).includes('/reoptimizar'))).toBe(true));
+    const cuerpo = JSON.parse(String(fetchFalso.mock.calls.find((c) => String(c[0]).includes('/reoptimizar'))?.[1]?.body));
+    expect(cuerpo).toMatchObject({ tipo: 'CANCELACION', pedido_id: 12 });
   });
 
   it('muestra el error al re-optimizar', async () => {

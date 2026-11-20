@@ -31,8 +31,110 @@ def test_pedido_de_cliente_inactivo_y_codigo_duplicado(client, admin):
     datos = {"codigo": "DUP-1", "cliente_id": cli["id"], "peso_kg": 10}
     assert client.post("/api/pedidos", headers=admin, json=datos).status_code == 201
     assert client.post("/api/pedidos", headers=admin, json=datos).status_code == 409
+    # Con un pedido pendiente el cliente no se puede desactivar; al cancelarlo, sí
+    assert client.delete(f"/api/clientes/{cli['id']}", headers=admin).status_code == 409
+    dup = next(p for p in client.get("/api/pedidos", headers=admin).json() if p["codigo"] == "DUP-1")
+    assert client.delete(f"/api/pedidos/{dup['id']}", headers=admin).status_code == 204
     assert client.delete(f"/api/clientes/{cli['id']}", headers=admin).status_code == 204
     assert client.post("/api/pedidos", headers=admin, json={**datos, "codigo": "DUP-2"}).status_code == 422
+
+
+def test_cancelar_desde_pedidos_saca_el_pedido_de_su_ruta(client, admin, monkeypatch):
+    monkeypatch.setattr("app.api.routers.gestion.hora_actual", lambda: "10:00")
+    _crear_flota(client, admin, n=1)
+    ids = _crear_pedidos(client, admin, 3)
+    ruta = _optimizar(client, admin)["rutas"][0]
+    cancelado = ruta["paradas"][1]["pedido"]["id"]
+    assert client.delete(f"/api/pedidos/{cancelado}", headers=admin).status_code == 204
+    assert client.get(f"/api/pedidos/{cancelado}", headers=admin).json()["estado"] == "CANCELADO"
+    # La ruta original queda re-optimizada y la nueva ya no lleva el pedido cancelado
+    assert client.get(f"/api/rutas/{ruta['id']}", headers=admin).json()["estado"] == "REOPTIMIZADA"
+    vigentes = client.get("/api/rutas?vigentes=true", headers=admin).json()
+    en_ruta = [p["pedido"]["id"] for r in vigentes for p in r["paradas"]]
+    assert cancelado not in en_ruta and sorted(en_ruta) == sorted(set(ids) - {cancelado})
+    inc = client.get(f"/api/rutas/{ruta['id']}/incidentes", headers=admin).json()
+    assert inc[0]["tipo"] == "CANCELACION" and inc[0]["pedido_id"] == cancelado
+    # Cancelar de nuevo no falla; un pedido entregado no se puede cancelar
+    assert client.delete(f"/api/pedidos/{cancelado}", headers=admin).status_code == 204
+    nueva = vigentes[0]
+    entregado = nueva["paradas"][0]
+    client.patch(f"/api/rutas/{nueva['id']}/paradas/{entregado['id']}/entregada", headers=admin)
+    r = client.delete(f"/api/pedidos/{entregado['pedido']['id']}", headers=admin)
+    assert r.status_code == 409 and "ya fue entregado" in r.json()["detail"]
+
+
+def test_cancelar_el_ultimo_pendiente_sin_jornada_cierra_la_ruta(client, admin, monkeypatch):
+    _crear_flota(client, admin, n=1)
+    [pid] = _crear_pedidos(client, admin, 1)
+    ruta = _optimizar(client, admin)["rutas"][0]
+    # A las 23:00 ya no queda jornada para recalcular: se quita la parada y la ruta se cierra
+    monkeypatch.setattr("app.api.routers.gestion.hora_actual", lambda: "23:00")
+    assert client.delete(f"/api/pedidos/{pid}", headers=admin).status_code == 204
+    detalle = client.get(f"/api/rutas/{ruta['id']}", headers=admin).json()
+    assert detalle["paradas"] == [] and detalle["estado"] == "COMPLETADA"
+    assert client.get(f"/api/rutas/{ruta['id']}/incidentes", headers=admin).json()[0]["hora"] == "23:00"
+
+
+def test_no_desactiva_vehiculo_conductor_ni_cliente_con_trabajo_pendiente(client, admin):
+    [v1] = _crear_flota(client, admin, n=1)
+    cli = _crear_cliente(client, admin, "Bodega Activa")
+    _crear_pedidos(client, admin, 1, cliente_id=cli["id"])
+    # Cliente con un pedido pendiente
+    r = client.delete(f"/api/clientes/{cli['id']}", headers=admin)
+    assert r.status_code == 409 and "Cancélelos en Pedidos" in r.json()["detail"]
+    ruta = _optimizar(client, admin)["rutas"][0]
+    cid = ruta["conductor"]["id"]
+    for url in (f"/api/vehiculos/{v1['id']}", f"/api/conductores/{cid}"):
+        r = client.delete(url, headers=admin)
+        assert r.status_code == 409 and f"ruta #{ruta['id']}" in r.json()["detail"]
+        # Tampoco por el formulario de edición (casilla "Activo")
+        assert client.put(url, headers=admin, json={"activo": False}).status_code == 409
+    # Al terminar la ruta ya se pueden desactivar
+    client.patch(f"/api/rutas/{ruta['id']}/estado", headers=admin, json={"estado": "COMPLETADA"})
+    assert client.delete(f"/api/conductores/{cid}", headers=admin).status_code == 204
+    assert client.delete(f"/api/vehiculos/{v1['id']}", headers=admin).status_code == 204
+    assert client.delete(f"/api/clientes/{cli['id']}", headers=admin).status_code == 204
+
+
+def test_generar_no_reasigna_vehiculos_en_reparto(client, admin):
+    _crear_flota(client, admin, n=1)
+    _crear_pedidos(client, admin, 2)
+    ruta = _optimizar(client, admin)["rutas"][0]
+    client.patch(f"/api/rutas/{ruta['id']}/paradas/{ruta['paradas'][0]['id']}/entregada", headers=admin)
+    _crear_pedidos(client, admin, 1)
+    r = client.post("/api/rutas/optimizar", headers=admin, json={"fecha": "2026-11-16", "limite_segundos": 1})
+    assert r.status_code == 409 and "en reparto" in r.json()["detail"]
+    # La ruta en curso no se tocó
+    assert client.get(f"/api/rutas/{ruta['id']}", headers=admin).json()["estado"] == "EN_CURSO"
+
+
+def test_rutas_vigentes_y_de_dias_anteriores(client, admin, db):
+    from datetime import date  # noqa: PLC0415
+
+    from app.models import Ruta  # noqa: PLC0415
+
+    _crear_flota(client, admin, n=1)
+    _crear_pedidos(client, admin, 1)
+    ruta = _optimizar(client, admin)["rutas"][0]
+    assert [r["id"] for r in client.get("/api/rutas?vigentes=true", headers=admin).json()] == [ruta["id"]]
+    # Una ruta planificada de un día anterior ya no se muestra como vigente
+    db.get(Ruta, ruta["id"]).fecha = date(2026, 11, 13)
+    db.commit()
+    assert client.get("/api/rutas?vigentes=true", headers=admin).json() == []
+    # Pero si quedó en curso, sigue a la vista hasta cerrarla
+    db.get(Ruta, ruta["id"]).estado = "EN_CURSO"
+    db.commit()
+    assert [r["id"] for r in client.get("/api/rutas?vigentes=true", headers=admin).json()] == [ruta["id"]]
+
+
+def test_hora_de_operacion_en_lima():
+    from datetime import timedelta  # noqa: PLC0415
+
+    from app.core import tiempo  # noqa: PLC0415
+
+    assert tiempo.ahora().utcoffset() == timedelta(hours=-5)
+    assert tiempo.hoy() == tiempo.ahora().date()
+    assert len(tiempo.hora_actual()) == 5 and tiempo.hora_actual()[2] == ":"
 
 
 def test_codigo_de_pedido_automatico(client, admin):

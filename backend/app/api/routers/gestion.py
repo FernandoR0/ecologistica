@@ -10,8 +10,9 @@ from sqlalchemy.orm import Session
 from app.api.deps import gestion, get_current_user
 from app.api.paginacion import Pagina, paginar, params_pagina
 from app.api.routers.crud import crud_router
+from app.core.tiempo import hora_actual
 from app.db import get_db
-from app.models import Cliente, Conductor, Pedido, Vehiculo
+from app.models import Cliente, Conductor, Incidente, Parada, Pedido, Ruta, Usuario, Vehiculo
 from app.schemas import (
     ClienteIn,
     ClienteOut,
@@ -27,6 +28,7 @@ from app.schemas import (
     VehiculoOut,
     VehiculoUpdate,
 )
+from app.services import planificacion
 
 # RN-015: categoría mínima de licencia por tipo de vehículo
 ORDEN_A = ("A-I", "A-IIa", "A-IIb", "A-IIIa", "A-IIIb", "A-IIIc")
@@ -54,16 +56,61 @@ def _validar_conductor(db: Session, cond: Conductor) -> None:
         )
 
 
+RUTA_VIGENTE = ("PLANIFICADA", "EN_CURSO")
+
+
+def _ruta_vigente(db: Session, condicion) -> Ruta | None:
+    """Primera ruta planificada o en curso que cumple la condición y aún tiene entregas pendientes."""
+    return db.scalar(
+        select(Ruta).join(Parada).where(condicion, Ruta.estado.in_(RUTA_VIGENTE), Parada.estado == "PENDIENTE")
+        .order_by(Ruta.id).limit(1)
+    )
+
+
+def _antes_de_desactivar_vehiculo(db: Session, veh: Vehiculo) -> None:
+    ruta = _ruta_vigente(db, Ruta.vehiculo_id == veh.id)
+    if ruta:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            f"El vehículo {veh.placa} tiene entregas pendientes en la ruta #{ruta.id}. Registre una avería en Rutas "
+            "para repartirlas entre otros vehículos antes de desactivarlo.",
+        )
+
+
+def _antes_de_desactivar_conductor(db: Session, cond: Conductor) -> None:
+    ruta = _ruta_vigente(db, Ruta.conductor_id == cond.id)
+    if ruta:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            f"{cond.nombre} tiene entregas pendientes en la ruta #{ruta.id}. Registre una avería en Rutas para "
+            "repartirlas entre otros vehículos antes de desactivarlo.",
+        )
+
+
+def _antes_de_desactivar_cliente(db: Session, cli: Cliente) -> None:
+    activos = db.scalars(
+        select(Pedido.id).where(Pedido.cliente_id == cli.id, Pedido.estado.in_(("PENDIENTE", "PLANIFICADO")))
+    ).all()
+    if activos:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            f"{cli.nombre} tiene {len(activos)} pedido(s) pendiente(s) o en ruta. Cancélelos en Pedidos antes de "
+            "desactivar el cliente.",
+        )
+
+
 vehiculos = crud_router(
     model=Vehiculo, entrada=VehiculoIn, cambio=VehiculoUpdate, salida=VehiculoOut, prefix="/vehiculos", tag="Flota",
-    duplicado="La placa ya está registrada",
+    duplicado="La placa ya está registrada", antes_de_desactivar=_antes_de_desactivar_vehiculo,
 )
 conductores = crud_router(
     model=Conductor, entrada=ConductorIn, cambio=ConductorUpdate, salida=ConductorOut,
     prefix="/conductores", tag="Conductores", validar=_validar_conductor, duplicado="El DNI ya está registrado",
+    antes_de_desactivar=_antes_de_desactivar_conductor,
 )
 clientes = crud_router(
     model=Cliente, entrada=ClienteIn, cambio=ClienteUpdate, salida=ClienteOut, prefix="/clientes", tag="Clientes",
+    antes_de_desactivar=_antes_de_desactivar_cliente,
 )
 
 # ---------------- Pedidos ----------------
@@ -155,7 +202,35 @@ def actualizar_pedido(pedido_id: int, datos: PedidoUpdate, db: Session = Depends
 
 
 @pedidos.delete("/{pedido_id}", status_code=204)
-def cancelar_pedido(pedido_id: int, db: Session = Depends(get_db), _=Depends(gestion)):
-    _pedido(db, pedido_id).estado = "CANCELADO"
+def cancelar_pedido(pedido_id: int, db: Session = Depends(get_db), user: Usuario = Depends(gestion)):
+    """Cancela el pedido. Si ya está en una ruta vigente, la ruta se re-optimiza sin él (RF-007, incidente
+    CANCELACION), igual que al registrar la cancelación desde la pantalla Rutas."""
+    p = _pedido(db, pedido_id)
+    if p.estado == "ENTREGADO":
+        raise HTTPException(status.HTTP_409_CONFLICT, "El pedido ya fue entregado; no se puede cancelar")
+    parada = db.scalar(
+        select(Parada).join(Ruta).where(
+            Parada.pedido_id == p.id, Parada.estado == "PENDIENTE", Ruta.estado.in_(RUTA_VIGENTE),
+        )
+    )
+    if parada is not None:
+        ruta_id, parada_id, hora = parada.ruta_id, parada.id, hora_actual()
+        descripcion = "Pedido cancelado desde la pantalla Pedidos"
+        try:
+            planificacion.reoptimizar(
+                db, ruta_id, "CANCELACION", hora_actual=hora, pedido_id=p.id, descripcion=descripcion,
+                usuario_id=user.id,
+            )
+        except planificacion.PlanificacionError:
+            # Sin jornada restante para recalcular: se quita la parada y las demás conservan su orden
+            db.rollback()
+            ruta = db.get(Ruta, ruta_id)
+            ruta.paradas.remove(db.get(Parada, parada_id))
+            db.add(Incidente(ruta_id=ruta_id, tipo="CANCELACION", hora=hora, pedido_id=p.id,
+                             descripcion=descripcion, usuario_id=user.id))
+            if not any(x.estado == "PENDIENTE" for x in ruta.paradas):
+                ruta.estado = "COMPLETADA"
+    p = _pedido(db, pedido_id)
+    p.estado = "CANCELADO"
     db.commit()
     return Response(status_code=204)
