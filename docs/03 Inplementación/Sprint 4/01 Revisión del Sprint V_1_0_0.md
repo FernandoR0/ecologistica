@@ -6,21 +6,18 @@
 
 **Líder del Proyecto:** Chaupis Espinoza, Fernando Rodrigo
 
-| Campo | Detalle |
-|---|---|
-| Sprint | Sprint 4 - Indicadores, calidad, despliegue y validación con usuarios (30/10/2026 - 19/11/2026) |
-| Sprint Goal | Medir el impacto, liberar en producción y validar con usuarios: indicadores, reportes, modo conductor, Green IT, E2E, SUS y despliegue continuo |
-| Incremento revisado | Aplicación 1.1.0, rama `feature/enunciado-oficial` integrada por [FernandoR0/ecologistica#20](https://github.com/FernandoR0/ecologistica/pull/20) |
-| Versión del documento | V_1_0_0 · 20/11/2026 |
-
 ## Historias de Usuario completadas en este Sprint
+
+Sprint 4 (30/10/2026 - 19/11/2026). **Sprint Goal:** medir el impacto, liberar en producción y validar con usuarios:
+indicadores, reportes, modo conductor, Green IT, E2E, SUS y despliegue continuo. Incremento revisado: aplicación 1.1.0,
+integrada por [FernandoR0/ecologistica#20](https://github.com/FernandoR0/ecologistica/pull/20).
 
 Definition of Done aplicada: criterios Gherkin cubiertos por pruebas automáticas, cobertura ≥ 80 %, Quality Gate
 PASSED, 0 violaciones WCAG 2.1 AA, Pull Request con CI en verde y documentación de la API en `/docs`.
 
 | Código | Título | Criterios de aceptación verificados | Pull Request / commit de cierre | Estado |
 |---|---|---|---|---|
-| US-011 | Consultar el dashboard de sostenibilidad | Seis indicadores (km, CO₂, combustible ahorrado en L y S/, ventanas, ahorro frente a la ruta secuencial, árboles) y la frase "Has ahorrado S/ XX en combustible hoy"; sin rutas muestra "Aún no hay rutas planificadas" | [af5e453](https://github.com/FernandoR0/ecologistica/commit/af5e453) · [fabf1ca](https://github.com/FernandoR0/ecologistica/commit/fabf1ca) · [#20](https://github.com/FernandoR0/ecologistica/pull/20) | Done |
+| US-011 | Consultar el dashboard de sostenibilidad | Seis indicadores (km, CO₂, combustible ahorrado en L y S/, ventanas, ahorro frente a la ruta secuencial, árboles) y la frase de ahorro con el monto del día ("Has ahorrado S/ 8.22 en combustible hoy" en producción el 20/11/2026); sin rutas muestra "Aún no hay rutas planificadas" | [af5e453](https://github.com/FernandoR0/ecologistica/commit/af5e453) · [fabf1ca](https://github.com/FernandoR0/ecologistica/commit/fabf1ca) · [#20](https://github.com/FernandoR0/ecologistica/pull/20) | Done |
 | US-012 | Descargar el reporte de sostenibilidad | PDF con emisiones por ruta, costo del ciclo de vida (combustible, mantenimiento S/ 1,20/km, depreciación 20 %, seguros), créditos de carbono y meta de cero neto; rango inválido responde 422 | [fabf1ca](https://github.com/FernandoR0/ecologistica/commit/fabf1ca) · [#20](https://github.com/FernandoR0/ecologistica/pull/20) | Done |
 | US-013 | Planificar la compensación de carbono | CO₂ pendiente, árboles necesarios y costo de bonos; el registro de reforestación descuenta el pendiente; CO₂ ≤ 0 rechazado | [af5e453](https://github.com/FernandoR0/ecologistica/commit/af5e453) · [fabf1ca](https://github.com/FernandoR0/ecologistica/commit/fabf1ca) | Done |
 | US-014 | Consultar mi ruta en modo conductor | El conductor ve su siguiente entrega con dirección, referencia, hora y alerta de tráfico; "Entregado" marca la parada y resalta la siguiente | [80e4054](https://github.com/FernandoR0/ecologistica/commit/80e4054) · [#20](https://github.com/FernandoR0/ecologistica/pull/20) | Done |

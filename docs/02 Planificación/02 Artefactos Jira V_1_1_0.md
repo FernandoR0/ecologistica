@@ -22,7 +22,7 @@
 | Estimación | Story Points (serie de Fibonacci) en historias y enablers; estimación original en horas en las subtareas |
 | Tipos de incidencia | Epic, Historia (US), Tarea (ENB, enablers técnicos), Subtarea y Error (bug) |
 | Componentes | Backend, Frontend, Motor de rutas, DevOps y Calidad |
-| Etiquetas | Requisito de origen (`RF-0xx`, `RNF-0xx`), `historia`, `enabler` y `bug` |
+| Etiquetas | Requisito de origen (por ejemplo `RF-003` o `RNF-001`), `historia`, `enabler` y `bug` |
 | Versión | `v1.0.0-MVP` (02/09/2026 - 19/11/2026) |
 
 **Resumen del contenido del proyecto:**

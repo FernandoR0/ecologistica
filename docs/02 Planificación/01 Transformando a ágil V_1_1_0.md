@@ -257,7 +257,7 @@ ventanas, ahorro frente a la ruta secuencial y árboles equivalentes, **para** m
 Escenario: Indicadores del día
   Dado rutas planificadas hoy
   Cuando abro el Dashboard
-  Entonces veo los seis indicadores y la frase "Has ahorrado S/ XX en combustible hoy"
+  Entonces veo los seis indicadores y la frase de ahorro con el monto del día, por ejemplo "Has ahorrado S/ 8.22 en combustible hoy"
 
 Escenario: Sin rutas
   Dado que no hay rutas

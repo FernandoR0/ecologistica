@@ -274,15 +274,15 @@ Cada documento tiene un enlace de regreso a este README. Resumen de carpetas en 
 
 ### Sprint 1
 
-- [01 Informe de estado del proyecto V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%201/01%20Informe%20de%20estado%20del%20proyecto%20V_1_1_0.md)
-- [02 Registro de Impedimentos V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%201/02%20Registro%20de%20Impedimentos%20V_1_1_0.md)
+- [01 Informe de estado del proyecto V_1_2_0](docs/03%20Implementaci%C3%B3n/Sprint%201/01%20Informe%20de%20estado%20del%20proyecto%20V_1_2_0.md)
+- [02 Registro de Impedimentos V_1_2_0](docs/03%20Implementaci%C3%B3n/Sprint%201/02%20Registro%20de%20Impedimentos%20V_1_2_0.md)
 - [03 Revisión del Sprint V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%201/03%20Revisi%C3%B3n%20del%20Sprint%20V_1_1_0.md)
 - [04 Retrospectiva del Sprint V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%201/04%20Retrospectiva%20del%20Sprint%20V_1_1_0.md)
 
 ### Sprint 2
 
-- [01 Informe de estado del proyecto V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%202/01%20Informe%20de%20estado%20del%20proyecto%20V_1_1_0.md)
-- [02 Registro de Impedimentos V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%202/02%20Registro%20de%20Impedimentos%20V_1_1_0.md)
+- [01 Informe de estado del proyecto V_1_2_0](docs/03%20Implementaci%C3%B3n/Sprint%202/01%20Informe%20de%20estado%20del%20proyecto%20V_1_2_0.md)
+- [02 Registro de Impedimentos V_1_2_0](docs/03%20Implementaci%C3%B3n/Sprint%202/02%20Registro%20de%20Impedimentos%20V_1_2_0.md)
 - [03 Revisión del Sprint V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%202/03%20Revisi%C3%B3n%20del%20Sprint%20V_1_1_0.md)
 - [04 Retrospectiva del Sprint V_1_1_0](docs/03%20Implementaci%C3%B3n/Sprint%202/04%20Retrospectiva%20del%20Sprint%20V_1_1_0.md)
 

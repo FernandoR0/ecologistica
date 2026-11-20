@@ -1,18 +1,14 @@
 [← Volver al README Principal](../../../README.md)
 
-# Informe de estado del proyecto
+# Revisión del sprint
 
 **Nombre del Proyecto:** EcoLogística - Optimizador de rutas sostenibles de última milla para DistriRápido S.A.C.
 
 **Líder del Proyecto:** Fernando Rodrigo Chaupis Espinoza
 
-| Campo | Detalle |
-|---|---|
-| Sprint | Sprint 1 (02/09/2026 - 15/09/2026) |
-| Sprint Goal | Base operativa: acceso por roles y registro de flota, conductores, clientes y pedidos con CI activo. |
-| Story points completados | 22 de 22 |
-
 ## Historias de Usuario completadas en este Sprint
+
+Sprint 1 (02/09/2026 - 15/09/2026). **Sprint Goal:** Base operativa: acceso por roles y registro de flota, conductores, clientes y pedidos con CI activo. Story points completados: 22 de 22.
 
 | Código | Título | Criterios de aceptación verificados | Pull Request / commit de cierre | Estado |
 |---|---|---|---|---|
@@ -44,5 +40,6 @@ Demostración a los stakeholders de las funcionalidades implementadas.
 |---|---|---|---|
 | 1.0.0 | 15/09/2026 | Fernando Rodrigo Chaupis Espinoza | Informe de estado del sprint |
 | 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Plantilla oficial de la consigna, enlaces a commits, enlace de retorno al README y nota de los campos completados en el Sprint 4 |
+| 1.2.0 | 20/11/2026 | Fernando Rodrigo Chaupis Espinoza | Título y estructura idénticos a la plantilla oficial (Plantilla 1 de la consigna); datos del sprint dentro de la primera sección |
 
 [← Volver al README Principal](../../../README.md)

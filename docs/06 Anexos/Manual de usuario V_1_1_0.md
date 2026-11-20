@@ -56,7 +56,7 @@ texto e íconos grandes. Al pulsar **✔ Entregado** la parada se marca y se res
 ## 4. Sostenibilidad
 
 - Indicadores del día: kilómetros, CO₂, combustible ahorrado (litros y soles), entregas dentro de su ventana, ahorro
-  frente a la ruta sin optimizar y árboles equivalentes, con la frase "Has ahorrado S/ XX en combustible hoy".
+  frente a la ruta sin optimizar y árboles equivalentes, con la frase de ahorro del día (por ejemplo, "Has ahorrado S/ 8.22 en combustible hoy").
 - **Descargar reporte PDF:** emisiones por ruta, costo del ciclo de vida de la flota, créditos de carbono y meta de
   cero neto para el rango de fechas elegido.
 - **Plan de compensación de carbono:** árboles necesarios y costo de bonos; el ADMIN registra las compensaciones
