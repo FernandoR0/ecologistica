@@ -42,7 +42,7 @@ https://ecologistica-api-r17u.onrender.com/docs
 | Fernando Rodrigo Chaupis Espinoza | Product Owner, Scrum Master y Developer (proyecto individual) |
 
 Backlog, sprints y release `v1.0.0-MVP` en Jira Software (proyecto **ECO**); evidencia en
-[02 Artefactos Jira](docs/02%20Planificaci%C3%B3n/02%20Artefactos%20Jira%20V_1_1_0.md).
+[02 Artefactos Jira](docs/02%20Planificaci%C3%B3n/02%20Artefactos%20Jira%20V_1_2_0.md).
 
 ## Problemática
 
@@ -268,7 +268,7 @@ Cada documento tiene un enlace de regreso a este README. Resumen de carpetas en 
 ## Fase 02: Planificación del Proyecto
 
 - [01 Transformando a ágil V_1_1_0](docs/02%20Planificaci%C3%B3n/01%20Transformando%20a%20%C3%A1gil%20V_1_1_0.md)
-- [02 Artefactos Jira V_1_1_0](docs/02%20Planificaci%C3%B3n/02%20Artefactos%20Jira%20V_1_1_0.md)
+- [02 Artefactos Jira V_1_2_0](docs/02%20Planificaci%C3%B3n/02%20Artefactos%20Jira%20V_1_2_0.md)
 - [03 Registro de riesgos V_1_1_0](docs/02%20Planificaci%C3%B3n/03%20Registro%20de%20riesgos%20V_1_1_0.md)
 - [04 Presupuesto del proyecto V_1_1_0](docs/02%20Planificaci%C3%B3n/04%20Presupuesto%20del%20proyecto%20V_1_1_0.md)
 - [05 Cronograma de sprints V_1_1_0](docs/02%20Planificaci%C3%B3n/05%20Cronograma%20de%20sprints%20V_1_1_0.md)

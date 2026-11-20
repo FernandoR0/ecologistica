@@ -8,8 +8,8 @@
 
 **Docente:** Daniel Gamarra Moreno
 
-**Fecha:** 19/11/2026
-**Versión:** 1.1.0
+**Fecha:** 20/11/2026
+**Versión:** 1.2.0
 ---
 
 ## Configuración Previa Aplicada
@@ -47,7 +47,7 @@ Cronograma de Jira con las 4 épicas, los 4 sprints y la publicación `v1.0.0-MV
 | EP-01 | Gestión operativa e identidad | 02/09/2026 | 15/09/2026 | Finalizada |
 | EP-02 | Motor de rutas y operación en campo | 16/09/2026 | 19/11/2026 | Finalizada |
 | EP-03 | Sostenibilidad e indicadores | 30/10/2026 | 19/11/2026 | Finalizada |
-| EP-04 | Administración, calidad y despliegue | 02/09/2026 | 19/11/2026 | En curso (falta ENB-007) |
+| EP-04 | Administración, calidad y despliegue | 02/09/2026 | 20/11/2026 | Finalizada |
 
 ![Roadmap en Jira: épicas, sprints y publicación v1.0.0-MVP](evidencias/evidencia-1-roadmap.png)
 
@@ -119,17 +119,22 @@ objetivo, los Story Points de cada ítem y los errores corregidos.
 
 ## Evidencia 4: Tablero Scrum Activo
 
-Tablero del Sprint 4 con las columnas **To Do**, **In Progress**, **In Review / QA** y **Done**. Todo el trabajo del
-sprint está en Done salvo ENB-007: la encuesta SUS ya está dentro de la aplicación (subtarea terminada), la aplicación a
-los 5 participantes está en curso y la documentación de resultados está por hacer.
+Tablero del Sprint 4 con las columnas **To Do**, **In Progress**, **In Review / QA** y **Done**. Al cierre del
+20/11/2026 las 50 tarjetas del sprint están en Done, incluida ENB-007 (ECO-93) con sus subtareas: la encuesta SUS dentro
+de la aplicación (ECO-94), la aplicación a 5 participantes (ECO-95) y la documentación de resultados (ECO-96), con un
+SUS global de 84,5.
 
-![Tablero Scrum del Sprint 4](evidencias/evidencia-4-tablero.png)
+![Tablero Scrum del Sprint 4 al cierre: todas las tarjetas en Done](evidencias/evidencia-4-tablero-cierre.png)
+
+Estado del tablero el 19/11/2026, con ENB-007 todavía en curso:
+
+![Tablero Scrum del Sprint 4 el 19/11/2026](evidencias/evidencia-4-tablero.png)
 
 ## Evidencia 5: Gestión de Versiones / Release
 
 | Versión | Inicio | Publicación | Contenido |
 |---|---|---|---|
-| v1.0.0-MVP | 02/09/2026 | 19/11/2026 | RF-001 a RF-012, motor VRPTW + Green VRP con Búsqueda Tabú, reducción del impacto ambiental, pruebas Playwright y despliegue continuo en Vercel + Render (https://ecologistica.vercel.app). 26 de 27 ítems terminados; queda ENB-007. |
+| v1.0.0-MVP | 02/09/2026 | 19/11/2026 | RF-001 a RF-012, motor VRPTW + Green VRP con Búsqueda Tabú, reducción del impacto ambiental, pruebas Playwright y despliegue continuo en Vercel + Render (https://ecologistica.vercel.app). 27 de 27 ítems terminados (ENB-007 cerrado el 20/11/2026). |
 
 ![Publicación v1.0.0-MVP en Jira](evidencias/evidencia-5-release.png)
 
@@ -141,5 +146,6 @@ los 5 participantes está en curso y la documentación de resultados está por h
 |---|---|---|---|
 | 1.0.0 | 13/11/2026 | Fernando Rodrigo Chaupis Espinoza | Versión inicial con el backlog en GitHub Issues |
 | 1.1.0 | 19/11/2026 | Fernando Rodrigo Chaupis Espinoza | Proyecto Scrum en Jira Software con épicas, backlog con Story Points y componentes, subtareas, errores, 4 sprints, tablero con columna In Review / QA y release v1.0.0-MVP |
+| 1.2.0 | 20/11/2026 | Fernando Rodrigo Chaupis Espinoza | Cierre de ENB-007 (evaluación SUS) y de la épica EP-04; tablero del Sprint 4 con todas las tarjetas en Done |
 
 [← Volver al README Principal](../../README.md)

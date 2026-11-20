@@ -18,7 +18,7 @@ documento están en el [README principal](../README.md#documentación-por-fases)
 
 La API se documenta con OpenAPI en `/docs` (Swagger) de la propia aplicación. El backlog, los sprints y la versión
 `v1.0.0-MVP` se gestionan en Jira Software (proyecto **ECO**); la evidencia está en
-[02 Artefactos Jira](<02 Planificación/02 Artefactos Jira V_1_1_0.md>).
+[02 Artefactos Jira](<02 Planificación/02 Artefactos Jira V_1_2_0.md>).
 
 ---
 
