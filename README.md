@@ -54,7 +54,8 @@ la jornada de los conductores y no se mide la huella de carbono de la flota.
 
 El PMV (`v1.0.0`) permite a la empresa:
 
-1. Registrar su flota, conductores (licencia, disponibilidad, jornada y punto de partida), clientes y pedidos.
+1. Registrar su flota, conductores (licencia, disponibilidad, jornada y punto de partida), clientes y pedidos,
+   ubicándolos con un buscador de direcciones o lugares de referencia y un pin en el mapa.
 2. Generar con un clic las rutas óptimas de todos los vehículos con un motor **VRPTW + Green VRP** (Google OR-Tools con
    **Búsqueda Tabú**), respetando peso y volumen, ventanas horarias, jornada con descanso de 1 h cada 4 h, la zona
    restringida del Centro y las zonas de riesgo.
@@ -62,7 +63,8 @@ El PMV (`v1.0.0`) permite a la empresa:
    averías, pedidos nuevos o cancelaciones.
 4. Medir el ahorro de kilómetros, combustible y CO₂, descargar el reporte PDF con el costo del ciclo de vida y
    planificar la compensación de carbono.
-5. Dar al conductor un modo simplificado en el celular y validar la usabilidad con una encuesta SUS integrada.
+5. Dar al conductor un modo simplificado en el celular (navegación a cada entrega, confirmación con foto y
+   funcionamiento sin señal) y validar la usabilidad con una encuesta SUS integrada.
 
 Resultado con los datos de demostración: **-49.7 % de kilómetros y -57 % de CO₂** frente a la ruta sin optimizar.
 Para 150 pedidos y 15 vehículos el plan se genera en **30 s** (meta ≤ 45 s).
@@ -72,14 +74,14 @@ Para 150 pedidos y 15 vehículos el plan se genera en **30 s** (meta ≤ 45 s).
 | RF | Funcionalidad | Dónde |
 |---|---|---|
 | RF-001 | Gestión de flota | Pantalla Flota · `api/routers/gestion.py` |
-| RF-002 | Gestión de pedidos (paginada) | Pantalla Pedidos |
+| RF-002 | Gestión de pedidos (paginada) con código automático; cancelar un pedido en ruta la re-optimiza | Pantalla Pedidos |
 | RF-003 | Rutas optimizadas VRPTW + Green VRP con Búsqueda Tabú | Pantalla Rutas · `optimization/vrptw.py` |
 | RF-004 | Rutas en el mapa (Leaflet + OpenStreetMap) con congestión por tramo, zonas y límites distritales | Pantalla Rutas |
 | RF-005 | Dashboard: km, ahorro, CO₂, combustible ahorrado, % de entregas a tiempo y árboles equivalentes | Pantalla Dashboard |
 | RF-006 | Reporte de sostenibilidad y **reporte PDF** con costo del ciclo de vida | Pantalla Sostenibilidad |
 | RF-007 | Re-optimización ante tráfico, accidente, bloqueo, clima, avería, pedido nuevo o cancelación | Pantalla Rutas |
-| RF-008 | Conductores con licencia, disponibilidad, jornada máxima y punto de partida | Pantallas Conductores y Mi ruta |
-| RF-009 | Clientes: horario, días, punto de referencia y restricciones de acceso | Pantalla Clientes |
+| RF-008 | Conductores con licencia, disponibilidad, jornada máxima y punto de partida; modo conductor con foto de entrega y sin conexión (RNF-006) | Pantallas Conductores y Mi ruta |
+| RF-009 | Clientes: horario, días, punto de referencia, restricciones de acceso y ubicación con buscador de direcciones | Pantalla Clientes |
 | RF-010 | Plan de compensación de carbono | Pantalla Sostenibilidad |
 | RF-011 | Inicio de sesión con roles ADMIN, PLANIFICADOR, CONDUCTOR y AUDITOR; bloqueo tras 3 intentos | Login |
 | RF-012 | Administración: usuarios, parámetros del motor, bitácora de auditoría (CSV) y resultados SUS | Pantalla Administración |
@@ -106,7 +108,7 @@ Navegador ──> Frontend React (Vercel) ──REST/JSON + JWT sobre HTTPS─�
 ```
 
 El motor (`backend/app/optimization`) no depende de la base de datos: recibe pedidos y vehículos y devuelve las rutas,
-así se prueba por separado. Detalle en el [Modelo C4](docs/01%20Inicio/12.%20Modelo%20C4%20V_1_1_0.md).
+así se prueba por separado. Detalle en el [Modelo C4](docs/01%20Inicio/12.%20Modelo%20C4%20V_1_2_0.md).
 
 ## Estructura del repositorio
 
@@ -217,14 +219,15 @@ variables locales se toman de `.env.example`.
 ## Pruebas y calidad
 
 ```bash
-cd backend && pytest --cov=app                          # 67 pruebas, cobertura 95 %
-cd frontend && npm test -- --coverage                   # 66 pruebas, cobertura 99.8 %
+cd backend && pytest --cov=app                          # 75 pruebas, cobertura 95 %
+cd frontend && npm test -- --coverage                   # 101 pruebas, cobertura 99.1 %
 cd backend && python -m scripts.prueba_carga 30 5       # 150 pedidos y 15 vehículos
-cd frontend && E2E_PYTHON=python npx playwright test    # 25 pruebas E2E en Chromium, Firefox y WebKit
+cd frontend && E2E_PYTHON=python npx playwright test    # 28 pruebas E2E por navegador en Chromium, Firefox y WebKit
 ```
 
 Resultados del Sprint 4: [análisis Playwright](docs/03%20Inplementaci%C3%B3n/Sprint%204/03%20Analisis%20PlayWrigth%20V_1_0_0.md)
-(75/75 en local y 36/36 contra producción).
+(75/75 en local y 36/36 contra producción el 19/11/2026). El 20/11/2026, con las mejoras de la prueba de usabilidad,
+la suite creció a 84/84 (28 casos por navegador).
 
 | Indicador | Resultado |
 |---|---|
@@ -253,13 +256,13 @@ Cada documento tiene un enlace de regreso a este README. Resumen de carpetas en 
 - [03. Declaración de la visión V_1_1_0](docs/01%20Inicio/03.%20Declaraci%C3%B3n%20de%20la%20visi%C3%B3n%20V_1_1_0.md)
 - [04. Registro de supuestos y restricciones V_1_1_0](docs/01%20Inicio/04.%20Registro%20de%20supuestos%20y%20restricciones%20V_1_1_0.md)
 - [05. Registro de interesados V_1_1_0](docs/01%20Inicio/05.%20Registro%20de%20interesados%20V_1_1_0.md)
-- [06. Requisitos funcionales V_1_1_0](docs/01%20Inicio/06.%20Requisitos%20funcionales%20V_1_1_0.md)
-- [07. Requisitos no funcionales V_1_1_0](docs/01%20Inicio/07.%20Requisitos%20no%20funcionales%20V_1_1_0.md)
+- [06. Requisitos funcionales V_1_2_0](docs/01%20Inicio/06.%20Requisitos%20funcionales%20V_1_2_0.md)
+- [07. Requisitos no funcionales V_1_2_0](docs/01%20Inicio/07.%20Requisitos%20no%20funcionales%20V_1_2_0.md)
 - [08. Usuarios V_1_1_0](docs/01%20Inicio/08.%20Usuarios%20V_1_1_0.md)
 - [09. Reglas de negocio V_1_1_0](docs/01%20Inicio/09.%20Reglas%20de%20negocio%20V_1_1_0.md)
 - [10. Stack tecnológico V_1_1_0](docs/01%20Inicio/10.%20Stack%20tecnol%C3%B3gico%20V_1_1_0.md)
-- [11. Base de datos V_1_2_0](docs/01%20Inicio/11.%20Base%20de%20datos%20V_1_2_0.md)
-- [12. Modelo C4 V_1_1_0](docs/01%20Inicio/12.%20Modelo%20C4%20V_1_1_0.md)
+- [11. Base de datos V_1_3_0](docs/01%20Inicio/11.%20Base%20de%20datos%20V_1_3_0.md)
+- [12. Modelo C4 V_1_2_0](docs/01%20Inicio/12.%20Modelo%20C4%20V_1_2_0.md)
 - [13. Restricciones V_1_1_0](docs/01%20Inicio/13.%20Restricciones%20V_1_1_0.md)
 
 ## Fase 02: Planificación del Proyecto
@@ -312,7 +315,7 @@ Cada documento tiene un enlace de regreso a este README. Resumen de carpetas en 
 
 ## Anexos
 
-- [Manual de usuario V_1_1_0](docs/06%20Anexos/Manual%20de%20usuario%20V_1_1_0.md) (usuario y administrador)
+- [Manual de usuario V_1_2_0](docs/06%20Anexos/Manual%20de%20usuario%20V_1_2_0.md) (usuario y administrador)
 - Documentación de la API: Swagger en https://ecologistica-api-r17u.onrender.com/docs
 
 ## Versionamiento
