@@ -45,6 +45,23 @@ describe('sesión y rutas protegidas', () => {
     await waitFor(() => expect(sessionStorage.getItem('eco_token')).toBeNull());
   });
 
+  it('sin señal mantiene la sesión ya verificada (RNF-006)', async () => {
+    sessionStorage.setItem('eco_token', 'vigente');
+    sessionStorage.setItem('eco_usuario', JSON.stringify(USUARIOS.CONDUCTOR));
+    simularApi({ '/auth/me': () => { throw new TypeError('Failed to fetch'); } });
+    render(<AuthProvider><MemoryRouter><Protegida><p>Privado</p></Protegida></MemoryRouter></AuthProvider>);
+    expect(await screen.findByText('Privado')).toBeInTheDocument();
+    expect(sessionStorage.getItem('eco_token')).toBe('vigente');
+  });
+
+  it('sin señal y sin usuario verificado antes, pide iniciar sesión', async () => {
+    sessionStorage.setItem('eco_token', 'vigente');
+    simularApi({ '/auth/me': () => { throw new TypeError('Failed to fetch'); } });
+    render(<AuthProvider><MemoryRouter><Protegida><p>Privado</p></Protegida></MemoryRouter></AuthProvider>);
+    await waitFor(() => expect(sessionStorage.getItem('eco_token')).toBeNull());
+    expect(screen.queryByText('Privado')).not.toBeInTheDocument();
+  });
+
   it('useAuth fuera del proveedor lanza un error claro', () => {
     const Sonda = () => {
       useAuth();
@@ -102,8 +119,14 @@ describe('Layout', () => {
     const menu = await screen.findByRole('navigation', { name: 'Menú principal' });
     expect(menu).toHaveTextContent('Pedidos');
     expect(menu).toHaveTextContent('Flota');
+    localStorage.setItem('eco_mi_ruta', '{"rutas":[],"guardadaEn":"2026-11-20T10:00:00Z"}');
+    localStorage.setItem('eco_entregas_pendientes', '[]');
     await userEvent.click(screen.getByRole('button', { name: 'Salir' }));
     expect(sessionStorage.getItem('eco_token')).toBeNull();
+    expect(sessionStorage.getItem('eco_usuario')).toBeNull();
+    // Ley 29733: al salir no quedan datos de clientes guardados en el dispositivo
+    expect(localStorage.getItem('eco_mi_ruta')).toBeNull();
+    expect(localStorage.getItem('eco_entregas_pendientes')).toBeNull();
   });
 
   it('el conductor no ve los menús de gestión', async () => {

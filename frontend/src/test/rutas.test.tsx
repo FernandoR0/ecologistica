@@ -9,7 +9,12 @@ import { renderConSesion, RUTA } from './utils';
 afterEach(() => {
   vi.unstubAllGlobals();
   sessionStorage.clear();
+  localStorage.clear();
 });
+
+const sinRed = () => {
+  throw new TypeError('Failed to fetch');
+};
 
 const PLAN = {
   estado: 'FACTIBLE', rutas: [RUTA], no_asignados: [15], distancia_total_km: 12.5, co2_total_kg: 3.68,
@@ -146,6 +151,88 @@ describe('Modo conductor (US-014)', () => {
     });
     await userEvent.click(await screen.findByRole('button', { name: '✔ Entregado' }));
     expect(await screen.findByText('Solo puede marcar entregas de su propia ruta')).toBeInTheDocument();
+  });
+
+  it('abre la navegación a la siguiente entrega en Google Maps', async () => {
+    renderConSesion(<MiRuta />, 'CONDUCTOR', { '/rutas/mias': { body: [RUTA] } });
+    const enlace = await screen.findByRole('link', { name: '🧭 Cómo llegar' });
+    expect(enlace).toHaveAttribute('href', 'https://www.google.com/maps/dir/?api=1&destination=-12.06,-75.21&travelmode=driving');
+    expect(enlace).toHaveAttribute('target', '_blank');
+  });
+});
+
+describe('Modo conductor sin conexión (RNF-006)', () => {
+  it('muestra la ruta guardada en el celular cuando no hay señal', async () => {
+    const { unmount } = renderConSesion(<MiRuta />, 'CONDUCTOR', { '/rutas/mias': { body: [RUTA] } });
+    expect(await screen.findByRole('heading', { name: 'Siguiente entrega' })).toBeInTheDocument();
+    unmount();
+    renderConSesion(<MiRuta />, 'CONDUCTOR', { '/rutas/mias': sinRed });
+    expect(await screen.findByText(/📴 Sin conexión\. Se muestra tu ruta guardada a las/)).toBeInTheDocument();
+    expect(screen.getByText('Bodega Doña Rosa', { selector: 'b' })).toBeInTheDocument();
+    expect(screen.queryByText(/No se pudo conectar/)).not.toBeInTheDocument();
+  });
+
+  it('sin ruta guardada explica que no hay conexión', async () => {
+    renderConSesion(<MiRuta />, 'CONDUCTOR', { '/rutas/mias': sinRed });
+    expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo conectar con el servidor');
+    expect(screen.queryByText('No tienes una ruta asignada por ahora.')).not.toBeInTheDocument();
+  });
+
+  it('marca la entrega sin señal y la envía sola cuando vuelve la conexión', async () => {
+    let conectado = true;
+    const enviadas: string[] = [];
+    const { fetchFalso } = renderConSesion(<MiRuta />, 'CONDUCTOR', {
+      '/rutas/mias': () => (conectado ? { body: [RUTA] } : sinRed()),
+      'PATCH /rutas/7/paradas': (_i, url) => {
+        if (!conectado) return sinRed();
+        enviadas.push(String(url));
+        return { body: {} };
+      },
+    });
+    await screen.findByRole('heading', { name: 'Siguiente entrega' });
+    conectado = false;
+    await userEvent.click(screen.getByRole('button', { name: '✔ Entregado' }));
+    expect(await screen.findByText('⏳ 1 entrega pendiente de enviar.')).toBeInTheDocument();
+    expect(screen.getByText(/📴 Sin conexión/)).toBeInTheDocument();
+    // La pantalla avanza a la siguiente entrega aunque no haya señal
+    expect(screen.getByText('Minimarket El Sol', { selector: 'b' })).toBeInTheDocument();
+    expect(screen.getByText(/Bodega Doña Rosa \(entregado\)/)).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem('eco_entregas_pendientes')!)).toEqual([{ rutaId: 7, paradaId: 1 }]);
+
+    conectado = true;
+    fireEvent(window, new Event('online'));
+    await waitFor(() => expect(enviadas).toEqual(['/rutas/7/paradas/1/entregada']));
+    await waitFor(() => expect(screen.queryByText(/pendiente de enviar/)).not.toBeInTheDocument());
+    expect(screen.queryByText(/📴 Sin conexión/)).not.toBeInTheDocument();
+    expect(localStorage.getItem('eco_entregas_pendientes')).toBe('[]');
+    expect(fetchFalso).toHaveBeenCalled();
+  });
+
+  it('si no llega el evento "online", reintenta solo cada 15 segundos', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      let conectado = false;
+      localStorage.setItem('eco_mi_ruta', JSON.stringify({ rutas: [RUTA], guardadaEn: '2026-11-20T15:00:00Z' }));
+      renderConSesion(<MiRuta />, 'CONDUCTOR', { '/rutas/mias': () => (conectado ? { body: [RUTA] } : sinRed()) });
+      expect(await screen.findByText(/📴 Sin conexión/)).toBeInTheDocument();
+      conectado = true;
+      await vi.advanceTimersByTimeAsync(15_000);
+      await waitFor(() => expect(screen.queryByText(/📴 Sin conexión/)).not.toBeInTheDocument());
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('descarta una entrega pendiente que la API rechaza y sigue con las demás', async () => {
+    localStorage.setItem('eco_entregas_pendientes', JSON.stringify([{ rutaId: 7, paradaId: 1 }, { rutaId: 7, paradaId: 2 }]));
+    const { fetchFalso } = renderConSesion(<MiRuta />, 'CONDUCTOR', {
+      '/rutas/mias': { body: [RUTA] },
+      'PATCH /rutas/7/paradas/1/entregada': { status: 404, body: { detail: 'Parada no existe en esta ruta' } },
+      'PATCH /rutas/7/paradas/2/entregada': { body: {} },
+    });
+    expect(await screen.findByRole('heading', { name: 'Siguiente entrega' })).toBeInTheDocument();
+    expect(fetchFalso.mock.calls.filter((c) => c[1]?.method === 'PATCH')).toHaveLength(2);
+    expect(localStorage.getItem('eco_entregas_pendientes')).toBe('[]');
   });
 });
 

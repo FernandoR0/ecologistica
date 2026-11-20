@@ -19,6 +19,17 @@ const MiRuta = lazy(() => import('./pages/MiRuta').then((m) => ({ default: m.MiR
 const Encuesta = lazy(() => import('./pages/Encuesta').then((m) => ({ default: m.Encuesta })));
 const Administracion = lazy(() => import('./pages/Administracion').then((m) => ({ default: m.Administracion })));
 
+// RNF-006: la aplicación queda guardada en el dispositivo para abrir sin señal (public/sw.js)
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => undefined);
+    navigator.serviceWorker.ready.then((reg) => {
+      const urls = performance.getEntriesByType('resource').map((r) => r.name).filter((u) => u.includes('/assets/'));
+      reg.active?.postMessage({ tipo: 'guardar', urls });
+    });
+  });
+}
+
 const GESTION = ['ADMIN', 'PLANIFICADOR'] as const;
 const cargando = (texto: string, hijo: ReactNode) => (
   <Suspense fallback={<p className="muted">{texto}</p>}>{hijo}</Suspense>

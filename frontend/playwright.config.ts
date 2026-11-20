@@ -33,6 +33,9 @@ export default defineConfig({
     locale: 'es-PE',
     timezoneId: 'America/Lima',
     trace: 'retain-on-failure',
+    // El service worker (RNF-006) impide simular caídas de red con page.route en WebKit; solo la prueba
+    // del modo sin conexión lo habilita
+    serviceWorkers: 'block',
     screenshot: 'only-on-failure',
     // En Windows la ruta del video de WebKit supera 260 caracteres: solo se graba en CI (Linux)
     video: process.env.CI ? 'retain-on-failure' : 'off',

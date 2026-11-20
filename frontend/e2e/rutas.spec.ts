@@ -83,3 +83,46 @@ test.describe('Modo conductor (US-014)', () => {
     }
   });
 });
+
+test.describe('Modo conductor sin conexión (RNF-006)', () => {
+  test.use({ serviceWorkers: 'allow' });
+
+  test('sin señal la app abre desde el celular y guarda las entregas para enviarlas después (RNF-006)', async ({ page, context, request, browserName }, info) => {
+    const h = await tokenApi(request, 'admin');
+    await prepararPedidos(request, h, unico('OFF', info), 2);
+    expect((await (await request.post(`${API}/rutas/optimizar`, { headers: h, data: {} })).json()).estado).toBe('FACTIBLE');
+
+    await iniciarSesion(page, 'conductor');
+    await expect(page.getByRole('heading', { name: 'Mi ruta de hoy' })).toBeVisible();
+    const conRuta = (await page.getByRole('heading', { name: 'Siguiente entrega' }).count()) > 0;
+
+    if (browserName === 'chromium') {
+      // Playwright solo emula service workers en Chromium: ahí se prueba que la app abre sin red tras recargar
+      await page.evaluate(async () => {
+        await navigator.serviceWorker.ready;
+        if (!navigator.serviceWorker.controller) {
+          await new Promise((ok) => navigator.serviceWorker.addEventListener('controllerchange', ok, { once: true }));
+        }
+      });
+      await page.reload();
+      await expect(page.getByRole('heading', { name: 'Mi ruta de hoy' })).toBeVisible();
+      await context.setOffline(true);
+      await page.reload();
+      await expect(page.getByRole('heading', { name: 'Mi ruta de hoy' })).toBeVisible();
+      await expect(page.getByText(/📴 Sin conexión\. Se muestra tu ruta guardada/)).toBeVisible();
+    } else {
+      await context.setOffline(true);
+    }
+    if (conRuta) {
+      await page.getByRole('button', { name: '✔ Entregado' }).first().click();
+      await expect(page.getByText('⏳ 1 entrega pendiente de enviar.')).toBeVisible();
+      await context.setOffline(false);
+      // Se envía con el evento "online" o con el reintento automático (cada 15 s)
+      await expect(page.getByText(/pendiente de enviar/)).toHaveCount(0, { timeout: 35_000 });
+      await expect(page.getByText(/📴 Sin conexión/)).toHaveCount(0);
+    } else {
+      await expect(page.getByText('No tienes una ruta asignada por ahora.')).toBeVisible();
+      await context.setOffline(false);
+    }
+  });
+});

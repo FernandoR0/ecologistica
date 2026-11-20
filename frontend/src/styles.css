@@ -59,6 +59,10 @@ th { background: #eef2ec; }
 
 .mapa { height: 460px; border-radius: 10px; border: 1px solid var(--borde); margin-bottom: 1rem; }
 .campo-ancho { grid-column: 1 / -1; }
+.aviso-offline { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; border-radius: 8px; padding: 0.6rem 0.8rem; font-weight: 600; }
+.acciones-conductor { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+a.boton-grande { display: inline-block; text-decoration: none; text-align: center; border-radius: 6px; box-sizing: border-box; }
+a.boton-grande.secundario { background: transparent; color: var(--primario-osc); border: 2px solid var(--primario-osc); }
 .selector-ubicacion { border: 1px solid var(--borde); border-radius: 10px; padding: 0.6rem 0.8rem; margin: 0; }
 .selector-ubicacion legend { font-weight: 600; padding: 0 0.3rem; }
 .selector-ubicacion p { margin: 0.3rem 0; }
