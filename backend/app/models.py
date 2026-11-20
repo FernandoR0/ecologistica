@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 
-from sqlalchemy import JSON, Boolean, Date, DateTime, Float, ForeignKey, Integer, String, event, func
+from sqlalchemy import JSON, Boolean, Date, DateTime, Float, ForeignKey, Integer, LargeBinary, String, event, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
@@ -181,6 +181,32 @@ class Parada(Base):
 
     ruta: Mapped[Ruta] = relationship(back_populates="paradas")
     pedido: Mapped[Pedido] = relationship()
+    entrega: Mapped["Entrega | None"] = relationship(
+        back_populates="parada", uselist=False, cascade="all, delete-orphan",
+    )
+
+    @property
+    def entregada_en(self) -> datetime | None:
+        return self.entrega.entregada_en if self.entrega else None
+
+    @property
+    def con_foto(self) -> bool:
+        return bool(self.entrega and self.entrega.foto_tipo)
+
+
+class Entrega(Base):
+    """US-014 · Confirmación de una entrega: hora y foto opcional tomada por el conductor."""
+
+    __tablename__ = "entregas"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    parada_id: Mapped[int] = mapped_column(ForeignKey("paradas.id"), unique=True, index=True)
+    usuario_id: Mapped[int | None] = mapped_column(ForeignKey("usuarios.id"), nullable=True)
+    entregada_en: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    foto_tipo: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    # Se carga solo al pedir la foto: el listado de rutas no trae las imágenes
+    foto: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True, deferred=True)
+
+    parada: Mapped[Parada] = relationship(back_populates="entrega")
 
 
 class Incidente(Base):

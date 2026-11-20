@@ -83,6 +83,14 @@ export async function apiPaginado<T>(ruta: string, pagina: number, limite = 12):
 }
 
 /** Descarga un archivo (por ejemplo el reporte PDF) enviando el token. */
+/** Imagen protegida de la API (por ejemplo, la foto de una entrega) como URL local para mostrarla. */
+export async function imagenProtegida(ruta: string): Promise<string> {
+  const token = tokenStore.get();
+  const resp = await solicitar(`${API_URL}${ruta}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  if (!resp.ok) throw new ApiError(resp.status, `No se pudo cargar la foto (${resp.status})`);
+  return URL.createObjectURL(await resp.blob());
+}
+
 export async function descargar(ruta: string, nombre: string): Promise<void> {
   const token = tokenStore.get();
   const resp = await solicitar(`${API_URL}${ruta}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
@@ -123,6 +131,8 @@ export type Congestion = 'VERDE' | 'AMARILLO' | 'ROJO';
 export interface Parada {
   id: number; orden: number; hora_llegada: string; distancia_tramo_km: number; tiempo_tramo_min: number;
   congestion: Congestion; fuera_ventana: boolean; estado: string; pedido: PedidoParada;
+  /** Hora en que se confirmó la entrega y si tiene foto (US-014). */
+  entregada_en?: string | null; con_foto?: boolean;
 }
 export interface Ruta {
   id: number; fecha: string; vehiculo: Vehiculo; conductor: { id: number; nombre: string } | null;

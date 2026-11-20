@@ -1,5 +1,7 @@
 """RF-003 rutas optimizadas · RF-004 datos para el mapa · RF-007 re-optimización."""
 
+import base64
+import binascii
 from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
@@ -9,9 +11,10 @@ from sqlalchemy.orm import Session, selectinload
 from app.api.deps import gestion, get_current_user
 from app.api.paginacion import Pagina, paginar, params_pagina
 from app.db import get_db
-from app.models import Conductor, Incidente, Parada, Ruta, Usuario
+from app.models import Conductor, Entrega, Incidente, Parada, Ruta, Usuario
 from app.schemas import (
     EstadoRutaIn,
+    EvidenciaIn,
     IncidenteIn,
     IncidenteOut,
     OptimizarIn,
@@ -22,6 +25,7 @@ from app.schemas import (
 from app.services import planificacion
 
 router = APIRouter(prefix="/rutas", tags=["Rutas"])
+MAX_FOTO_BYTES = 400 * 1024
 
 
 def _respuesta(res: planificacion.Resultado) -> ResultadoPlanOut:
@@ -52,6 +56,7 @@ def _con_relaciones(q):
     # Carga paradas, pedidos, vehiculo y conductor en pocas consultas (evita el problema N+1)
     return q.options(
         selectinload(Ruta.paradas).selectinload(Parada.pedido),
+        selectinload(Ruta.paradas).selectinload(Parada.entrega),
         selectinload(Ruta.vehiculo),
         selectinload(Ruta.conductor),
     )
@@ -125,21 +130,62 @@ def incidentes(ruta_id: int, db: Session = Depends(get_db), _=Depends(get_curren
     return db.scalars(select(Incidente).where(Incidente.ruta_id == ruta_id).order_by(Incidente.id)).all()
 
 
-@router.patch("/{ruta_id}/paradas/{parada_id}/entregada", response_model=ParadaOut)
-def marcar_entregada(ruta_id: int, parada_id: int, db: Session = Depends(get_db),
-                     user: Usuario = Depends(get_current_user)):
-    """US-014 · El conductor (solo en su ruta) o el planificador marca una entrega como realizada."""
+def _parada_propia(db: Session, ruta_id: int, parada_id: int, user: Usuario, *, lectura: bool = False) -> Parada:
+    """La parada existe en la ruta; el conductor solo accede a la suya y el auditor solo consulta."""
     parada = db.get(Parada, parada_id)
     if parada is None or parada.ruta_id != ruta_id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Parada no existe en esta ruta")
-    if user.rol == "AUDITOR":
+    if user.rol == "AUDITOR" and not lectura:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "No tiene permisos para esta acción")
     if user.rol == "CONDUCTOR":
         conductor = db.scalar(select(Conductor).where(Conductor.usuario_id == user.id))
         if conductor is None or parada.ruta.conductor_id != conductor.id:
             raise HTTPException(status.HTTP_403_FORBIDDEN, "Solo puede marcar entregas de su propia ruta")
+    return parada
+
+
+@router.put("/{ruta_id}/paradas/{parada_id}/evidencia", response_model=ParadaOut)
+def subir_evidencia(ruta_id: int, parada_id: int, datos: EvidenciaIn, db: Session = Depends(get_db),
+                    user: Usuario = Depends(get_current_user)):
+    """US-014 · Foto que confirma una entrega ya marcada (sugerencia de un repartidor en la prueba SUS)."""
+    parada = _parada_propia(db, ruta_id, parada_id, user)
+    if parada.entrega is None:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Primero marque la entrega como realizada")
+    cabecera, contenido = datos.imagen.split(",", 1)
+    try:
+        foto = base64.b64decode(contenido, validate=True)
+    except binascii.Error:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "La imagen no es válida") from None
+    if len(foto) > MAX_FOTO_BYTES:
+        raise HTTPException(status.HTTP_413_CONTENT_TOO_LARGE, "La foto supera 400 KB")
+    parada.entrega.foto = foto
+    parada.entrega.foto_tipo = cabecera.removeprefix("data:").removesuffix(";base64")
+    db.commit()
+    db.refresh(parada)
+    return parada
+
+
+@router.get("/{ruta_id}/paradas/{parada_id}/evidencia", response_class=Response,
+            responses={200: {"content": {"image/jpeg": {}}}})
+def ver_evidencia(ruta_id: int, parada_id: int, db: Session = Depends(get_db),
+                  user: Usuario = Depends(get_current_user)):
+    """Foto de la entrega para el planificador, el auditor o el propio conductor."""
+    parada = _parada_propia(db, ruta_id, parada_id, user, lectura=True)
+    if parada.entrega is None or not parada.entrega.foto_tipo:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "La entrega no tiene foto")
+    return Response(parada.entrega.foto, media_type=parada.entrega.foto_tipo,
+                    headers={"Cache-Control": "private, max-age=3600"})
+
+
+@router.patch("/{ruta_id}/paradas/{parada_id}/entregada", response_model=ParadaOut)
+def marcar_entregada(ruta_id: int, parada_id: int, db: Session = Depends(get_db),
+                     user: Usuario = Depends(get_current_user)):
+    """US-014 · El conductor (solo en su ruta) o el planificador marca una entrega como realizada."""
+    parada = _parada_propia(db, ruta_id, parada_id, user)
     parada.estado = "ENTREGADA"
     parada.pedido.estado = "ENTREGADO"
+    if parada.entrega is None:
+        db.add(Entrega(parada=parada, usuario_id=user.id))
     ruta = parada.ruta
     if ruta.estado == "PLANIFICADA":
         ruta.estado = "EN_CURSO"

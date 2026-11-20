@@ -203,6 +203,61 @@ def test_conductor_ve_y_marca_solo_su_ruta(client, admin, db):
                         headers=audi).status_code == 403
 
 
+# PNG de 1x1 píxel: basta para probar la foto de entrega sin archivos externos
+FOTO = ("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5E"
+        "rkJggg==")
+
+
+def test_entrega_con_hora_y_foto_de_confirmacion(client, admin, db):
+    from app.models import Conductor, Usuario  # noqa: PLC0415
+
+    _crear_flota(client, admin, n=1)
+    _crear_pedidos(client, admin, 2)
+    usuario = db.query(Usuario).filter_by(correo="cond@test.pe").one()
+    db.query(Conductor).one().usuario_id = usuario.id
+    db.commit()
+    _optimizar(client, admin)
+    h = token(client, "cond@test.pe")
+    ruta = client.get("/api/rutas/mias", headers=h).json()[0]
+    rid, primera, segunda = ruta["id"], ruta["paradas"][0]["id"], ruta["paradas"][1]["id"]
+    assert ruta["paradas"][0]["entregada_en"] is None and ruta["paradas"][0]["con_foto"] is False
+
+    # La foto solo se acepta después de marcar la entrega
+    assert client.put(f"/api/rutas/{rid}/paradas/{primera}/evidencia", headers=h,
+                      json={"imagen": FOTO}).status_code == 409
+    marcada = client.patch(f"/api/rutas/{rid}/paradas/{primera}/entregada", headers=h).json()
+    assert marcada["entregada_en"] is not None and marcada["con_foto"] is False
+    # Marcarla de nuevo no duplica el registro de la entrega
+    assert client.patch(f"/api/rutas/{rid}/paradas/{primera}/entregada", headers=h).json()["entregada_en"] == \
+        marcada["entregada_en"]
+
+    r = client.put(f"/api/rutas/{rid}/paradas/{primera}/evidencia", headers=h, json={"imagen": FOTO})
+    assert r.status_code == 200 and r.json()["con_foto"] is True
+    foto = client.get(f"/api/rutas/{rid}/paradas/{primera}/evidencia", headers=admin)
+    assert foto.status_code == 200 and foto.headers["content-type"] == "image/png"
+    assert foto.content.startswith(b"\x89PNG")
+    # El auditor puede ver la foto, pero no subirla
+    audi = token(client, "audi@test.pe")
+    assert client.get(f"/api/rutas/{rid}/paradas/{primera}/evidencia", headers=audi).status_code == 200
+    assert client.put(f"/api/rutas/{rid}/paradas/{primera}/evidencia", headers=audi,
+                      json={"imagen": FOTO}).status_code == 403
+    # Las rutas traen el indicador de foto, no la imagen
+    detalle = client.get(f"/api/rutas/{rid}", headers=admin).json()
+    assert detalle["paradas"][0]["con_foto"] is True and "foto" not in detalle["paradas"][0]
+
+    client.patch(f"/api/rutas/{rid}/paradas/{segunda}/entregada", headers=h)
+    assert client.get(f"/api/rutas/{rid}/paradas/{segunda}/evidencia", headers=admin).status_code == 404
+    # Formato o tamaño inválidos
+    assert client.put(f"/api/rutas/{rid}/paradas/{segunda}/evidencia", headers=h,
+                      json={"imagen": "data:image/gif;base64,R0lGODlhAQABAAAAACw="}).status_code == 422
+    assert client.put(f"/api/rutas/{rid}/paradas/{segunda}/evidencia", headers=h,
+                      json={"imagen": "data:image/png;base64,abc"}).status_code == 422
+    grande = "data:image/jpeg;base64," + "A" * 560_000
+    assert client.put(f"/api/rutas/{rid}/paradas/{segunda}/evidencia", headers=h,
+                      json={"imagen": grande}).status_code == 413
+    assert client.get(f"/api/rutas/{rid}/paradas/999/evidencia", headers=admin).status_code == 404
+
+
 def test_paginacion_de_pedidos(client, admin):
     _crear_pedidos(client, admin, 15)
     r = client.get("/api/pedidos", headers=admin)

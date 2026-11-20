@@ -313,6 +313,17 @@ class ParadaOut(ORM):
     fuera_ventana: bool
     estado: str
     pedido: PedidoParada
+    entregada_en: datetime | None = None
+    con_foto: bool = False
+
+
+class EvidenciaIn(BaseModel):
+    """Foto de la entrega como data URL (el celular la reduce antes de enviarla)."""
+
+    imagen: str = Field(
+        min_length=30, max_length=600_000, pattern=r"^data:image/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$",
+        description="data:image/jpeg;base64,... (máximo ~400 KB)",
+    )
 
 
 class RutaOut(ORM):

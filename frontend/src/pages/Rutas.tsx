@@ -1,6 +1,6 @@
 /** RF-003 generar rutas · RF-004 mapa · RF-007 re-optimizar ante incidentes. */
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { api, post, type ResultadoPlan, type Ruta, type Zona } from '../api';
+import { api, imagenProtegida, post, type ResultadoPlan, type Ruta, type Zona } from '../api';
 import { useAuth } from '../auth';
 import { MapaRutas } from '../components/MapaRutas';
 
@@ -24,6 +24,18 @@ export function Rutas() {
   const [resultado, setResultado] = useState<ResultadoPlan | null>(null);
   const [calculando, setCalculando] = useState(false);
   const [error, setError] = useState('');
+  const [foto, setFoto] = useState<{ parada: number; url: string; cliente: string } | null>(null);
+  const verFoto = async (rutaId: number, paradaId: number, cliente: string) => {
+    try {
+      const url = await imagenProtegida(`/rutas/${rutaId}/paradas/${paradaId}/evidencia`);
+      setFoto((anterior) => {
+        if (anterior) URL.revokeObjectURL(anterior.url);
+        return { parada: paradaId, url, cliente };
+      });
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
   const [incidente, setIncidente] = useState({
     ruta: 0, tipo: 'TRAFICO', hora_actual: '10:00', demora_min: 30, completados: '', pedido: '', descripcion: '',
   });
@@ -112,6 +124,24 @@ export function Rutas() {
                   {p.hora_llegada} · {p.pedido.cliente_nombre} ({p.pedido.codigo}, {p.pedido.peso_kg} kg) · pedido #{p.pedido.id}
                   {' · '}tramo {p.distancia_tramo_km.toFixed(1)} km / {p.tiempo_tramo_min} min, congestión {CONGESTION[p.congestion]}
                   {p.fuera_ventana && <b> · fuera de ventana</b>}
+                  {p.estado === 'ENTREGADA' && <b> · entregado</b>}
+                  {p.con_foto && (
+                    <>
+                      {' '}
+                      <button type="button" className="secundario" onClick={() => verFoto(r.id, p.id, p.pedido.cliente_nombre)}>
+                        📷 Ver foto
+                      </button>
+                    </>
+                  )}
+                  {foto?.parada === p.id && (
+                    <figure className="foto-entrega">
+                      <img src={foto.url} alt={`Foto de la entrega a ${foto.cliente}`} />
+                      <figcaption>
+                        Foto de la entrega a {foto.cliente}{' '}
+                        <button type="button" className="secundario" onClick={() => setFoto(null)}>Cerrar</button>
+                      </figcaption>
+                    </figure>
+                  )}
                 </li>
               ))}
             </ol>

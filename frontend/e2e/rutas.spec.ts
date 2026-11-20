@@ -1,6 +1,9 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
 import { API, iniciarSesion, irA, tokenApi, unico } from './support/fixtures';
 
+const SIGUIENTE = /^(Primera entrega|Ahora vas a) · \d+ de \d+$/;
+const PNG_1X1 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
 /** Crea pedidos pendientes por la API para que cada navegador tenga trabajo que planificar. */
 async function prepararPedidos(request: APIRequestContext, h: Record<string, string>, prefijo: string, n = 4) {
   const clientes = await (await request.get(`${API}/clientes?limite=100`, { headers: h })).json();
@@ -72,11 +75,22 @@ test.describe('Modo conductor (US-014)', () => {
 
     await iniciarSesion(page, 'conductor');
     await expect(page.getByRole('heading', { name: 'Mi ruta de hoy' })).toBeVisible();
-    const siguiente = page.getByRole('heading', { name: 'Siguiente entrega' });
+    const siguiente = page.getByRole('heading', { name: SIGUIENTE });
     if (await siguiente.count()) {
-      const pendientesAntes = await page.getByText(/Entregas pendientes:/).first().textContent();
-      await page.getByRole('button', { name: '✔ Entregado' }).first().click();
-      await expect(page.getByText(/Entregas pendientes:/).first()).not.toHaveText(pendientesAntes ?? '');
+      const avanceAntes = await page.getByText(/^Entregadas \d+ de \d+/).first().textContent();
+      const cliente = (await page.locator('.siguiente .grande b').first().textContent()) ?? '';
+      // Foto de confirmación (sugerencia de un repartidor en la prueba SUS): el navegador la reduce y la envía
+      await page.getByLabel('📷 Tomar foto de la entrega (opcional)').first().setInputFiles({
+        name: 'entrega.png', mimeType: 'image/png', buffer: Buffer.from(PNG_1X1, 'base64'),
+      });
+      await expect(page.getByRole('img', { name: `Foto de la entrega a ${cliente}` })).toBeVisible();
+      await page.getByRole('button', { name: `✔ Entregado a ${cliente}` }).click();
+      const confirmacion = page.locator('.confirmacion-entrega');
+      await expect(confirmacion).toContainText(`✔ Entregado a ${cliente} a las`);
+      await expect(confirmacion).toContainText('📷 Con foto de confirmación. Registrado en el sistema.');
+      await expect(page.getByText(/^Entregadas \d+ de \d+/).first()).not.toHaveText(avanceAntes ?? '');
+      // El mismo cliente puede tener otras entregas en la lista: se busca la que quedó con foto
+      await expect(page.locator('.lista-grande li.hecho').filter({ hasText: cliente }).filter({ hasText: '📷' })).not.toHaveCount(0);
     } else {
       // El plan no asignó paradas al vehículo del conductor de demostración
       await expect(page.getByText('No tienes una ruta asignada por ahora.')).toBeVisible();
@@ -94,7 +108,7 @@ test.describe('Modo conductor sin conexión (RNF-006)', () => {
 
     await iniciarSesion(page, 'conductor');
     await expect(page.getByRole('heading', { name: 'Mi ruta de hoy' })).toBeVisible();
-    const conRuta = (await page.getByRole('heading', { name: 'Siguiente entrega' }).count()) > 0;
+    const conRuta = (await page.getByRole('heading', { name: SIGUIENTE }).count()) > 0;
 
     if (browserName === 'chromium') {
       // Playwright solo emula service workers en Chromium: ahí se prueba que la app abre sin red tras recargar

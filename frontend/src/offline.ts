@@ -9,7 +9,7 @@ const CLAVE_RUTA = 'eco_mi_ruta';
 const CLAVE_PENDIENTES = 'eco_entregas_pendientes';
 
 export interface RutaGuardada { rutas: Ruta[]; guardadaEn: string }
-export interface EntregaPendiente { rutaId: number; paradaId: number }
+export interface EntregaPendiente { rutaId: number; paradaId: number; foto?: string }
 
 const leer = <T>(clave: string, porDefecto: T): T => {
   try {
@@ -48,10 +48,10 @@ export const respaldo = {
 };
 
 /** Marca la parada como entregada en una copia de las rutas (para mostrarla así mientras no hay señal). */
-export function marcarLocal(rutas: Ruta[], paradaId: number): Ruta[] {
+export function marcarLocal(rutas: Ruta[], paradaId: number, extra: { entregada_en?: string; con_foto?: boolean } = {}): Ruta[] {
   return rutas.map((r) => ({
     ...r,
-    paradas: r.paradas.map((p) => (p.id === paradaId ? { ...p, estado: 'ENTREGADA' } : p)),
+    paradas: r.paradas.map((p) => (p.id === paradaId ? { ...p, estado: 'ENTREGADA', ...extra } : p)),
   }));
 }
 

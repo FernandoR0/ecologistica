@@ -2,15 +2,22 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MapaRutas } from '../components/MapaRutas';
+import { reducirFoto } from '../foto';
 import { MiRuta } from '../pages/MiRuta';
+
+vi.mock('../foto', () => ({ reducirFoto: vi.fn() }));
+const foto = { reducirFoto: vi.mocked(reducirFoto) };
 import { Rutas } from '../pages/Rutas';
 import { renderConSesion, RUTA } from './utils';
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
   sessionStorage.clear();
   localStorage.clear();
 });
+
+const SIGUIENTE = /^(Primera entrega|Ahora vas a) · \d+ de \d+$/;
 
 const sinRed = () => {
   throw new TypeError('Failed to fetch');
@@ -26,6 +33,38 @@ const ZONAS = [
 ];
 
 describe('pantalla Rutas', () => {
+  it('el planificador ve la foto con la que el conductor confirmó la entrega', async () => {
+    const crear = vi.fn(() => 'blob:foto-1');
+    const revocar = vi.fn();
+    Object.assign(URL, { createObjectURL: crear, revokeObjectURL: revocar });
+    const conFoto = { ...RUTA, paradas: [{ ...RUTA.paradas[0], estado: 'ENTREGADA', con_foto: true }, RUTA.paradas[1]] };
+    const { fetchFalso } = renderConSesion(<Rutas />, 'PLANIFICADOR', {
+      '/rutas/7/paradas/1/evidencia': { body: {} },
+      '/rutas': { body: [conFoto] },
+      '/zonas': { body: [] },
+    });
+    expect(await screen.findByText(/Bodega Doña Rosa/)).toHaveTextContent('entregado');
+    expect(screen.getAllByRole('button', { name: '📷 Ver foto' })).toHaveLength(1);
+    await userEvent.click(screen.getByRole('button', { name: '📷 Ver foto' }));
+    expect(await screen.findByRole('img', { name: 'Foto de la entrega a Bodega Doña Rosa' })).toHaveAttribute('src', 'blob:foto-1');
+    expect(fetchFalso.mock.calls.some((c) => String(c[0]).endsWith('/rutas/7/paradas/1/evidencia'))).toBe(true);
+    await userEvent.click(screen.getByRole('button', { name: '📷 Ver foto' }));
+    expect(revocar).toHaveBeenCalledWith('blob:foto-1');
+    await userEvent.click(screen.getByRole('button', { name: 'Cerrar' }));
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
+
+  it('avisa si la foto de la entrega no se puede cargar', async () => {
+    const conFoto = { ...RUTA, paradas: [{ ...RUTA.paradas[0], estado: 'ENTREGADA', con_foto: true }] };
+    renderConSesion(<Rutas />, 'PLANIFICADOR', {
+      '/rutas/7/paradas/1/evidencia': { status: 404, body: { detail: 'La entrega no tiene foto' } },
+      '/rutas': { body: [conFoto] },
+      '/zonas': { body: [] },
+    });
+    await userEvent.click(await screen.findByRole('button', { name: '📷 Ver foto' }));
+    expect(await screen.findByText('No se pudo cargar la foto (404)')).toBeInTheDocument();
+  });
+
   it('lista las rutas vigentes con tramos, congestión y entregas fuera de ventana', async () => {
     const { fetchFalso } = renderConSesion(<Rutas />, 'PLANIFICADOR', { '/rutas': { body: [RUTA] }, '/zonas': { body: ZONAS } });
     expect(await screen.findByText('Ruta #7 · ABC-101 (DIESEL)')).toBeInTheDocument();
@@ -124,10 +163,10 @@ describe('Modo conductor (US-014)', () => {
       '/rutas/mias': { body: [RUTA] },
       'PATCH /rutas/7/paradas/1/entregada': { body: {} },
     });
-    expect(await screen.findByRole('heading', { name: 'Siguiente entrega' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: SIGUIENTE })).toBeInTheDocument();
     expect(screen.getByText('Bodega Doña Rosa', { selector: 'b' })).toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('Tráfico alto (hora punta)');
-    await userEvent.click(screen.getByRole('button', { name: '✔ Entregado' }));
+    await userEvent.click(screen.getByRole('button', { name: '✔ Entregado a Bodega Doña Rosa' }));
     await waitFor(() => expect(fetchFalso.mock.calls.some((c) => c[1]?.method === 'PATCH')).toBe(true));
   });
 
@@ -149,22 +188,86 @@ describe('Modo conductor (US-014)', () => {
       '/rutas/mias': { body: [RUTA] },
       'PATCH /rutas/7/paradas/1/entregada': { status: 403, body: { detail: 'Solo puede marcar entregas de su propia ruta' } },
     });
-    await userEvent.click(await screen.findByRole('button', { name: '✔ Entregado' }));
+    await userEvent.click(await screen.findByRole('button', { name: '✔ Entregado a Bodega Doña Rosa' }));
     expect(await screen.findByText('Solo puede marcar entregas de su propia ruta')).toBeInTheDocument();
   });
 
   it('abre la navegación a la siguiente entrega en Google Maps', async () => {
     renderConSesion(<MiRuta />, 'CONDUCTOR', { '/rutas/mias': { body: [RUTA] } });
-    const enlace = await screen.findByRole('link', { name: '🧭 Cómo llegar' });
+    const enlace = await screen.findByRole('link', { name: '🧭 Cómo llegar a Bodega Doña Rosa' });
     expect(enlace).toHaveAttribute('href', 'https://www.google.com/maps/dir/?api=1&destination=-12.06,-75.21&travelmode=driving');
     expect(enlace).toHaveAttribute('target', '_blank');
+  });
+
+  it('confirma la entrega a la vista y muestra el avance y la siguiente parada', async () => {
+    let entregada = false;
+    const { container } = renderConSesion(<MiRuta />, 'CONDUCTOR', {
+      '/rutas/mias': () => ({
+        body: [entregada
+          ? { ...RUTA, paradas: [{ ...RUTA.paradas[0], estado: 'ENTREGADA', entregada_en: '2026-11-20T13:32:00Z' }, RUTA.paradas[1]] }
+          : RUTA],
+      }),
+      'PATCH /rutas/7/paradas/1/entregada': () => {
+        entregada = true;
+        return { body: {} };
+      },
+    });
+    expect(await screen.findByRole('heading', { name: 'Primera entrega · 1 de 2' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Avance de la ruta: 0 de 2 entregas')).toHaveAttribute('value', '0');
+    await userEvent.click(screen.getByRole('button', { name: '✔ Entregado a Bodega Doña Rosa' }));
+    await waitFor(() => expect(container.querySelector('.confirmacion-entrega')).toHaveTextContent(
+      /✔ Entregado a Bodega Doña Rosa a las \d\d:\d\d.*Registrado en el sistema\./));
+    expect(await screen.findByRole('heading', { name: 'Ahora vas a · 2 de 2' })).toBeInTheDocument();
+    expect(screen.getByText('Minimarket El Sol', { selector: 'b' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Avance de la ruta: 1 de 2 entregas')).toHaveAttribute('value', '1');
+    expect(screen.getByText(/✔ 08:20 · Bodega Doña Rosa \(entregado \d\d:\d\d\)/)).toBeInTheDocument();
+    expect(screen.getByText(/➜ 09:05 · Minimarket El Sol/)).toBeInTheDocument();
+  });
+
+  it('adjunta una foto opcional y la envía junto con la entrega', async () => {
+    const reducir = foto.reducirFoto.mockReset().mockResolvedValue('data:image/jpeg;base64,QUJD');
+    let entregada = false;
+    const { fetchFalso } = renderConSesion(<MiRuta />, 'CONDUCTOR', {
+      '/rutas/mias': () => ({
+        body: [entregada ? { ...RUTA, paradas: [{ ...RUTA.paradas[0], estado: 'ENTREGADA', con_foto: true }, RUTA.paradas[1]] } : RUTA],
+      }),
+      'PATCH /rutas/7/paradas/1/entregada': () => {
+        entregada = true;
+        return { body: {} };
+      },
+      'PUT /rutas/7/paradas/1/evidencia': { body: {} },
+    });
+    const entrada = await screen.findByLabelText('📷 Tomar foto de la entrega (opcional)');
+    expect(entrada).toHaveAttribute('accept', 'image/*');
+    expect(entrada).toHaveAttribute('capture', 'environment');
+    await userEvent.upload(entrada, new File(['x'], 'entrega.jpg', { type: 'image/jpeg' }));
+    expect(await screen.findByRole('img', { name: 'Foto de la entrega a Bodega Doña Rosa' })).toHaveAttribute(
+      'src', 'data:image/jpeg;base64,QUJD');
+    await userEvent.click(screen.getByRole('button', { name: 'Quitar foto' }));
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    await userEvent.upload(screen.getByLabelText('📷 Tomar foto de la entrega (opcional)'),
+      new File(['x'], 'entrega.jpg', { type: 'image/jpeg' }));
+    await userEvent.click(await screen.findByRole('button', { name: '✔ Entregado a Bodega Doña Rosa' }));
+    expect(await screen.findByText(/📷 Con foto de confirmación\./)).toBeInTheDocument();
+    const put = fetchFalso.mock.calls.find((c) => c[1]?.method === 'PUT');
+    expect(JSON.parse(String(put?.[1]?.body))).toEqual({ imagen: 'data:image/jpeg;base64,QUJD' });
+    expect(await screen.findByText(/Bodega Doña Rosa \(entregado 📷\)/)).toBeInTheDocument();
+    expect(reducir).toHaveBeenCalledTimes(2);
+  });
+
+  it('avisa si la foto no se puede leer', async () => {
+    foto.reducirFoto.mockReset().mockRejectedValue(new Error('No se pudo leer la foto. Intenta tomarla de nuevo.'));
+    renderConSesion(<MiRuta />, 'CONDUCTOR', { '/rutas/mias': { body: [RUTA] } });
+    await userEvent.upload(await screen.findByLabelText('📷 Tomar foto de la entrega (opcional)'),
+      new File(['x'], 'mala.jpg', { type: 'image/jpeg' }));
+    expect(await screen.findByText('No se pudo leer la foto. Intenta tomarla de nuevo.')).toBeInTheDocument();
   });
 });
 
 describe('Modo conductor sin conexión (RNF-006)', () => {
   it('muestra la ruta guardada en el celular cuando no hay señal', async () => {
     const { unmount } = renderConSesion(<MiRuta />, 'CONDUCTOR', { '/rutas/mias': { body: [RUTA] } });
-    expect(await screen.findByRole('heading', { name: 'Siguiente entrega' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: SIGUIENTE })).toBeInTheDocument();
     unmount();
     renderConSesion(<MiRuta />, 'CONDUCTOR', { '/rutas/mias': sinRed });
     expect(await screen.findByText(/📴 Sin conexión\. Se muestra tu ruta guardada a las/)).toBeInTheDocument();
@@ -189,14 +292,15 @@ describe('Modo conductor sin conexión (RNF-006)', () => {
         return { body: {} };
       },
     });
-    await screen.findByRole('heading', { name: 'Siguiente entrega' });
+    await screen.findByRole('heading', { name: SIGUIENTE });
     conectado = false;
-    await userEvent.click(screen.getByRole('button', { name: '✔ Entregado' }));
+    await userEvent.click(screen.getByRole('button', { name: '✔ Entregado a Bodega Doña Rosa' }));
     expect(await screen.findByText('⏳ 1 entrega pendiente de enviar.')).toBeInTheDocument();
     expect(screen.getByText(/📴 Sin conexión/)).toBeInTheDocument();
     // La pantalla avanza a la siguiente entrega aunque no haya señal
     expect(screen.getByText('Minimarket El Sol', { selector: 'b' })).toBeInTheDocument();
-    expect(screen.getByText(/Bodega Doña Rosa \(entregado\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Bodega Doña Rosa \(entregado \d\d:\d\d\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Se enviará al volver la señal\./)).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('eco_entregas_pendientes')!)).toEqual([{ rutaId: 7, paradaId: 1 }]);
 
     conectado = true;
@@ -230,7 +334,7 @@ describe('Modo conductor sin conexión (RNF-006)', () => {
       'PATCH /rutas/7/paradas/1/entregada': { status: 404, body: { detail: 'Parada no existe en esta ruta' } },
       'PATCH /rutas/7/paradas/2/entregada': { body: {} },
     });
-    expect(await screen.findByRole('heading', { name: 'Siguiente entrega' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: SIGUIENTE })).toBeInTheDocument();
     expect(fetchFalso.mock.calls.filter((c) => c[1]?.method === 'PATCH')).toHaveLength(2);
     expect(localStorage.getItem('eco_entregas_pendientes')).toBe('[]');
   });
